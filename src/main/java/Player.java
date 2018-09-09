@@ -1,7 +1,11 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Player {
 
     private int id;
     private int infantryCount;
+    private List<String> territories;
 
     /* Getters: getInfantryCount used for battles*/
     public int getInfantryCount() {
@@ -18,9 +22,20 @@ public class Player {
         return infantryCount - i;
     }
 
+    public void addTerritories(String country){
+        territories.add(country);
+    }
+    public void seeTerritories(){
+        System.out.print("__________________________________________\nPlayer #"+id+" Territories\n");
+        for(String country: territories){
+            System.out.println(country);
+        }
+    }
+
     Player(int id, int infantryCount)
     {
         this.id = id;
         this.infantryCount=infantryCount;
+        territories = new ArrayList<String>();
     }
 }
