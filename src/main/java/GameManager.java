@@ -28,7 +28,10 @@ public class GameManager {
     private static void setupPlayerList(int size) {
         playerList = new Player[size];
         int cavalry;
-
+        /*
+        * change calvary to some sort of token representation so later when we implement purchasing or trading new units we don't 
+        * have to redefine anything and can base any new units on this currency that a player will already hold
+        */
         switch(size){
             case 2:
                 cavalry=40;
