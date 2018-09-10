@@ -4,41 +4,8 @@ import com.google.gson.reflect.TypeToken;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
-/**/
-class Territory {
-    private boolean occupied;
-    private int occupiedByID;
-    private List<String> neighbors;
-
-    /**/
-    Territory(boolean i, int j, List<String> k)
-    {
-        occupied = i;
-        occupiedByID = j;
-        neighbors = k;
-    }
-
-    /**/
-    public void setTerritory(boolean i, int j){
-        occupied = i;
-        occupiedByID = j;
-    }
-
-    public boolean isOccupied(){
-        return occupied;
-    }
-
-    public List<String> getNeighbors(){
-        return neighbors;
-    }
-
-
-}
 
 /**/
 public class BoardManager {
@@ -63,7 +30,7 @@ public class BoardManager {
 
                 Type listType= new TypeToken<List<String>>() {}.getType();
                 List<String> territoryNeighbors = gson.fromJson(neighborsObject, listType);
-                thisMap.put(territoryName, new Territory(false, -1, territoryNeighbors));
+                thisMap.put(territoryName, new Territory(false, -1, null, territoryNeighbors));
             }
         } catch (FileNotFoundException e)
         {
@@ -82,12 +49,8 @@ public class BoardManager {
         }
         return occupied;
     }
-
-
     /**/
-    public void setupInitialTerritories(Player player) {
-        boolean askAgainForInput;
-
+    public void seeUntakenTerritories(){
         System.out.println("\n__________________________________________\nUNTAKEN-TERRITORIES");
         for(HashMap.Entry<String, Territory> country: thisMap.entrySet()){
             if(!thisMap.get(country.getKey()).isOccupied()){
@@ -95,8 +58,12 @@ public class BoardManager {
             }
         }
 
-        player.seeTerritories();
+    }
 
+
+    /* Refactor first few lines of method */
+    public void setupInitialTerritories(Player player) {
+        boolean askAgainForInput;
         System.out.print("\n__________________________________________\nPlayer #" + player.getId());
         Scanner country = new Scanner(System.in);
         do{
@@ -105,14 +72,24 @@ public class BoardManager {
                 System.out.print("Select: ");
                 String countryInput = country.nextLine();
 
-                thisMap.get(countryInput).setTerritory(true, player.getId());
+                if (thisMap.get(countryInput).isOccupied()){
+                    throw new Exception("Error: Chosen country already occupied.");
+                }
+
+                thisMap.get(countryInput).setTerritory(true, player.getId(), new Army(player.getId(), 1));
+                player.shipArmy();
                 player.addTerritories(countryInput);
+
+
                 askAgainForInput = false;
             } catch (InputMismatchException e){
                 System.out.print("Error: Invalid input.");
                 askAgainForInput = true;
             } catch (NullPointerException e){
                 System.out.print("Error: Country not found");
+                askAgainForInput = true;
+            } catch (Exception e){
+                System.out.print(e.getMessage());
                 askAgainForInput = true;
             }
         } while(askAgainForInput);
@@ -125,6 +102,16 @@ public class BoardManager {
     public void seeNeighbors(String key){
         for(String k: thisMap.get(key).getNeighbors()){
             System.out.println(k);
+        }
+    }
+    public String getOccupantCount(String country){
+        return thisMap.get(country).seeArmyCount();
+    }
+    public void addOccupantsTo(String country, int count, String type){
+        try {
+            thisMap.get(country).addOccupants(count, type);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
 

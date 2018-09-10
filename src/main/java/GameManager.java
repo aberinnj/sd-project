@@ -22,39 +22,43 @@ public class GameManager {
         rollForSetup();
         BoardManager bm = new BoardManager(base + "\\src\\main\\java\\mapSource.json");
         initializeTerritories(bm);
+
+        System.out.println("------------------------\n| Allocate the rest of your armies\n------------------------");
+        shipAllArmies(bm);
     }
 
     /**/
     private static void setupPlayerList(int size) {
         playerList = new Player[size];
-        int cavalry;
+        int default_infantry;
         /*
         * change calvary to some sort of token representation so later when we implement purchasing or trading new units we don't 
         * have to redefine anything and can base any new units on this currency that a player will already hold
         */
+
         switch(size){
             case 2:
-                cavalry=40;
+                default_infantry=40;
                 break;
             case 3:
-                cavalry=35;
+                default_infantry=35;
                 break;
             case 4:
-                cavalry=30;
+                default_infantry=30;
                 break;
             case 5:
-                cavalry=25;
+                default_infantry=25;
                 break;
             case 6:
-                cavalry=20;
+                default_infantry=20;
                 break;
             default:
-                cavalry=0;
+                default_infantry=0;
                 break;
         }
 
         for(int a=0; a<size; a++){
-            playerList[a] = new Player(a, cavalry);
+            playerList[a] = new Player(a, default_infantry);
         }
     }
 
@@ -95,12 +99,57 @@ public class GameManager {
     }
 
     /**/
-    private  static void initializeTerritories(BoardManager bm){
+    private static void initializeTerritories(BoardManager bm){
         while(!bm.isAllTerritoriesInitialized()) {
             for (int i : playerTurnPattern) {
-
+                bm.seeUntakenTerritories();
+                playerList[i].seeTerritories(bm);
                 bm.setupInitialTerritories(playerList[i]);
             }
         }
     }
+
+    /**/
+    public static boolean arePlayersReady()
+    {
+        boolean allReady = true;
+        for( Player k : playerList){
+            allReady = allReady && k.isBaseEmpty();
+        }
+        return allReady;
+    }
+
+    /**/
+    private static void shipAllArmies(BoardManager bm){
+        boolean invalidTerritory;
+        while(!arePlayersReady()){
+            for( Player k: playerList){
+                invalidTerritory = true;
+
+                if (!k.isBaseEmpty()){
+                    k.seeTerritories(bm);
+                    System.out.println("Remaining armies: " + k.getRemainingArmies());
+                    System.out.print("Select a territory to ship your Army to: ");
+                    Scanner territoryScanner = new Scanner(System.in);
+                    while(invalidTerritory){
+                    try{
+                        String territory = territoryScanner.nextLine();
+                        if(!k.checkIfPlayerHasTerritory(territory))
+                            throw new Exception("Error: "+ territory + " is not your territory");
+                        invalidTerritory = false;
+
+                        bm.addOccupantsTo(territory, 1, "INFANTRY");
+                        k.shipArmy();
+
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+
+                    }
+                }
+            }
+        }
+    }
+
+
 }
