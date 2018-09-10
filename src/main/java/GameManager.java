@@ -2,28 +2,30 @@ import java.util.Scanner;
 
 public class GameManager {
 
-    private static int playerSize;
-    private static Player[] playerList;
     public static String base = System.getProperty("user.dir");
 
+    /* Game static members */
+    private static int playerSize;
+    private static Player[] playerList;
+    private static int[] playerTurnPattern;
+
     /**/
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         System.out.println("Game of Risk");
-        System.out.println("------------");
-        System.out.println("PlayerCount");
+
+        System.out.println("------------------------\n| PlayerSetup\n------------------------");
+        System.out.print("Number of Players: ");
         Scanner setup = new Scanner(System.in);
         playerSize = setup.nextInt();
+        setupPlayerList(playerSize);
 
-        setPlayerList(playerSize);
-
+        rollForSetup();
         BoardManager bm = new BoardManager(base + "\\src\\main\\java\\mapSource.json");
-
+        initializeTerritories(bm);
     }
 
     /**/
-    private static void setPlayerList(int size)
-    {
+    private static void setupPlayerList(int size) {
         playerList = new Player[size];
         int cavalry;
         /*
@@ -57,4 +59,48 @@ public class GameManager {
     }
 
     /**/
+    private static void rollForSetup(){
+        playerTurnPattern = new int[playerSize];
+        Dice turnSetupDice = new Dice();
+        int highestID = -1;
+        int highestNUM = 1;
+
+        System.out.println("\n------------------------\n| BoardSetup\n" +
+                "| Note: Whoever gets the first of the same highest\n" +
+                "| number, is considered to have the highest number\n" +
+                "| Fix: Refactor\n------------------------");
+
+        for(int i=0; i<playerSize; i++)
+        {
+            turnSetupDice.roll();
+            System.out.println("Rolling for Player#"+(i)+ "..."+turnSetupDice.getDiceValue());
+            if (turnSetupDice.getDiceValue() > highestNUM)
+            {
+                highestNUM = turnSetupDice.getDiceValue();
+                highestID = i;
+            }
+        }
+        setupTurnPattern(highestID);
+
+    }
+
+    /* helper function for rollForSetup */
+    private static void setupTurnPattern(int i){
+        System.out.println("\nOrder of Turns:");
+        for(int b=0; b<playerSize; b++)
+        {
+            playerTurnPattern[b] = (i+b)% playerSize;
+            System.out.println((b+1)+ ". Player#" + playerTurnPattern[b]);
+        }
+    }
+
+    /**/
+    private  static void initializeTerritories(BoardManager bm){
+        while(!bm.isAllTerritoriesInitialized()) {
+            for (int i : playerTurnPattern) {
+
+                bm.setupInitialTerritories(playerList[i]);
+            }
+        }
+    }
 }
