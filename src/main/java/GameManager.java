@@ -17,12 +17,18 @@ public class GameManager {
         System.out.print("Number of Players: ");
         Scanner setup = new Scanner(System.in);
         playerSize = setup.nextInt();
+
+        while(playerSize < 2 || playerSize > 6) {
+        	System.out.println("This game mode only supports between 2 and 6 players, please enter a valid number of players");
+        	playerSize = setup.nextInt();
+        }
+        
         setupPlayerList(playerSize);
 
         rollForSetup();
         BoardManager bm = new BoardManager(base + "\\src\\main\\java\\mapSource.json");
         initializeTerritories(bm);
-
+	Deck deck = new Deck(base + "/main/java/deck.json");
         System.out.println("------------------------\n| Allocate the rest of your armies\n------------------------");
         shipAllArmies(bm);
     }
@@ -31,10 +37,6 @@ public class GameManager {
     private static void setupPlayerList(int size) {
         playerList = new Player[size];
         int default_infantry;
-        /*
-        * change calvary to some sort of token representation so later when we implement purchasing or trading new units we don't 
-        * have to redefine anything and can base any new units on this currency that a player will already hold
-        */
 
         switch(size){
             case 2:
