@@ -1,18 +1,20 @@
-/**/
 public class Army {
-    private int ownerID;
     private int INFANTRY;
     private int CAVALRY;
     private int ARTILLERY;
 
-    Army(int i, int j){
-        ownerID=i;
+    /*////////////////////////////////////////////////////////////////////////////////
+    Contructor for building an army
+    *///////////////////////////////////////////////////////////////////////////////*/
+    Army(int j){
         INFANTRY =j;
         CAVALRY =0;
         ARTILLERY =0;
     }
 
-    /* Needs error handling */
+    /*////////////////////////////////////////////////////////////////////////////////
+    Function for getting values, incrementing and decrementing
+    *///////////////////////////////////////////////////////////////////////////////*/
     public int getInfantryCount(){
         return INFANTRY;
     }
@@ -29,6 +31,11 @@ public class Army {
     public void loseCavalry(){ CAVALRY--;}
     public void loseArtillery(){ ARTILLERY--;}
 
+    /*////////////////////////////////////////////////////////////////////////////////
+    Exchanging number of pieces
+
+    Not yet implemented.
+    *///////////////////////////////////////////////////////////////////////////////*/
 
     public void exchange(int type){
         switch (type){
@@ -38,14 +45,13 @@ public class Army {
             case 2:
                 // option 2: exchange 2 CAVALRY for 1 ARTILLERY
                 break;
-
             case 3:
                 // option 3: exchange 1 CAVALRY and 5 INFANTRY for 1 ARTILLERY
                 break;
 
-                default:
-                    //
-                    break;
+            default:
+                // throw error
+                break;
         }
     }
 }
