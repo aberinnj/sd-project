@@ -10,3 +10,9 @@ __Files and Program Flow__
 - Dice - Simple Dice class
 - Territory - Handles all requests and responses involving Territories such as occupants, occupiedBy, isOccupied as well as neighboring territories
 - Deck
+
+
+__Summary__
+
+* GameManager sets up board, players, decks, and starts the game loop
+* BoardManager sets up Territories, and makes use of dices
