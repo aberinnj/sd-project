@@ -1,4 +1,4 @@
-# sdprojectrisk
+# sdprojectrisk [![Build Status](https://travis-ci.com/aberinnj/sd_project.svg?branch=master)](https://travis-ci.com/aberinnj/sd_project)
 Software Design class team project implementing a clone of the boardgame Risk.
 
 __Files and Program Flow__
