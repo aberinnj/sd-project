@@ -16,6 +16,7 @@ public class GameManager {
     *///////////////////////////////////////////////////////////////////////////////*/
     public static void main(String[] args) {
 
+        // Game Setup
         System.out.println("Game of Risk");
         System.out.println("------------------------");
         System.out.println("PlayerSetup");
@@ -36,14 +37,27 @@ public class GameManager {
         }
         rollForSetup();
 
-        BoardManager bm = new BoardManager(base + "\\src\\main\\java\\mapSource.json");
+        BoardManager bm = new BoardManager(base + "\\src\\main\\java\\mapSource.json", base + "/main/java/deck.json");
         initializeTerritories(bm);
         System.out.println("------------------------");
         System.out.println("Allocate the rest of your armies");
         System.out.println("------------------------");
         shipAllArmies(bm);
 
-        Deck deck = new Deck(base + "/main/java/deck.json");
+        // Game Start
+        while(!isGameOver(bm)){
+
+            for (int i: playerTurnPattern)
+            {
+                // access playerList[i]
+                // 1. place new Armies
+                // 2. attacking
+                // 3. fortifying position
+            }
+            // break for now
+            break;
+        }
+
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
@@ -198,5 +212,18 @@ public class GameManager {
                 }
             }
         }
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    Method checks if the game is over, by passing the boardmanager
+    returns true if a player has all the territories
+    *///////////////////////////////////////////////////////////////////////////////*/
+    private static boolean isGameOver(BoardManager bm){
+        for(Player i: playerList){
+            if (i.isPlayerTheWinner(bm)){
+                return true;
+            }
+        }
+        return false;
     }
 }

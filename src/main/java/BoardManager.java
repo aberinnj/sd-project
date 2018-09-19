@@ -11,7 +11,7 @@ public class BoardManager {
     private static HashMap<String, Territory> boardMap;                                                                 // boardMap is a hashmap <TerritoryName, TerritoryObject>
                                                                                                                         // TerritoryName is used as a key to get the corresponding object
                                                                                                                         // TerritoryObject is an object of class Territory
-
+    private static Deck gameDeck;
     /*////////////////////////////////////////////////////////////////////////////////
     Constructor, constructs map and puts it inside a hashmap
 
@@ -21,10 +21,10 @@ public class BoardManager {
 
     Refactor.
     *///////////////////////////////////////////////////////////////////////////////*/
-    BoardManager(String path){
+    BoardManager(String mapPath, String deckPath){
         boardMap = new HashMap<String, Territory>();
         try {
-            FileReader json = new FileReader(path);
+            FileReader json = new FileReader(mapPath);
             JsonParser parser = new JsonParser();
 
             Gson gson = new Gson();
@@ -42,6 +42,7 @@ public class BoardManager {
                 List<String> territoryNeighbors = gson.fromJson(neighborsObject, listType);
                 boardMap.put(territoryName, new Territory(false, -1, null, territoryNeighbors));
             }
+            gameDeck = new Deck(deckPath);
         }
         catch (FileNotFoundException e)
         {
@@ -77,6 +78,14 @@ public class BoardManager {
             }
         }
 
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    Method gets the number of territories involved in the game
+    currently being only used for checking if player has taken all the territories
+    *///////////////////////////////////////////////////////////////////////////////*/
+    public int getNumberOfTerritories(){
+        return boardMap.size();
     }
 
 
