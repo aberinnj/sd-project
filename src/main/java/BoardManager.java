@@ -88,6 +88,12 @@ public class BoardManager {
         return boardMap.size();
     }
 
+    /*////////////////////////////////////////////////////////////////////////////////
+    Method returns true of a territory is adjacent to origin
+    *///////////////////////////////////////////////////////////////////////////////*/
+    public boolean isTerritoryANeighborOf(String country, String origin){
+        return boardMap.get(origin).getNeighbors().contains(country);
+    }
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method prompts user for a territory to send an infantry to and initialize an army in .
@@ -134,16 +140,22 @@ public class BoardManager {
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
-    Method returns occupant count of a territory.
+    Method returns occupant count of a territory as int
+    *///////////////////////////////////////////////////////////////////////////////*/
+    public int getOccupantCount(String country){
+        return boardMap.get(country).ArmyCount();
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    Method returns occupant count of a territory as a STATUS string
     Used in displaying territories with the count of user armies in it
     *///////////////////////////////////////////////////////////////////////////////*/
-    public String getOccupantCount(String country){
+    public String getOccupantCountStatus(String country){
         return boardMap.get(country).seeArmyCount();
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method adds occupants to a territory that has already been occupied.
-    Used in setting up rest of infantry pieces
     *///////////////////////////////////////////////////////////////////////////////*/
     public void addOccupantsTo(String country, int count, String type){
         try {
@@ -153,7 +165,16 @@ public class BoardManager {
         }
     }
 
-
+    /*////////////////////////////////////////////////////////////////////////////////
+    Method loses occupants in a territory
+    *///////////////////////////////////////////////////////////////////////////////*/
+    public void transferOccupantsFrom(String country, int count, String type){
+        try {
+            boardMap.get(country).loseOccupants(count, type);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
 
 
 }
