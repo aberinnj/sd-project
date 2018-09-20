@@ -26,7 +26,7 @@ public class GameManager {
         while(true){
             try{
                 System.out.print("Number of Players: ");
-                playerSize = setup.nextInt();
+                playerSize = Integer.parseInt(setup.nextLine());
                 setupPlayerList(playerSize);
                 System.out.println();
                 break;
@@ -37,24 +37,30 @@ public class GameManager {
         }
         rollForSetup();
 
-        BoardManager bm = new BoardManager(base + "\\src\\main\\java\\mapSource.json", base + "/main/java/deck.json");
-        initializeTerritories(bm);
+        BoardManager bm = new BoardManager(base + "/mapSource.json", base + "/deck.json");
+        initializeTerritories(bm, setup);
         System.out.println("------------------------");
         System.out.println("Allocate the rest of your armies");
         System.out.println("------------------------");
-        shipAllArmies(bm);
+        for (int i: playerTurnPattern) {
+            //shipAllArmies(bm, setup);
+            playerList[i].shipArmies(bm, setup);
+        }
 
         // Game Start
         while(!isGameOver(bm)){
 
             for (int i: playerTurnPattern)
             {
+                System.out.println("Player " + i + " turn");
                 // access playerList[i]
                 // 1. place new Armies
+                int armies = playerList[i].addArmies();
+                playerList[i].shipArmies(bm, setup);
+
                 // 2. attacking
                 // 3. fortifying position
             }
-            // break for now
             break;
         }
 
@@ -147,12 +153,13 @@ public class GameManager {
     has an unoccupied territory and allows the users to select a territory
     per turn.
      *//////////////////////////////////////////////////////////////////////*/
-    private static void initializeTerritories(BoardManager bm){
+    private static void initializeTerritories(BoardManager bm, Scanner setup){
         while(!bm.isAllTerritoriesInitialized()) {
+            // FIX ERROR WHERE MORE THAN TWO PLAYERS GETS STUCK IN LOOP
             for (int i : playerTurnPattern) {
                 bm.displayUntakenTerritories();                                                                         //BoardManager's displayUntakenTerritories to display untaken territories
                 playerList[i].displayPlayerTerritories(bm);                                                             //player's displayPlayerTerritories to display player's territories
-                bm.setInitialTerritory(playerList[i]);                                                                  //BoardManager queries user for which territory to occupy
+                bm.setInitialTerritory(playerList[i], setup);                                                                  //BoardManager queries user for which territory to occupy
             }
         }
     }
@@ -171,6 +178,8 @@ public class GameManager {
         return allReady;
     }
 
+
+
     /*///////////////////////////////////////////////////////////////////////
     Method prompts user to assign all of their armies to a territory per turn
 
@@ -179,8 +188,8 @@ public class GameManager {
     select a territory and update relevant information
 
     Refactor.
-     *//////////////////////////////////////////////////////////////////////*/
-    private static void shipAllArmies(BoardManager bm){
+     //////
+    private static void shipAllArmies(BoardManager bm, Scanner territoryScanner){
         boolean invalidTerritory;
         while(!arePlayersReady()){
             for ( int i: playerTurnPattern) {
@@ -190,8 +199,8 @@ public class GameManager {
                     playerList[i].displayPlayerTerritories(bm);
 
                     System.out.println("Remaining armies: " + playerList[i].getRemainingArmies());
-                    System.out.print("Select a territory to ship your Army to: ");
-                    Scanner territoryScanner = new Scanner(System.in);
+                    System.out.println("Select a territory to ship your Army to: ");
+                    //Scanner territoryScanner = new Scanner(System.in);
 
                     while(invalidTerritory) {
                         try {
@@ -213,6 +222,7 @@ public class GameManager {
             }
         }
     }
+    *//////////////////////////////////////////////////////////////////////*
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method checks if the game is over, by passing the boardmanager
