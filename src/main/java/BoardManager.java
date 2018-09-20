@@ -98,12 +98,12 @@ public class BoardManager {
 
     Refactor.
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void setInitialTerritory(Player player) {
+    public void setInitialTerritory(Player player, Scanner country) {
         boolean askAgainForInput;
 
         System.out.println("__________________________________________");
         System.out.println("Player #" + player.getId());
-        Scanner country = new Scanner(System.in);
+        //Scanner country = new Scanner(System.in);
         do{
             try {
                 System.out.println();
