@@ -11,6 +11,10 @@ public class BoardManager {
     private static HashMap<String, Territory> boardMap;                                                                 // boardMap is a hashmap <TerritoryName, TerritoryObject>
                                                                                                                         // TerritoryName is used as a key to get the corresponding object
                                                                                                                         // TerritoryObject is an object of class Territory
+   
+    private static HashMap<String, List> continentsMap;                                                                 //continentsMap is hashmap <ContinentName, Terrtories> used to check 
+                                                                                                                        //if a player owns  a continent
+    
     private static Deck gameDeck;
     /*////////////////////////////////////////////////////////////////////////////////
     Constructor, constructs map and puts it inside a hashmap
@@ -42,6 +46,18 @@ public class BoardManager {
                 List<String> territoryNeighbors = gson.fromJson(neighborsObject, listType);
                 boardMap.put(territoryName, new Territory(false, -1, null, territoryNeighbors));
             }
+            
+            JsonArray continentArray = rootObj.getAsJsonArray("continents");
+            for(JsonElement continentItem: continentArray){
+                JsonObject continentObject = continentItem.getAsJsonObject();
+                String continentName = continentObject.get("name").getAsString();
+                JsonArray territoriesObject = continentObject.get("territories").getAsJsonArray();
+                
+                Type listType= new TypeToken<List<String>>() {}.getType();
+                List<String> territoriesOfContinent = gson.fromJson(territoriesObject, listType);
+                continentsMap.put(continentName, territoriesOfContinent);
+            }
+
             gameDeck = new Deck(deckPath);
         }
         catch (FileNotFoundException e)
@@ -104,12 +120,12 @@ public class BoardManager {
 
     Refactor.
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void setInitialTerritory(Player player) {
+    public void setInitialTerritory(Player player, Scanner country) {
         boolean askAgainForInput;
 
         System.out.println("__________________________________________");
         System.out.println("Player #" + player.getId());
-        Scanner country = new Scanner(System.in);
+        //Scanner country = new Scanner(System.in);
         do{
             try {
                 System.out.println();

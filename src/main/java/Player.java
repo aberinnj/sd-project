@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Player {
 
@@ -98,6 +99,47 @@ public class Player {
             return true;
         }
         return false;
+    }
+
+    /*///////////////////////////////////////////////////////////////////////////////
+    Function to Add armies at the beginning of each turn
+     */////////////////////////////////////////////////////////////////////
+    public int addArmies() {
+        int newArmies = (3 + Math.max(0, (int) Math.ceil((territories.size() - 12) / 3)));
+        System.out.println(newArmies + " new armies available");
+        homebase.addInfantryCount(newArmies);
+        return newArmies;
+    }
+
+    /*
+    Moved the ship armies function here so there would be one function as well as to only allow one player to place armies
+    at a time
+    */
+    public void shipArmies(BoardManager bm, Scanner territoryScanner) {
+        //boolean invalidTerritory = true;
+        while (!isBaseEmpty()) {
+            displayPlayerTerritories(bm);
+
+            System.out.println("Remaining armies: " + getRemainingArmies());
+            System.out.println("Select a territory to ship your Army to: ");
+            //Scanner territoryScanner = new Scanner(System.in);
+
+            //while(invalidTerritory) {
+            try {
+                // prompts user for a territory
+                String territory = territoryScanner.nextLine();
+                if (!ifPlayerHasTerritory(territory))
+                    throw new Exception("Error: " + territory + " is not your territory");
+                //invalidTerritory = false;
+                // transfer infantry to territory
+                bm.addOccupantsTo(territory, 1, "INFANTRY");
+                shipArmy();
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            //}
+        }
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
