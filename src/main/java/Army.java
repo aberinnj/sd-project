@@ -27,9 +27,9 @@ public class Army {
     public void addInfantryCount(int k) { INFANTRY += k; }
     public void addCavalryCount(int k) { CAVALRY += k ; }
     public void addArtilleryCount(int k) { ARTILLERY += k; }
-    public void loseInfantry(){ INFANTRY--;}
-    public void loseCavalry(){ CAVALRY--;}
-    public void loseArtillery(){ ARTILLERY--;}
+    public void loseInfantry(int k){ INFANTRY -= k;}
+    public void loseCavalry(int k){ CAVALRY -= k;}
+    public void loseArtillery(int k){ ARTILLERY -= k;}
 
     /*////////////////////////////////////////////////////////////////////////////////
     Exchanging number of pieces

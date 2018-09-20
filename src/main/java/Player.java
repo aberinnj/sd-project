@@ -48,6 +48,20 @@ public class Player {
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
+    Method displays Player's adjacent territories to given territory argument
+     *///////////////////////////////////////////////////////////////////////////////*/
+    public void displayPlayerNeighboringTerritories(BoardManager bm, String origin){
+        System.out.println("Infantry/Cavalry/Artillery Count And Neighboring Countries");
+        for(String country: territories){
+            if(bm.isTerritoryANeighborOf(country, origin))
+            {
+                System.out.print(bm.getOccupantCountStatus(country) + " ");
+                System.out.println(country);
+            }
+        }
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////
     Method checks if player has a territory
      *///////////////////////////////////////////////////////////////////////////////*/
     public boolean ifPlayerHasTerritory(String country){
@@ -66,7 +80,7 @@ public class Player {
     Method Diminishes number of army
      *///////////////////////////////////////////////////////////////////////////////*/
     public void shipArmy(){
-        homebase.loseInfantry();
+        homebase.loseInfantry(1);
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +93,7 @@ public class Player {
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method returns the total number of remaining infantry
-     *///////////////////////////////////////////////////////////////////////////////*/
+    *///////////////////////////////////////////////////////////////////////////////*/
     public boolean isPlayerTheWinner(BoardManager bm){
         if (territories.size() == bm.getNumberOfTerritories()){
             return true;
@@ -126,6 +140,26 @@ public class Player {
             }
             //}
         }
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    Method executes movement of one army to another
+
+    Note: Add exceptions to invalid string values in case of a mistake on the programmer's
+    part
+    Assumption: Cavalry = 5 Infantry and Artillery = 2 Cavalry
+    *///////////////////////////////////////////////////////////////////////////////*/
+    public void fortifyTerritory(BoardManager bm, String origin, String destination, int army) {
+
+        //bm.transferOccupantsFrom(origin, a, "ARTILLERY");
+        //bm.addOccupantsTo(destination, a, "ARTILLERY");
+
+        //bm.transferOccupantsFrom(origin, c, "CAVALRY");
+        //bm.addOccupantsTo(destination, c, "CAVALRY");
+
+        bm.transferOccupantsFrom(origin, army, "INFANTRY");
+        bm.addOccupantsTo(destination, army, "INFANTRY");
+
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
