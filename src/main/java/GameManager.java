@@ -213,6 +213,47 @@ public class GameManager {
             }
         }
     }
+    /*////////////////////////////////////////////////////////////////////////////////
+    Method checks the number of continents a player owns and designates more armies
+    *///////////////////////////////////////////////////////////////////////////////*/
+    private static int continentsOwned(Player current,BoardManager bm){
+        int moreArmies= 0;
+        String ownedContinents = " ";
+        if (current.numOfTerritories()<4)
+            return 0;
+
+        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("AUSTRALIA")))){
+            moreArmies =+ 2;
+            ownedContinents += "AUSTRALIA, ";
+        }
+        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("ASIA")))){
+            moreArmies += 7;
+            ownedContinents += "ASIA, ";
+
+        }
+        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("NORTH AMERICA")))){
+            moreArmies += 5;
+            ownedContinents += "NORTH AMERICA, ";
+        }
+        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("EUROPE")))){
+            moreArmies += 5;
+            ownedContinents += "EUROPE, ";
+        }
+        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("AFRICA")))){
+            moreArmies += 3;
+            ownedContinents += "AFRICA, ";
+        }
+        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("SOUTH AMERICA")))){
+            moreArmies += 2;
+            ownedContinents += "SOUTH AMERICA, ";
+        }
+
+        if(moreArmies!=0){
+            System.out.println("You get " + moreArmies + "armies because you own " + ownedContinents + "Congratulations!");
+        }
+        return moreArmies;
+    }
+    
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method checks if the game is over, by passing the boardmanager
