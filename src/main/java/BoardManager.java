@@ -22,7 +22,7 @@ public class BoardManager {
                                                                                                                         // TerritoryName is used as a key to get the corresponding object
                                                                                                                         // TerritoryObject is an object of class Territory
 
-    private static HashMap<String, Continent> continentsMap = new HashMap<String,Continent>();                          //continentsMap is hashmap <ContinentName, Terrtories> used to check
+    private static HashMap<String, Continent> continentsMap;                         //continentsMap is hashmap <ContinentName, Terrtories> used to check
 
     private static Deck gameDeck;
     /*////////////////////////////////////////////////////////////////////////////////
@@ -35,6 +35,7 @@ public class BoardManager {
     Refactor.
     *///////////////////////////////////////////////////////////////////////////////*/
     BoardManager(String mapPath, String deckPath){
+        continentsMap = new HashMap<String,Continent>();
         boardMap = new HashMap<String, Territory>();
         try {
             FileReader json = new FileReader(mapPath);
@@ -74,6 +75,20 @@ public class BoardManager {
         catch (FileNotFoundException e)
         {
             e.printStackTrace();
+        }
+    }
+    public HashMap<String, Territory> getBoardMap(){
+        return boardMap;
+    }
+
+    public void setBoardMap(HashMap<String, Territory> newBoardMap)
+    {
+        for(String i: boardMap.keySet())
+        {
+            boardMap.get(i).setTerritory(
+                    newBoardMap.get(i).isOccupied(),
+                    newBoardMap.get(i).getOccupantID(),
+                    new Army(newBoardMap.get(i).getArmy().getInfantryCount()));
         }
     }
 
