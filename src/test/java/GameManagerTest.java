@@ -16,12 +16,12 @@ public class GameManagerTest extends TestCase {
     }
     @Test
     public void testGameManager2() throws Exception {
-        Object player = new Player(0, 40, hand);
+        Object player = new Player(0, 40);
         assertEquals(40, ((Player) player).getRemainingArmies());
     }
     @Test
     public void testGameManager3() throws Exception {
-        Object player2 = new Player(0, 40, hand);
+        Object player2 = new Player(0, 40);
         assertEquals(false, ((Player) player2).isBaseEmpty());
     }
     @Test

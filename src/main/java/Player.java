@@ -346,25 +346,27 @@ public class Player {
 
     public int tradeCards(Scanner scanner) {
         displayHand();
-        String ans = null;
-        while ((ans != "Yes") && (ans != "No")) {
+        String ans;
+
+        do{
             System.out.println("Would you like to exchange your cards for units? Yes/ No");
             ans = scanner.nextLine();
-        }
-        if (ans == "No") return 0;
-        else {
+        }while (!ans.equals("Yes") && !ans.equals("No"));
+        //if (ans == "No") return 0;
+        //else {
 
-        }
+        //}
+        return 0;
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
     Constructor for making a player
     *///////////////////////////////////////////////////////////////////////////////*/
-    Player(int id, int infantryCount, ArrayList<Entry<String, String>> hand)
+    Player(int id, int infantryCount)
     {
         this.id = id;
         homebase = new Army(infantryCount);
-        Hand = hand;
+        Hand = new ArrayList<Entry<String, String>>();
         territories = new ArrayList<String>();
     }
 }

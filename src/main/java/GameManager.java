@@ -105,8 +105,7 @@ public class GameManager {
         }
 
         for(int a=0; a<size; a++){
-            ArrayList<Map.Entry<String, String>> hand;
-            playerList[a] = new Player(a, default_infantry, hand);
+            playerList[a] = new Player(a, default_infantry);
         }
     }
 
