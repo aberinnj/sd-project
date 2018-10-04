@@ -22,12 +22,8 @@ public class BoardManager {
                                                                                                                         // TerritoryName is used as a key to get the corresponding object
                                                                                                                         // TerritoryObject is an object of class Territory
 
-    private static HashMap<String, Continent> continentsMap = new HashMap<String,Continent>();                                                                 //continentsMap is hashmap <ContinentName, Terrtories> used to check
+    private static HashMap<String, Continent> continentsMap = new HashMap<String,Continent>();                          //continentsMap is hashmap <ContinentName, Terrtories> used to check
 
-    public List<String> getContinentsMap(String name) {
-        return continentsMap.get(name).FullContinent;
-    }
-    
     private static Deck gameDeck;
     /*////////////////////////////////////////////////////////////////////////////////
     Constructor, constructs map and puts it inside a hashmap
@@ -70,9 +66,6 @@ public class BoardManager {
                 Type listType= new TypeToken<List<String>>() {}.getType();
                 List<String> territoriesOfContinent = gson.fromJson(territoriesObject, listType);
                 //System.out.println(continentName);
-                for (String i: territoriesOfContinent){
-                    System.out.println(i);
-                }
                 continentsMap.put(continentName, new Continent(territoriesOfContinent));
             }
 
@@ -82,6 +75,14 @@ public class BoardManager {
         {
             e.printStackTrace();
         }
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    Method returns a the list of continents
+    *///////////////////////////////////////////////////////////////////////////////*/
+    public List<String> getContinentsMap(String name) {
+
+        return continentsMap.get(name).FullContinent;
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
