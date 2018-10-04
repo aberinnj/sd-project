@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.Scanner;
 
 public class GameManager {
@@ -56,10 +58,11 @@ public class GameManager {
                 System.out.println("Player " + i + " turn");
                 // access playerList[i]
                 // 1. place new Armies
-                int armies = playerList[i].addArmies();
-                playerList[i].shipArmies(bm, setup);
-
+                //int armies =
+                //playerList[i].shipArmies(bm, setup);
+                playerList[i].addArmies(bm, setup);
                 // 2. attacking
+                playerList[i].attack(bm, setup);
                 // 3. fortifying position
                 fortifyPlayersTerritory(bm, i);
             }
@@ -102,7 +105,8 @@ public class GameManager {
         }
 
         for(int a=0; a<size; a++){
-            playerList[a] = new Player(a, default_infantry);
+            ArrayList<Map.Entry<String, String>> hand;
+            playerList[a] = new Player(a, default_infantry, hand);
         }
     }
 
@@ -112,7 +116,7 @@ public class GameManager {
     to play first
     *//////////////////////////////////////////////////////////////////////*/
     private static void rollForSetup(){
-        playerTurnPattern = new int[playerSize];
+        playerTurnPattern = new int[playerSize]; //Is this array necessary?
         Dice turnSetupDice = new Dice();
         int highestID = -1;
         int highestNUM = 1;
@@ -181,52 +185,6 @@ public class GameManager {
         return allReady;
     }
 
-
-
-    /*///////////////////////////////////////////////////////////////////////
-    Method prompts user to assign all of their armies to a territory per turn
-
-    While players have not finished placing all their infantry pieces
-    loop through turn-pattern, for each player, who still has unused infantry pieces,
-    select a territory and update relevant information
-
-    Refactor.
-     //////
-    private static void shipAllArmies(BoardManager bm, Scanner territoryScanner){
-        boolean invalidTerritory;
-        while(!arePlayersReady()){
-            for ( int i: playerTurnPattern) {
-                invalidTerritory = true;
-
-                if (!playerList[i].isBaseEmpty()) {
-                    playerList[i].displayPlayerTerritories(bm);
-
-                    System.out.println("Remaining armies: " + playerList[i].getRemainingArmies());
-                    System.out.println("Select a territory to ship your Army to: ");
-                    //Scanner territoryScanner = new Scanner(System.in);
-
-                    while(invalidTerritory) {
-                        try {
-                            // prompts user for a territory
-                            String territory = territoryScanner.nextLine();
-                            if (!playerList[i].ifPlayerHasTerritory(territory))
-                                throw new Exception("Error: " + territory + " is not your territory");
-                            invalidTerritory = false;
-
-                            // transfer infantry to territory
-                            bm.addOccupantsTo(territory, 1, "INFANTRY");
-                            playerList[i].shipArmy();
-
-                        } catch (Exception e) {
-                            System.out.println(e.getMessage());
-                        }
-                    }
-                }
-            }
-        }
-    }
-    *//////////////////////////////////////////////////////////////////////*
-
     /*////////////////////////////////////////////////////////////////////////////////
     Method checks if the game is over, by passing the boardmanager
     returns true if a player has all the territories
@@ -268,7 +226,7 @@ public class GameManager {
                         throw new Exception("Uh Oh! This territory only has one army. You cannot transfer the defending army of a territory.");
                     }
                     System.out.println("Neighboring Territories: ");
-                    playerList[id].displayPlayerNeighboringTerritories(bm, origin);
+                    playerList[id].displayPlayerNeighboringTerritories(bm, origin, false);
                     System.out.println("Army Count: " + bm.getOccupantCount(origin));
                 } else
                     throw new Exception("Player does not own territory " + origin);
