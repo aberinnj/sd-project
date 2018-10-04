@@ -1,5 +1,5 @@
-# sdprojectrisk [![Build Status](https://travis-ci.com/aberinnj/sd_project.svg?branch=master)](https://travis-ci.com/aberinnj/sd_project)
-[![codecov](https://codecov.io/gh/aberinnj/sd_project/branch/master/graph/badge.svg)](https://codecov.io/gh/aberinnj/sd_project)
+# sdprojectrisk [![Build Status](https://travis-ci.com/aberinnj/sd_project.svg?branch=master)](https://travis-ci.com/aberinnj/sd_project) [![codecov](https://codecov.io/gh/aberinnj/sd_project/branch/master/graph/badge.svg)](https://codecov.io/gh/aberinnj/sd_project)
+
 Software Design class team project implementing a clone of the boardgame Risk.
 
 __Files and Program Flow__
