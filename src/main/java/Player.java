@@ -337,6 +337,20 @@ public class Player {
         else System.out.println("You have chosen not to attack");
     }
 
+    /*////////////////////////////////////////////////////////////////////////////////
+    Methods returns a copy of the territories list
+    *///////////////////////////////////////////////////////////////////////////////*/
+        public List<String> territoriesCopy(){
+            return territories;
+        }
+        /*////////////////////////////////////////////////////////////////////////////////
+        Method returns the number territories a player has
+         *///////////////////////////////////////////////////////////////////////////////*/
+        public int numOfTerritories(){
+            return territories.size();
+        }
+
+
     public void displayHand() {
         System.out.println("You have the current cards");
         for (int i = 0; i < Hand.size();i++) {

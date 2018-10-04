@@ -170,23 +170,23 @@
   }
 
 ],
-    "continents":[
+  "continents":[
     {
-    "name": "NORTH AMERICA",
-    "territories": ["ALASKA", "NORTH WEST TERRITORY", "ALBERTA","ONTARIO","QUEBEC","GREENLAND", "WESTERN UNITED STATES", "EASTERN UNITED STATTES", "CENTRAL AMERICA"]
-  },
-  {
-    "name": "SOUTH AMERICA",
-    "territories": ["VENEZUELA", "BRAZIL", "PERU", "ARGENTINA"]
-  },
-   {
-    "name": "EUROPE",
-    "territories": ["WESTERN EUROPE", "GREAT BRITAIN", "ICELAND", "SCANDANAVIA", "NORHTERN EUROPE", "SOUTHERN EUROPE", "UKRAINE"]
-   },
-   {
-    "name": "EUROPE",
-    "territories": ["WESTERN EUROPE", "GREAT BRITAIN", "ICELAND", "SCANDANAVIA", "NORHTERN EUROPE", "SOUTHERN EUROPE", "UKRAINE"]
-   },
+      "name": "NORTH AMERICA",
+      "territories": ["ALASKA", "NORTH WEST TERRITORY", "ALBERTA","ONTARIO","QUEBEC","GREENLAND", "WESTERN UNITED STATES", "EASTERN UNITED STATES", "CENTRAL AMERICA"]
+    },
+    {
+      "name": "SOUTH AMERICA",
+      "territories": ["VENEZUELA", "BRAZIL", "PERU", "ARGENTINA"]
+    },
+    {
+      "name": "EUROPE",
+      "territories": ["WESTERN EUROPE", "GREAT BRITAIN", "ICELAND", "SCANDINAVIA", "NORTHERN EUROPE", "SOUTHERN EUROPE", "UKRAINE"]
+    },
+    {
+      "name": "AFRICA",
+      "territories": ["NORTH AFRICA", "EGYPT", "CONGO", "EAST AFRICA", "SOUTH AFRICA", "MADAGASCAR"]
+    },
    {
     "name": "ASIA",
     "territories": ["SIAM", "INDIA", "AFGHANISTAN", "URAL", "SIBERIA", "MONGOLIA", "CHINA", "MIDDLE EAST", "JAPAN", "YAKUTSK", "IRKUTSK", "KAMCHATKA"]
