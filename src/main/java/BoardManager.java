@@ -8,27 +8,25 @@ import java.util.*;
 
 class Continent{
     public List<String> FullContinent;
-    
-     Continent(List<String> k)
+  
+    Continent(List<String> k)
     {
         FullContinent = k;
     }
 
 }
-
-
 public class BoardManager {
 
     private static HashMap<String, Territory> boardMap;                                                                 // boardMap is a hashmap <TerritoryName, TerritoryObject>
                                                                                                                         // TerritoryName is used as a key to get the corresponding object
-                                                                                                                        // TerritoryObject is an object of class Territory
-   
+                                                                                                                        // TerritoryObject is an object of class Territor
     private static HashMap<String, Continent> continentsMap = new HashMap<String,Continent>();                                                                 //continentsMap is hashmap <ContinentName, Terrtories> used to check
 
     public List<String> getContinentsMap(String name) {
         return continentsMap.get(name).FullContinent;
-    }                                                                                                                    //if a player owns  a continent
-
+    }
+  
+    //if a player owns  a continent
     private static Deck gameDeck;
     /*////////////////////////////////////////////////////////////////////////////////
     Constructor, constructs map and puts it inside a hashmap
@@ -68,12 +66,13 @@ public class BoardManager {
                 JsonObject continentObject = continentItem.getAsJsonObject();
                 String continentName = continentObject.get("name").getAsString();
                 JsonArray territoriesObject = continentObject.get("territories").getAsJsonArray();
-                
+
                 Type listType= new TypeToken<List<String>>() {}.getType();
                 List<String> territoriesOfContinent = gson.fromJson(territoriesObject, listType);
                 //System.out.println(continentName);
                 for (String i: territoriesOfContinent){
-                   System.out.println(i);
+
+                    System.out.println(i);
                 }
                 continentsMap.put(continentName, new Continent(territoriesOfContinent));
             }
@@ -201,6 +200,14 @@ public class BoardManager {
         }
     }
 
+    public void removeOccupantsFrom(String country, int count, String type) {
+        try {
+            boardMap.get(country).loseOccupants(count, type);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     /*////////////////////////////////////////////////////////////////////////////////
     Method loses occupants in a territory
     *///////////////////////////////////////////////////////////////////////////////*/
@@ -212,5 +219,13 @@ public class BoardManager {
         }
     }
 
+    public void transferOwnership(String attacker, String defender) {
+        try {
+            int newOwner = boardMap.get(attacker).getOccupantID();
+            boardMap.get(defender).transferOwnership(newOwner);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
 
 }

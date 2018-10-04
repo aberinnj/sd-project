@@ -67,6 +67,9 @@ public class Territory {
             throw new Exception("Invalid Army Type ");
     }
 
+    public void transferOwnership(int newOwner) {
+        occupiedByID = newOwner;
+    }
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method returns if territory is occupied
