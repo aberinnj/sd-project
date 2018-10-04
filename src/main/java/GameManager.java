@@ -48,7 +48,7 @@ public class GameManager {
         }
 
         MM = new MoveManager();
-        initMoveManager(bm, playerList, playerSize);
+        addToMoveManager(bm, playerList, playerSize, -1);
         boolean undolooper = true;
         // Game Start
         while(!isGameOver(bm)){
@@ -59,9 +59,9 @@ public class GameManager {
                 do {
                     System.out.println("Player " + i + " turn");
                     // 1. place new Armies
-                    playerList[i].addArmies(bm, setup);
+                    //playerList[i].addArmies(bm, setup);
                     // 2. attacking
-                    playerList[i].attack(bm, setup);
+                    //playerList[i].attack(bm, setup);
                     // 3. fortifying position
                     fortifyPlayersTerritory(bm, i);
 
@@ -76,8 +76,10 @@ public class GameManager {
                         playerList[i].setTerritories(last.playerTerritories.get(i));
                         // Set BoardMap Territories to previous state
                         bm.setBoardMap(last.CurrentTerritoryStatus);
-                    } else
+                    } else {
                         undolooper = false;
+                        addToMoveManager(bm, playerList, playerSize, i);
+                    }
                 }while(undolooper);
 
             }
@@ -85,7 +87,7 @@ public class GameManager {
 
     }
 
-    private static void initMoveManager(BoardManager bm, Player[] list, int size){
+    private static void addToMoveManager(BoardManager bm, Player[] list, int size, int playerID){
         HashMap<String, Territory> moveMap = new HashMap<String, Territory>();
         HashMap<String, Territory> boardMap = bm.getBoardMap();
         HashMap<Integer, List<String>> playerTerritories = new HashMap<Integer, List<String>>();
@@ -103,7 +105,7 @@ public class GameManager {
             List<String> territoryList = new ArrayList<String>(list[i].getTerritories());
             playerTerritories.put(i, territoryList);
         }
-        MM.addMove(new Move(0, moveMap, playerTerritories));
+        MM.addMove(new Move(playerID, moveMap, playerTerritories));
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
