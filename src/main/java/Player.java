@@ -39,17 +39,8 @@ public class Player {
 
     public void setTerritories(List<String> k)
     {
-        for(String i: k)
-        {
-            if (!territories.contains(i))
-                territories.add(i);
-
-        }
-        for(String i: territories)
-        {
-            if(!k.contains(i))
-                territories.remove(i);
-        }
+        territories.clear();
+        territories.addAll(k);
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
@@ -355,7 +346,7 @@ public class Player {
     /*////////////////////////////////////////////////////////////////////////////////
     Methods returns a copy of the territories list
     *///////////////////////////////////////////////////////////////////////////////*/
-        public List<String> territoriesCopy(){
+        public List<String> getTerritories(){
             return territories;
         }
         /*////////////////////////////////////////////////////////////////////////////////

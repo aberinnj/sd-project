@@ -48,18 +48,18 @@ public class GameManager {
         }
 
         MM = new MoveManager();
-        initMoveManager(bm, playerSize);
+        initMoveManager(bm, playerList, playerSize);
+        boolean undolooper = true;
         // Game Start
         while(!isGameOver(bm)){
 
             for (int i: playerTurnPattern)
             {
+                undolooper = true;
                 do {
                     System.out.println("Player " + i + " turn");
-                    // access playerList[i]
                     // 1. place new Armies
                     playerList[i].addArmies(bm, setup);
-
                     // 2. attacking
                     playerList[i].attack(bm, setup);
                     // 3. fortifying position
@@ -69,7 +69,7 @@ public class GameManager {
                     System.out.println("\n____________________________\nUNDO actions? Yes or No");
                     String commitQuestion = setup.nextLine();
 
-                    if (commitQuestion.equals("Yes")) {
+                    if (commitQuestion.toLowerCase().equals("yes")) {
                         // THEN UNDO
                         Move last = MM.getLastMove();
                         // Set Territories of player i to previous state
@@ -77,29 +77,31 @@ public class GameManager {
                         // Set BoardMap Territories to previous state
                         bm.setBoardMap(last.CurrentTerritoryStatus);
                     } else
-                        break;
-                }while(true);
+                        undolooper = false;
+                }while(undolooper);
 
             }
-            break;
-
         }
 
     }
 
-    private static void initMoveManager(BoardManager bm, int size){
+    private static void initMoveManager(BoardManager bm, Player[] list, int size){
         HashMap<String, Territory> moveMap = new HashMap<String, Territory>();
         HashMap<String, Territory> boardMap = bm.getBoardMap();
         HashMap<Integer, List<String>> playerTerritories = new HashMap<Integer, List<String>>();
         for(String key: boardMap.keySet())
         {
             List<String> neighbors = boardMap.get(key).getNeighbors();
+            int occ = boardMap.get(key).getOccupantID();
+            boolean isOcc = boardMap.get(key).isOccupied();
+            int count = boardMap.get(key).getArmy().getInfantryCount();
+            moveMap.put(key, new Territory(isOcc, occ, new Army(count), neighbors));
 
-            moveMap.put(key, new Territory(false, -1, null, neighbors));
         }
         for(int i=0; i<size; i++)
         {
-            playerTerritories.put(i, new ArrayList<String>());
+            List<String> territoryList = new ArrayList<String>(list[i].getTerritories());
+            playerTerritories.put(i, territoryList);
         }
         MM.addMove(new Move(0, moveMap, playerTerritories));
     }
@@ -223,6 +225,7 @@ public class GameManager {
     private static boolean isGameOver(BoardManager bm){
         for(Player i: playerList){
             if (i.isPlayerTheWinner(bm)){
+                System.out.println("Someone won!?");
                 return true;
             }
         }
@@ -310,27 +313,27 @@ public class GameManager {
         String ownedContinents = " ";
         if (current.numOfTerritories()<4)
             return 0;
-        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("AUSTRALIA")))){
+        if ((current.getTerritories()).containsAll((bm.getContinentsMap("AUSTRALIA")))){
             moreArmies =+ 2;
             ownedContinents += "AUSTRALIA, ";
         }
-        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("ASIA")))){
+        if ((current.getTerritories()).containsAll((bm.getContinentsMap("ASIA")))){
             moreArmies += 7;
             ownedContinents += "ASIA, ";
         }
-        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("NORTH AMERICA")))){
+        if ((current.getTerritories()).containsAll((bm.getContinentsMap("NORTH AMERICA")))){
             moreArmies += 5;
             ownedContinents += "NORTH AMERICA, ";
         }
-        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("EUROPE")))){
+        if ((current.getTerritories()).containsAll((bm.getContinentsMap("EUROPE")))){
             moreArmies += 5;
             ownedContinents += "EUROPE, ";
         }
-        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("AFRICA")))){
+        if ((current.getTerritories()).containsAll((bm.getContinentsMap("AFRICA")))){
             moreArmies += 3;
             ownedContinents += "AFRICA, ";
         }
-        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("SOUTH AMERICA")))){
+        if ((current.getTerritories()).containsAll((bm.getContinentsMap("SOUTH AMERICA")))){
             moreArmies += 2;
             ownedContinents += "SOUTH AMERICA, ";
         }
