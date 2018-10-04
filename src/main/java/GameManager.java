@@ -184,6 +184,90 @@ public class GameManager {
         return allReady;
     }
 
+    /*///////////////////////////////////////////////////////////////////////
+    Method prompts user to assign all of their armies to a territory per turn
+
+    While players have not finished placing all their infantry pieces
+    loop through turn-pattern, for each player, who still has unused infantry pieces,
+    select a territory and update relevant information
+
+    Refactor.
+     //////
+    private static void shipAllArmies(BoardManager bm, Scanner territoryScanner){
+        boolean invalidTerritory;
+        while(!arePlayersReady()){
+            for ( int i: playerTurnPattern) {
+                invalidTerritory = true;
+
+                if (!playerList[i].isBaseEmpty()) {
+                    playerList[i].displayPlayerTerritories(bm);
+
+                    System.out.println("Remaining armies: " + playerList[i].getRemainingArmies());
+                    System.out.println("Select a territory to ship your Army to: ");
+                    //Scanner territoryScanner = new Scanner(System.in);
+
+                    while(invalidTerritory) {
+                        try {
+                            // prompts user for a territory
+                            String territory = territoryScanner.nextLine();
+                            if (!playerList[i].ifPlayerHasTerritory(territory))
+                                throw new Exception("Error: " + territory + " is not your territory");
+                            invalidTerritory = false;
+
+                            // transfer infantry to territory
+                            bm.addOccupantsTo(territory, 1, "INFANTRY");
+                            playerList[i].shipArmy();
+
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    Method checks the number of continents a player owns and designates more armies
+    *///////////////////////////////////////////////////////////////////////////////*/
+    private static int continentsOwned(Player current,BoardManager bm){
+        int moreArmies= 0;
+        String ownedContinents = " ";
+        if (current.numOfTerritories()<4)
+            return 0;
+
+        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("AUSTRALIA")))){
+            moreArmies =+ 2;
+            ownedContinents += "AUSTRALIA, ";
+        }
+        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("ASIA")))){
+            moreArmies += 7;
+            ownedContinents += "ASIA, ";
+
+        }
+        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("NORTH AMERICA")))){
+            moreArmies += 5;
+            ownedContinents += "NORTH AMERICA, ";
+        }
+        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("EUROPE")))){
+            moreArmies += 5;
+            ownedContinents += "EUROPE, ";
+        }
+        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("AFRICA")))){
+            moreArmies += 3;
+            ownedContinents += "AFRICA, ";
+        }
+        if ((current.territoriesCopy()).containsAll((bm.getContinentsMap("SOUTH AMERICA")))){
+            moreArmies += 2;
+            ownedContinents += "SOUTH AMERICA, ";
+        }
+
+        if(moreArmies!=0){
+            System.out.println("You get " + moreArmies + "armies because you own " + ownedContinents + "Congratulations!");
+        }
+        return moreArmies;
+    }
+
     /*////////////////////////////////////////////////////////////////////////////////
     Method checks if the game is over, by passing the boardmanager
     returns true if a player has all the territories
