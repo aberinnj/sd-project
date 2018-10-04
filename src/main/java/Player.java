@@ -1,8 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
+
+import java.util.stream.Collectors;
 import java.util.Scanner;
 import java.util.Arrays;
 import java.util.Map.Entry;
+
 
 public class Player {
 
@@ -73,6 +76,21 @@ public class Player {
      *///////////////////////////////////////////////////////////////////////////////*/
     public boolean ifPlayerHasTerritory(String country){
         return territories.contains(country);
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    Methods returns a copy of the territories list
+    *///////////////////////////////////////////////////////////////////////////////*/
+    public <String> List <String> territoriesCopy(){
+        List<String> copy = (List<String>) territories.stream().collect(Collectors.toList());
+        return copy;
+    }
+    
+    /*////////////////////////////////////////////////////////////////////////////////
+    Method returns the number territories a player has
+     *///////////////////////////////////////////////////////////////////////////////*/
+    public int numOfTerritories(){
+        return territories.size();
     }
 
     /*////////////////////////////////////////////////////////////////////////////////

@@ -8,26 +8,25 @@ import java.util.*;
 
 class Continent{
     public List<String> FullContinent;
-
+  
     Continent(List<String> k)
     {
         FullContinent = k;
     }
 
 }
-
 public class BoardManager {
 
     private static HashMap<String, Territory> boardMap;                                                                 // boardMap is a hashmap <TerritoryName, TerritoryObject>
                                                                                                                         // TerritoryName is used as a key to get the corresponding object
-                                                                                                                        // TerritoryObject is an object of class Territory
-
+                                                                                                                        // TerritoryObject is an object of class Territor
     private static HashMap<String, Continent> continentsMap = new HashMap<String,Continent>();                                                                 //continentsMap is hashmap <ContinentName, Terrtories> used to check
 
     public List<String> getContinentsMap(String name) {
         return continentsMap.get(name).FullContinent;
     }
-    
+  
+    //if a player owns  a continent
     private static Deck gameDeck;
     /*////////////////////////////////////////////////////////////////////////////////
     Constructor, constructs map and puts it inside a hashmap
@@ -47,6 +46,7 @@ public class BoardManager {
             Gson gson = new Gson();
             JsonObject rootObj = parser.parse(json).getAsJsonObject();
             JsonArray mapArray = rootObj.getAsJsonArray("map");
+
 
             for(JsonElement mapItem: mapArray){
                 // gets {name, neighbors}
@@ -71,6 +71,7 @@ public class BoardManager {
                 List<String> territoriesOfContinent = gson.fromJson(territoriesObject, listType);
                 //System.out.println(continentName);
                 for (String i: territoriesOfContinent){
+
                     System.out.println(i);
                 }
                 continentsMap.put(continentName, new Continent(territoriesOfContinent));
