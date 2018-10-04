@@ -37,6 +37,21 @@ public class Player {
         }
     }
 
+    public void setTerritories(List<String> k)
+    {
+        for(String i: k)
+        {
+            if (!territories.contains(i))
+                territories.add(i);
+
+        }
+        for(String i: territories)
+        {
+            if(!k.contains(i))
+                territories.remove(i);
+        }
+    }
+
     /*////////////////////////////////////////////////////////////////////////////////
     Method lists the Player's territories
      *///////////////////////////////////////////////////////////////////////////////*/

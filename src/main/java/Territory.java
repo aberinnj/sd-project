@@ -100,6 +100,10 @@ public class Territory {
         return occupants.getInfantryCount() + 5*(occupants.getCavalryCount()) + 10*(occupants.getArtilleryCount());
     }
 
+    public Army getArmy(){
+        return occupants;
+    }
+
     /*////////////////////////////////////////////////////////////////////////////////
     Method returns the status of occupant-count, as a string.
     Used only to show in displaying territories

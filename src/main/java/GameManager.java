@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class GameManager {
 
@@ -10,6 +7,7 @@ public class GameManager {
     private static Player[] playerList;                                                                                 // list of players
     private static int[] playerTurnPattern;                                                                             // list of turns to loop through
 
+    private static MoveManager MM;
     /*////////////////////////////////////////////////////////////////////////////////
     main function executing all game functions from setup to winning a game .
     Segments
@@ -18,7 +16,6 @@ public class GameManager {
         3. Sets up the board by reading mapsource and letting players pick territories
     *///////////////////////////////////////////////////////////////////////////////*/
     public static void main(String[] args) {
-
         // Game Setup
         System.out.println("Game of Risk");
         System.out.println("------------------------");
@@ -50,26 +47,61 @@ public class GameManager {
             playerList[i].shipArmies(bm, setup);
         }
 
+        MM = new MoveManager();
+        initMoveManager(bm, playerSize);
         // Game Start
         while(!isGameOver(bm)){
 
             for (int i: playerTurnPattern)
             {
-                System.out.println("Player " + i + " turn");
-                // access playerList[i]
-                // 1. place new Armies
-                //int armies =
-                //playerList[i].shipArmies(bm, setup);
-                playerList[i].addArmies(bm, setup);
-                // 2. attacking
-                playerList[i].attack(bm, setup);
-                // 3. fortifying position
-                fortifyPlayersTerritory(bm, i);
+                do {
+                    System.out.println("Player " + i + " turn");
+                    // access playerList[i]
+                    // 1. place new Armies
+                    playerList[i].addArmies(bm, setup);
+
+                    // 2. attacking
+                    playerList[i].attack(bm, setup);
+                    // 3. fortifying position
+                    fortifyPlayersTerritory(bm, i);
+
+                    // undo recent section
+                    System.out.println("\n____________________________\nUNDO actions? Yes or No");
+                    String commitQuestion = setup.nextLine();
+
+                    if (commitQuestion.equals("Yes")) {
+                        // THEN UNDO
+                        Move last = MM.getLastMove();
+                        // Set Territories of player i to previous state
+                        playerList[i].setTerritories(last.playerTerritories.get(i));
+                        // Set BoardMap Territories to previous state
+                        bm.setBoardMap(last.CurrentTerritoryStatus);
+                    } else
+                        break;
+                }while(true);
+
             }
             break;
 
         }
 
+    }
+
+    private static void initMoveManager(BoardManager bm, int size){
+        HashMap<String, Territory> moveMap = new HashMap<String, Territory>();
+        HashMap<String, Territory> boardMap = bm.getBoardMap();
+        HashMap<Integer, List<String>> playerTerritories = new HashMap<Integer, List<String>>();
+        for(String key: boardMap.keySet())
+        {
+            List<String> neighbors = boardMap.get(key).getNeighbors();
+
+            moveMap.put(key, new Territory(false, -1, null, neighbors));
+        }
+        for(int i=0; i<size; i++)
+        {
+            playerTerritories.put(i, new ArrayList<String>());
+        }
+        MM.addMove(new Move(0, moveMap, playerTerritories));
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
