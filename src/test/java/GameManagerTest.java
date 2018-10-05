@@ -82,12 +82,13 @@ public class GameManagerTest extends TestCase {
 
     @Test
     public void testDeck() {
-        assertNotNull(Deck.drawCard());
-        assertNotNull(Deck.drawCard());
-        assertNotNull(Deck.drawCard());
-        assertNotNull(Deck.drawCard());
-        assertNotNull(Deck.drawCard());
-        assertNotSame(Deck.drawCard(), Deck.drawCard());
+        Deck deck = new Deck(base + "\\src\\main\\java\\deck.json");
+        assertNotNull(deck.drawCard());
+        assertNotNull(deck.drawCard());
+        assertNotNull(deck.drawCard());
+        assertNotNull(deck.drawCard());
+        assertNotNull(deck.drawCard());
+        assertNotSame(deck.drawCard(), Deck.drawCard());
     }
 
     @Test
