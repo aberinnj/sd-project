@@ -81,6 +81,17 @@ public class GameManagerTest extends TestCase {
     }
 
     @Test
+    public void testGameManager() {
+        public static String base = System.getProperty("user.dir");
+
+        Object bm = new BoardManager(base + "\\src\\main\\java\\mapSource.json", base + "\\src\\main\\java\\deck.json");
+        Object dice = new Dice();
+        Object player = new Player(0, 40);
+
+        assertEquals(0, continentsOwned(player, bm);
+    }
+
+    @Test
     public void testDeck() {
         Deck deck = new Deck(base + "\\src\\main\\java\\deck.json");
         assertNotNull(deck.drawCard());
