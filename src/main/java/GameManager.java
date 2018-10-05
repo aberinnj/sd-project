@@ -309,9 +309,11 @@ public class GameManager {
         return army_count;
     }
 
+
     /*////////////////////////////////////////////////////////////////////////////////
    Method checks the number of continents a player owns and designates more armies
    *///////////////////////////////////////////////////////////////////////////////*/
+    /*
     private static int continentsOwned(Player current, BoardManager bm){
         int moreArmies= 0;
         String ownedContinents = " ";
@@ -346,6 +348,7 @@ public class GameManager {
         }
         return moreArmies;
     }
+   */
 
 
 }
