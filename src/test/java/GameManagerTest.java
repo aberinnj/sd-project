@@ -78,6 +78,9 @@ public class GameManagerTest extends TestCase {
         //assertEquals(empty, ((BoardManager) bm).opposingNeighbors("ALASKA"));
         //assertEquals(empty, ((BoardManager) bm).opposingNeighbors("ALASKA"));
 
+
+        assertEquals(0, ((BoardManager) bm).getOccupantCount("ALASKA"));
+
     }
 
     @Test
