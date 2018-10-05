@@ -17,7 +17,7 @@ public class GameManager {
         2. Setting up playerslist and pattern of turns by auto-rolling (rollForSetup)
         3. Sets up the board by reading mapsource and letting players pick territories
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void main(String[] args) {
+    public static void main(String[] args) {
         // Game Setup
         System.out.println("Game of Risk");
         System.out.println("------------------------");
@@ -91,7 +91,7 @@ public class GameManager {
 
     }
 
-    public void addToMoveManager(BoardManager bm, Player[] list, int size, int playerID){
+    public static void addToMoveManager(BoardManager bm, Player[] list, int size, int playerID){
         HashMap<String, Territory> moveMap = new HashMap<String, Territory>();
         HashMap<String, Territory> boardMap = bm.getBoardMap();
         HashMap<Integer, List<String>> playerTerritories = new HashMap<Integer, List<String>>();
@@ -116,7 +116,7 @@ public class GameManager {
     Method for setting up list of players playing the game, throws an exception on
     invalid player-size. Setups up playerList size with corresponding settings
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void setupPlayerList(int size) throws Exception{
+    public static void setupPlayerList(int size) throws Exception{
         if(size < 2 || size > 6)
             throw new Exception("Error: This game mode only supports 2-6 players.");
 
@@ -154,7 +154,7 @@ public class GameManager {
     turnSetupDice. Player who assumes the first highest number is considered
     to play first
     *//////////////////////////////////////////////////////////////////////*/
-    public void rollForSetup(){
+    public static void rollForSetup(){
         playerTurnPattern = new int[playerSize]; //Is this array necessary?
         Dice turnSetupDice = new Dice();
         int highestID = -1;
@@ -185,7 +185,7 @@ public class GameManager {
     Method serves to setup static member, playerTurnPattern. Argument i is the
     index to start the pattern (which is considered the id of the player)
      *//////////////////////////////////////////////////////////////////////*/
-    public void setupTurnPattern(int i){
+    public static void setupTurnPattern(int i){
         System.out.println("\nOrder of Turns:");
         for(int b=0; b<playerSize; b++)
         {
@@ -199,7 +199,7 @@ public class GameManager {
     has an unoccupied territory and allows the users to select a territory
     per turn.
      *//////////////////////////////////////////////////////////////////////*/
-    public void initializeTerritories(BoardManager bm, Scanner setup){
+    public static void initializeTerritories(BoardManager bm, Scanner setup){
         while(!bm.isAllTerritoriesInitialized()) {
             // FIX ERROR WHERE MORE THAN TWO PLAYERS GETS STUCK IN LOOP
             for (int i : playerTurnPattern) {
@@ -214,7 +214,7 @@ public class GameManager {
     Method checks if the game is over, by passing the boardmanager
     returns true if a player has all the territories
     *///////////////////////////////////////////////////////////////////////////////*/
-    public boolean isGameOver(BoardManager bm){
+    public static boolean isGameOver(BoardManager bm){
         for(Player i: playerList){
             if (i.isPlayerTheWinner(bm)){
                 System.out.println("Someone won!?");
@@ -231,7 +231,7 @@ public class GameManager {
 
     Refactor. Add Exception to transfer count.
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void fortifyPlayersTerritory(BoardManager bm, int id)
+    public static void fortifyPlayersTerritory(BoardManager bm, int id)
     {
         Scanner scan = new Scanner(System.in);
         System.out.println("------------------------");
@@ -289,7 +289,7 @@ public class GameManager {
     /*////////////////////////////////////////////////////////////////////////////////
     Helper method for querying player for number of army to transfer
     *///////////////////////////////////////////////////////////////////////////////*/
-    public int queryTransferCount(){
+    public static int queryTransferCount(){
         Scanner intScanner = new Scanner(System.in);
         System.out.print("\nTransfer army: ");
         int army_count = intScanner.nextInt();
@@ -300,7 +300,7 @@ public class GameManager {
     /*////////////////////////////////////////////////////////////////////////////////
    Method checks the number of continents a player owns and designates more armies
    *///////////////////////////////////////////////////////////////////////////////*/
-    public int continentsOwned(Player current, BoardManager bm){
+    public static int continentsOwned(Player current, BoardManager bm){
         int moreArmies= 0;
         String ownedContinents = " ";
         if (current.numOfTerritories()<4)

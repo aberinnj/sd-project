@@ -1,6 +1,8 @@
 
 import junit.framework.TestCase;
 import org.junit.Test;
+
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +50,14 @@ public class GameManagerTest extends TestCase {
         assertEquals(1, ((Player) player).numOfTerritories());
     }
 
+    @Test(expected = FileNotFoundException.class)
+    public void testBoardFail() {
+        BoardManager fail = new BoardManager("failpath1", "failpath2");
+    }
+
     @Test
-    public void testBoardManager() throws Exception {
+    public void testBoardManager() {
+
         assertEquals(false, ((BoardManager) bm).isAllTerritoriesInitialized());
         assertEquals(42, ((BoardManager) bm).getNumberOfTerritories());
 
@@ -72,11 +80,11 @@ public class GameManagerTest extends TestCase {
         neighbors.add("NORTH WEST TERRITORY");
         neighbors.add("ALBERTA");
 
-        List<String> empty = new ArrayList<String>();
+        BoardManager test = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
+        HashMap<String, Territory> map = (HashMap<String, Territory>) test.getBoardMap();
+        assertEquals(42, map.size());
 
-        //assertEquals(neighbors, ((BoardManager) bm).getNeighbors("ALASKA"));
-        //assertEquals(empty, ((BoardManager) bm).opposingNeighbors("ALASKA"));
-        //assertEquals(empty, ((BoardManager) bm).opposingNeighbors("ALASKA"));
+        test.setBoardMap(map);
 
     }
 
