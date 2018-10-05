@@ -88,7 +88,42 @@ public class GameManagerTest extends TestCase {
         Object dice = new Dice();
         Object player = new Player(0, 40);
 
-        assertEquals(0, continentsOwned(player, bm);
+        public static String base = System.getProperty("user.dir");
+        System.out.println("Game of Risk");
+
+        System.out.println("------------------------");
+
+        System.out.println("PlayerSetup");
+
+        System.out.println("------------------------");
+
+        Scanner setup = new Scanner(System.in);
+
+        while(true){
+
+            try{
+
+                System.out.print("Number of Players: ");
+
+                playerSize = Integer.parseInt(2);
+
+                setupPlayerList(playerSize);
+
+                System.out.println();
+
+                break;
+
+            }catch (Exception e){
+
+                System.out.println(e.getMessage());
+
+                continue;
+
+            }
+
+        }
+
+
     }
 
     @Test
