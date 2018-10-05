@@ -214,7 +214,7 @@ public class Player {
         bm.addOccupantsTo(destination, army, "INFANTRY");
 
     }
-
+    /*/////////////////////////////////////////
     public void attack(BoardManager bm, Scanner scanner) {
         for (String territory: territories) {
             displayPlayerNeighboringTerritories(bm, territory, true);
@@ -342,6 +342,7 @@ public class Player {
         }
         else System.out.println("You have chosen not to attack");
     }
+    *///////////////////////////////////////////////
 
     /*////////////////////////////////////////////////////////////////////////////////
     Methods returns a copy of the territories list
