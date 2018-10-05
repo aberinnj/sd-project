@@ -83,7 +83,6 @@ public class GameManager {
                         undolooper = false;
                         addToMoveManager(bm, playerList, playerSize, i);
                         Move last = MM.getLastMove();
-                        PM.createFileForMove(last, base);
                     }
                 }while(undolooper);
 

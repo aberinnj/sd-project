@@ -24,7 +24,7 @@ public class PlayManager {
         bucketForRisk = "risk-project-team-one-" + UUID.randomUUID();
         s3instance = AmazonS3ClientBuilder.defaultClient();
 
-        try {
+/*        try {
             if (!s3instance.doesBucketExistV2(bucketForRisk)) {
                 try {
                     s3instance.createBucket(bucketForRisk);
@@ -43,20 +43,22 @@ public class PlayManager {
             System.out.println("-----------------------------------------------------------");
             System.out.println("Error Message: " + networkErr.getMessage());
             System.out.println("-----------------------------------------------------------");
-        }
+        }*/
 
     }
 
-    public void createFileForMove(Move i, String base){
+/*    public void createFileForMove(Move i, String base){
         JsonObject jobject = new JsonObject();
         JsonArray arr = new JsonArray();
-        /*NEEDS WORK*/
+        *//*NEEDS WORK*//*
 
-    }
+    }*/
 
+/*
     public void UploadMove(File k, String key)
     {
         s3instance.putObject(new PutObjectRequest(bucketForRisk, key, k));
     }
+*/
 
 }
