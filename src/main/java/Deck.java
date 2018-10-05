@@ -38,9 +38,6 @@ public class Deck {
             JsonArray cardDeck = rootObj.getAsJsonArray("Cards");
 
             for (JsonElement mapItem: cardDeck) {
-                if (mapItem.isJsonNull()) {
-                    break;
-                }
                 JsonObject cardObject = mapItem.getAsJsonObject();
                 String cardTerritory = cardObject.get("name").getAsString();
                 String cardUnit = cardObject.get("unit").getAsString();
