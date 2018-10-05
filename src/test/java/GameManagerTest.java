@@ -82,7 +82,7 @@ public class GameManagerTest extends TestCase {
 
         BoardManager test = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
         HashMap<String, Territory> map = (HashMap<String, Territory>) test.getBoardMap();
-        assertEquals(42, map.size());
+        assertEquals(map, test.getBoardMap());
 
         test.setBoardMap(map);
 
