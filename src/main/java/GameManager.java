@@ -17,7 +17,7 @@ public class GameManager {
         2. Setting up playerslist and pattern of turns by auto-rolling (rollForSetup)
         3. Sets up the board by reading mapsource and letting players pick territories
     *///////////////////////////////////////////////////////////////////////////////*/
-    public static void main(String[] args) {
+    public void main(String[] args) {
         // Game Setup
         System.out.println("Game of Risk");
         System.out.println("------------------------");
@@ -39,7 +39,7 @@ public class GameManager {
         }
         rollForSetup();
 
-        BoardManager bm = new BoardManager(base + "\\src\\main\\java\\mapSource.json", base + "\\src\\main\\java\\deck.json");
+        BoardManager bm = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
         initializeTerritories(bm, setup);
         System.out.println("------------------------");
         System.out.println("Allocate the rest of your armies");
@@ -91,7 +91,7 @@ public class GameManager {
 
     }
 
-    private static void addToMoveManager(BoardManager bm, Player[] list, int size, int playerID){
+    public void addToMoveManager(BoardManager bm, Player[] list, int size, int playerID){
         HashMap<String, Territory> moveMap = new HashMap<String, Territory>();
         HashMap<String, Territory> boardMap = bm.getBoardMap();
         HashMap<Integer, List<String>> playerTerritories = new HashMap<Integer, List<String>>();
@@ -116,7 +116,7 @@ public class GameManager {
     Method for setting up list of players playing the game, throws an exception on
     invalid player-size. Setups up playerList size with corresponding settings
     *///////////////////////////////////////////////////////////////////////////////*/
-    private static void setupPlayerList(int size) throws Exception{
+    public void setupPlayerList(int size) throws Exception{
         if(size < 2 || size > 6)
             throw new Exception("Error: This game mode only supports 2-6 players.");
 
@@ -154,7 +154,7 @@ public class GameManager {
     turnSetupDice. Player who assumes the first highest number is considered
     to play first
     *//////////////////////////////////////////////////////////////////////*/
-    private static void rollForSetup(){
+    public void rollForSetup(){
         playerTurnPattern = new int[playerSize]; //Is this array necessary?
         Dice turnSetupDice = new Dice();
         int highestID = -1;
@@ -185,7 +185,7 @@ public class GameManager {
     Method serves to setup static member, playerTurnPattern. Argument i is the
     index to start the pattern (which is considered the id of the player)
      *//////////////////////////////////////////////////////////////////////*/
-    private static void setupTurnPattern(int i){
+    public void setupTurnPattern(int i){
         System.out.println("\nOrder of Turns:");
         for(int b=0; b<playerSize; b++)
         {
@@ -199,7 +199,7 @@ public class GameManager {
     has an unoccupied territory and allows the users to select a territory
     per turn.
      *//////////////////////////////////////////////////////////////////////*/
-    private static void initializeTerritories(BoardManager bm, Scanner setup){
+    public void initializeTerritories(BoardManager bm, Scanner setup){
         while(!bm.isAllTerritoriesInitialized()) {
             // FIX ERROR WHERE MORE THAN TWO PLAYERS GETS STUCK IN LOOP
             for (int i : playerTurnPattern) {
@@ -210,25 +210,11 @@ public class GameManager {
         }
     }
 
-    /*///////////////////////////////////////////////////////////////////////
-    Method checks if all players have finished setting up (dispatching armies)
-    to their territories, by checking if all users have no remaining unassigned
-    infantry pieces
-     *//////////////////////////////////////////////////////////////////////*/
-    public static boolean arePlayersReady()
-    {
-        boolean allReady = true;
-        for( Player k : playerList){
-            allReady = allReady && k.isBaseEmpty();
-        }
-        return allReady;
-    }
-
     /*////////////////////////////////////////////////////////////////////////////////
     Method checks if the game is over, by passing the boardmanager
     returns true if a player has all the territories
     *///////////////////////////////////////////////////////////////////////////////*/
-    private static boolean isGameOver(BoardManager bm){
+    public boolean isGameOver(BoardManager bm){
         for(Player i: playerList){
             if (i.isPlayerTheWinner(bm)){
                 System.out.println("Someone won!?");
@@ -245,7 +231,7 @@ public class GameManager {
 
     Refactor. Add Exception to transfer count.
     *///////////////////////////////////////////////////////////////////////////////*/
-    private static void fortifyPlayersTerritory(BoardManager bm, int id)
+    public void fortifyPlayersTerritory(BoardManager bm, int id)
     {
         Scanner scan = new Scanner(System.in);
         System.out.println("------------------------");
@@ -303,7 +289,7 @@ public class GameManager {
     /*////////////////////////////////////////////////////////////////////////////////
     Helper method for querying player for number of army to transfer
     *///////////////////////////////////////////////////////////////////////////////*/
-    private static int queryTransferCount(){
+    public int queryTransferCount(){
         Scanner intScanner = new Scanner(System.in);
         System.out.print("\nTransfer army: ");
         int army_count = intScanner.nextInt();
@@ -314,7 +300,7 @@ public class GameManager {
     /*////////////////////////////////////////////////////////////////////////////////
    Method checks the number of continents a player owns and designates more armies
    *///////////////////////////////////////////////////////////////////////////////*/
-    private static int continentsOwned(Player current, BoardManager bm){
+    public int continentsOwned(Player current, BoardManager bm){
         int moreArmies= 0;
         String ownedContinents = " ";
         if (current.numOfTerritories()<4)
