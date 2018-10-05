@@ -84,8 +84,6 @@ public class GameManagerTest extends TestCase {
         HashMap<String, Territory> map = (HashMap<String, Territory>) test.getBoardMap();
         assertEquals(map, test.getBoardMap());
 
-        test.setBoardMap(map);
-
     }
 
     @Test

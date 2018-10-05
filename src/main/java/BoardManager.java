@@ -78,7 +78,7 @@ public class BoardManager {
         }
     }
     public HashMap<String, Territory> getBoardMap(){
-        return boardMap;
+        return this.boardMap;
     }
 
     public void setBoardMap(HashMap<String, Territory> newBoardMap)
