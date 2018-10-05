@@ -1,86 +1,39 @@
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.Map;
-import java.util.Scanner;
+public class GameManager{
 
-public class GameManager {
-
-    public static String base = System.getProperty("user.dir");                                                         // sets the base
     private static int playerSize;                                                                                      // size of players playing
+    private static int playerTurnPattern[];                                                                             // list of turns to loop through
     private static Player[] playerList;                                                                                 // list of players
-    private static int[] playerTurnPattern;                                                                             // list of turns to loop through
+    private static BoardManager bm;
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    main function executing all game functions from setup to winning a game .
-    Segments
-        1. Introduction and setting up the scanner
-        2. Setting up playerslist and pattern of turns by auto-rolling (rollForSetup)
-        3. Sets up the board by reading mapsource and letting players pick territories
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public static void main(String[] args) {
+    GameManager(){
+        playerSize = 0;
+        playerTurnPattern = null;
+        playerList = null;
+        bm = null;
+    }
 
-        // Game Setup
-        System.out.println("Game of Risk");
-        System.out.println("------------------------");
-        System.out.println("PlayerSetup");
-        System.out.println("------------------------");
-        Scanner setup = new Scanner(System.in);
+    GameManager(int count, String base, int[] pattern){
+        playerSize = count;
+        playerTurnPattern = pattern.clone();
+        playerList = new Player[count];
+        bm = new BoardManager(
+                base + "\\src\\main\\java\\mapSource.json",
+                base + "\\src\\main\\java\\deck.json"
+        );
 
-        while(true){
-            try{
-                System.out.print("Number of Players: ");
-                playerSize = Integer.parseInt(setup.nextLine());
-                setupPlayerList(playerSize);
-                System.out.println();
-                break;
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-                continue;
-            }
+    }
+
+    protected void initPlayers(int armySize){
+        for(int a=0; a<playerSize; a++){
+            playerList[a] = new Player(a, armySize);
         }
-        rollForSetup();
-
-        BoardManager bm = new BoardManager(base + "\\src\\main\\java\\mapSource.json", base + "\\src\\main\\java\\deck.json");
-        initializeTerritories(bm, setup);
-        System.out.println("------------------------");
-        System.out.println("Allocate the rest of your armies");
-        System.out.println("------------------------");
-        for (int i: playerTurnPattern) {
-            //shipAllArmies(bm, setup);
-            playerList[i].shipArmies(bm, setup);
-        }
-
-        // Game Start
-        while(!isGameOver(bm)){
-
-            for (int i: playerTurnPattern)
-            {
-                System.out.println("Player " + i + " turn");
-                // access playerList[i]
-                // 1. place new Armies
-                //int armies =
-                //playerList[i].shipArmies(bm, setup);
-                playerList[i].addArmies(bm, setup);
-                // 2. attacking
-                playerList[i].attack(bm, setup);
-                // 3. fortifying position
-                fortifyPlayersTerritory(bm, i);
-            }
-            break;
-
-        }
-
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method for setting up list of players playing the game, throws an exception on
     invalid player-size. Setups up playerList size with corresponding settings
     *///////////////////////////////////////////////////////////////////////////////*/
-    private static void setupPlayerList(int size) throws Exception{
-        if(size < 2 || size > 6)
-            throw new Exception("Error: This game mode only supports 2-6 players.");
-
-        playerList = new Player[size];
+    protected int getDefaultArmySize(int size){
         int default_infantry;
 
         switch(size){
@@ -103,55 +56,7 @@ public class GameManager {
                 default_infantry=0;
                 break;
         }
-
-        for(int a=0; a<size; a++){
-            playerList[a] = new Player(a, default_infantry);
-        }
-    }
-
-    /*///////////////////////////////////////////////////////////////////////
-    Method used to determine turn-pattern for players by rolling a dice called
-    turnSetupDice. Player who assumes the first highest number is considered
-    to play first
-    *//////////////////////////////////////////////////////////////////////*/
-    private static void rollForSetup(){
-        playerTurnPattern = new int[playerSize]; //Is this array necessary?
-        Dice turnSetupDice = new Dice();
-        int highestID = -1;
-        int highestNUM = 1;
-
-        System.out.println("-----------------------");
-        System.out.println("BoardSetup");
-        System.out.println("Note: Whoever gets the first of the same highest");
-        System.out.println("number, is considered to have the highest number");
-        System.out.println("------------------------");
-
-        for(int i=0; i<playerSize; i++)
-        {
-            turnSetupDice.roll();
-            System.out.print("Rolling for Player#");
-            System.out.print(i + "..."+turnSetupDice.getDiceValue());
-            System.out.println();
-            if (turnSetupDice.getDiceValue() > highestNUM)
-            {
-                highestNUM = turnSetupDice.getDiceValue();
-                highestID = i;
-            }
-        }
-        setupTurnPattern(highestID);
-    }
-
-    /*///////////////////////////////////////////////////////////////////////
-    Method serves to setup static member, playerTurnPattern. Argument i is the
-    index to start the pattern (which is considered the id of the player)
-     *//////////////////////////////////////////////////////////////////////*/
-    private static void setupTurnPattern(int i){
-        System.out.println("\nOrder of Turns:");
-        for(int b=0; b<playerSize; b++)
-        {
-            playerTurnPattern[b] = (i+b)% playerSize;
-            System.out.println((b+1)+ ". Player#" + playerTurnPattern[b]);
-        }
+        return default_infantry;
     }
 
     /*///////////////////////////////////////////////////////////////////////
@@ -159,15 +64,14 @@ public class GameManager {
     has an unoccupied territory and allows the users to select a territory
     per turn.
      *//////////////////////////////////////////////////////////////////////*/
-    private static void initializeTerritories(BoardManager bm, Scanner setup){
-        while(!bm.isAllTerritoriesInitialized()) {
-            // FIX ERROR WHERE MORE THAN TWO PLAYERS GETS STUCK IN LOOP
+    protected void initTerritories(Utilities utils){
+        do{
             for (int i : playerTurnPattern) {
                 bm.displayUntakenTerritories();                                                                         //BoardManager's displayUntakenTerritories to display untaken territories
                 playerList[i].displayPlayerTerritories(bm);                                                             //player's displayPlayerTerritories to display player's territories
                 bm.setInitialTerritory(playerList[i], setup);                                                                  //BoardManager queries user for which territory to occupy
             }
-        }
+        }while(!bm.isAllTerritoriesInitialized());
     }
 
     /*///////////////////////////////////////////////////////////////////////
@@ -308,5 +212,21 @@ public class GameManager {
         return moreArmies;
     }
 
+    private int queryForPlayerSize(){
+        int size;
+        while(true){
+            try{
+                size = super.getScanAsInt("Player Setup -- Number of Players: ");
+                break;
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                continue;
+            }
+        }
+        return size;
+    }
+
 
 }
+
+

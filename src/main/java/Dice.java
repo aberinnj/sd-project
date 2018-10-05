@@ -16,4 +16,24 @@ public class Dice {
     public int getDiceValue(){
         return diceValue;
     }
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    Returns the index of the highest roll in the number of iterations provided as an argument
+    Indices are used for
+    *///////////////////////////////////////////////////////////////////////////////*/
+    public int getIndexOfHighestRollIn(int iterations){
+        int indexOfHighestRoll = -1;
+        int valueOfHighestRoll = 1;
+        for(int i=0; i<iterations; i++)
+        {
+            roll();
+            if (getDiceValue() > valueOfHighestRoll)
+            {
+                valueOfHighestRoll = getDiceValue();
+                indexOfHighestRoll = i;
+            }
+        }
+        return indexOfHighestRoll;
+    }
+
 }
