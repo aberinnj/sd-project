@@ -123,7 +123,7 @@ public class GameManagerTest extends TestCase {
 
     @Test
     public void testDeck() {
-        Deck deck = new Deck(base + "\\src\\main\\java\\deck.json");
+        Deck deck = new Deck(base + "/src/main/java/deck.json");
         assertNotNull(deck.drawCard());
         assertNotNull(deck.drawCard());
         assertNotNull(deck.drawCard());
