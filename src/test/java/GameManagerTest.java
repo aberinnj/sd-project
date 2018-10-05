@@ -9,7 +9,7 @@ public class GameManagerTest extends TestCase {
 
     public static String base = System.getProperty("user.dir");
 
-    Object bm = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
+    Object bm = new BoardManager(base + "\\src\\main\\java\\mapSource.json", base + "\\src\\main\\java\\deck.json");
     Object dice = new Dice();
     Object player = new Player(0, 40);
 
