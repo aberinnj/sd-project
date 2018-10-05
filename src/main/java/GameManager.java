@@ -1,5 +1,6 @@
 import java.util.*;
 
+
 public class GameManager {
 
     public static String base = System.getProperty("user.dir");                                                         // sets the base
@@ -81,6 +82,8 @@ public class GameManager {
                     } else {
                         undolooper = false;
                         addToMoveManager(bm, playerList, playerSize, i);
+                        Move last = MM.getLastMove();
+                        PM.createFileForMove(last, base);
                     }
                 }while(undolooper);
 

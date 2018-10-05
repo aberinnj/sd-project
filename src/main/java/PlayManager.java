@@ -1,6 +1,6 @@
 import java.io.File;
+import java.io.FileWriter;
 import java.util.UUID;
-import java.io.IOException;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -10,7 +10,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GetBucketLocationRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 
 public class PlayManager {
@@ -45,9 +47,9 @@ public class PlayManager {
 
     }
 
-    public void createFileForMove(Move i){
+    public void createFileForMove(Move i, String base){
+        JsonObject jobject = new JsonObject();
         JsonArray arr = new JsonArray();
-
         /*NEEDS WORK*/
 
     }
@@ -58,38 +60,3 @@ public class PlayManager {
     }
 
 }
-
-/* Data model for Moves. Read and Write
-* {
-    "moves": [{
-        "playerID": 0,
-        "territories": [{
-                "name": "SIAM",
-                "territory-status": {
-                    "occupied": true,
-                    "occupiedID": 0,
-                    "armycount": 2,
-                    "neighbors": ["SIAM-neighbor1", "SIAM-neighbor2"]
-                }
-            },
-            {
-                "name": "INDIA",
-                "territory-status": {
-                    "occupied": true,
-                    "occupiedID": 0,
-                    "armycount": 2,
-                    "neighbors": ["INDIA-neighbor1", "INDIA-neighbor2"]
-                }
-            }
-        ],
-        "playerTerritories": [{
-                "0": ["SIAM", "INDIA"]
-            },
-            {
-                "1": ["CHINA", "JAPAN", "MONGOLIA"]
-            }
-        ]
-    }]
-}
-*
-* */
