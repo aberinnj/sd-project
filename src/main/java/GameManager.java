@@ -7,6 +7,7 @@ public class GameManager {
     private static Player[] playerList;                                                                                 // list of players
     private static int[] playerTurnPattern;                                                                             // list of turns to loop through
 
+    private static PlayManager PM;
     private static MoveManager MM;
     /*////////////////////////////////////////////////////////////////////////////////
     main function executing all game functions from setup to winning a game .
@@ -47,6 +48,7 @@ public class GameManager {
             playerList[i].shipArmies(bm, setup);
         }
 
+        PM = new PlayManager();
         MM = new MoveManager();
         initMoveManager(bm, playerList, playerSize);
         boolean undolooper = true;
