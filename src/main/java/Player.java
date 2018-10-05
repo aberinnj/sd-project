@@ -214,7 +214,7 @@ public class Player {
         bm.addOccupantsTo(destination, army, "INFANTRY");
 
     }
-
+    /*/////////////////////////////////////////
     public void attack(BoardManager bm, Scanner scanner) {
         for (String territory: territories) {
             displayPlayerNeighboringTerritories(bm, territory, true);
@@ -297,7 +297,7 @@ public class Player {
                     }
 
                     Arrays.sort(defenseDie);
-                    /* Print out the die values */
+                    // Print out the die values
                     System.out.println("Attack Die Values:");
                     for (i = 0; i < numAttackDie; i++) {
                         System.out.print(attackDie[i] + ' ');
@@ -308,7 +308,7 @@ public class Player {
                     }
                     System.out.print("\n");
 
-                    /* Compare Die */
+                    // Compare Die
                     int attackLoss = 0;
                     int defenseLoss = 0;
                     for (i = 0; i < Math.min(numDefenseDie, numAttackDie); i++) {
@@ -316,7 +316,7 @@ public class Player {
                         else attackLoss += 1;
                     }
 
-                    /* Remove armies from attacker and defender */
+                    // Remove armies from attacker and defender
                     try {
                         bm.removeOccupantsFrom(origin, attackLoss, "INFANTRY");
                         bm.removeOccupantsFrom(defender, defenseLoss, "INFANTRY");
@@ -342,6 +342,7 @@ public class Player {
         }
         else System.out.println("You have chosen not to attack");
     }
+    *///////////////////////////////////////////////
 
     /*////////////////////////////////////////////////////////////////////////////////
     Methods returns a copy of the territories list
