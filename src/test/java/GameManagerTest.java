@@ -1,7 +1,7 @@
 
 import junit.framework.TestCase;
 import org.junit.Test;
-
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,7 +105,7 @@ public class GameManagerTest extends TestCase {
 
                 System.out.print("Number of Players: ");
 
-                playerSize = Integer.parseInt(2);
+                int playerSize = 2;
 
                 setupPlayerList(playerSize);
 
