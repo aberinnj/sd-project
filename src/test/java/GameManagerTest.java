@@ -88,7 +88,6 @@ public class GameManagerTest extends TestCase {
         Object dice = new Dice();
         Object player = new Player(0, 40);
 
-        String base = System.getProperty("user.dir");
         System.out.println("Game of Risk");
 
         System.out.println("------------------------");
@@ -106,10 +105,6 @@ public class GameManagerTest extends TestCase {
                 System.out.print("Number of Players: ");
 
                 int playerSize = 2;
-
-                setupPlayerList(playerSize);
-
-                System.out.println();
 
                 break;
 
