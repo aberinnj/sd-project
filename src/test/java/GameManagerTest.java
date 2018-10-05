@@ -81,14 +81,14 @@ public class GameManagerTest extends TestCase {
     }
 
     @Test
-    public void testGameManager() {
+    public void testGameManager() throws Exception {
         public static String base = System.getProperty("user.dir");
 
         Object bm = new BoardManager(base + "\\src\\main\\java\\mapSource.json", base + "\\src\\main\\java\\deck.json");
         Object dice = new Dice();
         Object player = new Player(0, 40);
 
-        public static String base = System.getProperty("user.dir");
+        String base = System.getProperty("user.dir");
         System.out.println("Game of Risk");
 
         System.out.println("------------------------");
