@@ -25,15 +25,7 @@ public class BoardManager {
     private static HashMap<String, Continent> continentsMap;                         //continentsMap is hashmap <ContinentName, Terrtories> used to check
 
     private static Deck gameDeck;
-    /*////////////////////////////////////////////////////////////////////////////////
-    Constructor, constructs map and puts it inside a hashmap
 
-    Make a parser and parse json to get map=[]
-    for each object inside map, get territoryName and neighborsObject
-    Assign neighborsObject into a list, territoryNeighbors and add into boardMap
-
-    Refactor.
-    *///////////////////////////////////////////////////////////////////////////////*/
     BoardManager(String mapPath, String deckPath){
         continentsMap = new HashMap<String,Continent>();
         boardMap = new HashMap<String, Territory>();
@@ -229,15 +221,6 @@ public class BoardManager {
     public void transferOccupantsFrom(String country, int count, String type){
         try {
             boardMap.get(country).loseOccupants(count, type);
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public void transferOwnership(String attacker, String defender) {
-        try {
-            int newOwner = boardMap.get(attacker).getOccupantID();
-            boardMap.get(defender).transferOwnership(newOwner);
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
