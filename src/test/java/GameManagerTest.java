@@ -1,7 +1,7 @@
 
 import junit.framework.TestCase;
 import org.junit.Test;
-
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +9,7 @@ public class GameManagerTest extends TestCase {
 
     public static String base = System.getProperty("user.dir");
 
-    Object bm = new BoardManager(base + "\\src\\main\\java\\mapSource.json", base + "\\src\\main\\java\\deck.json");
+    Object bm = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
     Object dice = new Dice();
     Object player = new Player(0, 40);
 
@@ -81,13 +81,55 @@ public class GameManagerTest extends TestCase {
     }
 
     @Test
+    public void testGameManager() throws Exception {
+        String base = System.getProperty("user.dir");
+
+        Object bm = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
+        Object dice = new Dice();
+        Object player = new Player(0, 40);
+
+        System.out.println("Game of Risk");
+
+        System.out.println("------------------------");
+
+        System.out.println("PlayerSetup");
+
+        System.out.println("------------------------");
+
+        Scanner setup = new Scanner(System.in);
+
+        while(true){
+
+            try{
+
+                System.out.print("Number of Players: ");
+
+                int playerSize = 2;
+
+                break;
+
+            }catch (Exception e){
+
+                System.out.println(e.getMessage());
+
+                continue;
+
+            }
+
+        }
+
+
+    }
+
+    @Test
     public void testDeck() {
-        assertNotNull(Deck.drawCard());
-        assertNotNull(Deck.drawCard());
-        assertNotNull(Deck.drawCard());
-        assertNotNull(Deck.drawCard());
-        assertNotNull(Deck.drawCard());
-        assertNotSame(Deck.drawCard(), Deck.drawCard());
+        Deck deck = new Deck(base + "\\src\\main\\java\\deck.json");
+        assertNotNull(deck.drawCard());
+        assertNotNull(deck.drawCard());
+        assertNotNull(deck.drawCard());
+        assertNotNull(deck.drawCard());
+        assertNotNull(deck.drawCard());
+        assertNotSame(deck.drawCard(), Deck.drawCard());
     }
 
     @Test
