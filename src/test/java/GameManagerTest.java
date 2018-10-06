@@ -73,14 +73,6 @@ public class GameManagerTest extends TestCase {
         BoardManager test = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
         HashMap<String, Territory> map = (HashMap<String, Territory>) test.getBoardMap();
 
-
-        test.setBoardMap(map);
-        assertEquals(true, test.isAllTerritoriesInitialized());
-        assertNotNull(test.getBoardMap());
-        assertEquals(true, test.isTerritoryANeighborOf("CHINA", "SIAM"));
-
-        
-
     }
 
 
@@ -121,4 +113,6 @@ public class GameManagerTest extends TestCase {
         ((Army) army).loseInfantry(20);
         assertEquals(10, ((Army) army).getInfantryCount());
     }
+
+
 }

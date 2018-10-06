@@ -1,7 +1,5 @@
 import java.util.*;
 
-
-
 public class NewGame {
 
     public static Scanner getScanner() {
