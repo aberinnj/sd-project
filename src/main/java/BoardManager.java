@@ -154,17 +154,16 @@ public class BoardManager {
 
     Refactor.
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void setInitialTerritory(Player player, Scanner country) {
+    public void setInitialTerritory(Player player, Utilities utils) {
         boolean askAgainForInput;
 
-        System.out.println("__________________________________________");
-        System.out.println("Player #" + player.getId());
         //Scanner country = new Scanner(System.in);
         do{
             try {
-                System.out.println();
-                System.out.print("Select: ");
-                String countryInput = country.nextLine();
+
+                String prompt = "Player #"+ player.getId()+ " -- Select Territory: ";
+                ArrayList<String> untakenTerritories = new ArrayList<String>(){{add("UNFINISHED");}};
+                String countryInput = utils.getInputUnique(prompt, untakenTerritories ,"Error:" );
 
                 if (boardMap.get(countryInput).isOccupied()){
                     throw new Exception("Error: Chosen country already occupied.");

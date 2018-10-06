@@ -1,6 +1,5 @@
 import junit.framework.TestCase;
 import org.junit.Test;
-import sun.misc.MessageUtils;
 
 import java.util.ArrayList;
 
