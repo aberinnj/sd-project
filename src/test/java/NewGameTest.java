@@ -20,6 +20,11 @@ public class NewGameTest extends TestCase{
 
         BoardManager bm = NewGame.getBoardManager(base);
         assertNotNull(bm);
+
+        Scanner test = new Scanner("2");
+        int p = NewGame.getNumberPlayers(test);
+        assertEquals(2, p);
+
     }
 
 }
