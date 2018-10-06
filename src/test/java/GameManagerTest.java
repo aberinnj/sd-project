@@ -94,6 +94,15 @@ public class GameManagerTest extends TestCase {
     }
 
     @Test
+    public void testSetBoardMap() {
+        BoardManager test = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
+        HashMap<String, Territory> map = (HashMap<String, Territory>) test.getBoardMap();
+
+        test.setBoardMap(map);
+
+    }
+
+    @Test
     public void testDeck() {
         Deck deck = new Deck(base + "/src/main/java/deck.json");
         Deck fail = new Deck(base + "thisaintnodeck.json");
