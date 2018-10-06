@@ -75,7 +75,8 @@ public class GameManager {
                 String commitQuestion = scanner.nextLine();
 
                 if (commitQuestion.toLowerCase().equals("yes")) {
-                    player = undo(bm, MM, playerList, player);
+                    undo(bm, MM, playerList);
+                    //player; figure out a way to let a the previous player go
                 }
                 else {
                     Move current = MM.addToMoveManager(bm, MM, playerList, numPlayers, player);
@@ -118,7 +119,7 @@ public class GameManager {
         return false;
     }
 
-    public static int undo(BoardManager bm, MoveManager MM, Player[] playerList) {
+    public static void undo(BoardManager bm, MoveManager MM, Player[] playerList) {
         // THEN UNDO
         Move last = MM.getLastMove();
         // Set Territories of player i to previous state
@@ -127,7 +128,6 @@ public class GameManager {
         }
         // Set BoardMap Territories to previous state
         bm.setBoardMap(last.CurrentTerritoryStatus);
-        return player--;
     }
 }
 
