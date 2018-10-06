@@ -16,6 +16,13 @@ public class GameManagerTest extends TestCase {
     Object player = new Player(0, 40);
 
     @Test
+    public void testGameManager() throws Exception {
+        GameManager gm = new GameManager();
+
+        String[] mainArgs= {"This Game SUCKS!!!"};
+    }
+
+    @Test
     public void testPlayer() throws Exception {
 
         assertEquals(false, ((Player) player).isBaseEmpty());
@@ -61,37 +68,22 @@ public class GameManagerTest extends TestCase {
         assertEquals(false, ((BoardManager) bm).isAllTerritoriesInitialized());
         assertEquals(42, ((BoardManager) bm).getNumberOfTerritories());
 
-        Army larmy = new Army(10);
-        Army rarmy = new Army(10);
-
-        List<String> l = new ArrayList<String>();
-        l.add("Right");
-
-        List<String> r = new ArrayList<String>();
-        r.add("Right");
-
-        Territory Left = new Territory(true, 0, ((Army) larmy), l);
-        Territory Right = new Territory(true, 1, ((Army) rarmy), r);
-
         assertEquals(false, ((BoardManager) bm).isTerritoryANeighborOf("INDIA", "ALASKA"));
-
-        List<String> neighbors = new ArrayList<String>();
-        neighbors.add("KAMCHATKA");
-        neighbors.add("NORTH WEST TERRITORY");
-        neighbors.add("ALBERTA");
 
         BoardManager test = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
         HashMap<String, Territory> map = (HashMap<String, Territory>) test.getBoardMap();
-        assertEquals(map, test.getBoardMap());
+
+
+        test.setBoardMap(map);
+        assertEquals(true, test.isAllTerritoriesInitialized());
+        assertNotNull(test.getBoardMap());
+        assertEquals(true, test.isTerritoryANeighborOf("CHINA", "SIAM"));
+
+        
 
     }
 
-    @Test
-    public void testGameManager() throws Exception {
-        GameManager gm = new GameManager();
 
-        String[] mainArgs= {"This Game SUCKS!!!"};
-    }
 
     @Test
     public void testDeck() {

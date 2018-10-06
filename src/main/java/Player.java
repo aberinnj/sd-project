@@ -157,12 +157,6 @@ public class Player {
     *///////////////////////////////////////////////////////////////////////////////*/
     public void fortifyTerritory(BoardManager bm, String origin, String destination, int army) {
 
-        //bm.transferOccupantsFrom(origin, a, "ARTILLERY");
-        //bm.addOccupantsTo(destination, a, "ARTILLERY");
-
-        //bm.transferOccupantsFrom(origin, c, "CAVALRY");
-        //bm.addOccupantsTo(destination, c, "CAVALRY");
-
         bm.transferOccupantsFrom(origin, army, "INFANTRY");
         bm.addOccupantsTo(destination, army, "INFANTRY");
 
