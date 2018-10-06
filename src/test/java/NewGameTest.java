@@ -17,7 +17,7 @@ public class NewGameTest extends TestCase{
 
         String base = NewGame.getBase();
         assertNotNull(base);
-        
+
         BoardManager bm = NewGame.getBoardManager(base);
         assertNotNull(bm);
     }
