@@ -3,162 +3,25 @@ import java.util.*;
 
 public class GameManager {
 
-    public static String base = System.getProperty("user.dir");                                                         // sets the base
-    private static int playerSize;                                                                                      // size of players playing
-    private static Player[] playerList;                                                                                 // list of players
-    private static int[] playerTurnPattern;                                                                             // list of turns to loop through
 
-    private static PlayManager PM;
-    private static MoveManager MM;
-    /*////////////////////////////////////////////////////////////////////////////////
-    main function executing all game functions from setup to winning a game .
-    Segments
-        1. Introduction and setting up the scanner
-        2. Setting up playerslist and pattern of turns by auto-rolling (rollForSetup)
-        3. Sets up the board by reading mapsource and letting players pick territories
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        NewGame ng = new NewGame();
+
         // Game Setup
         System.out.println("Game of Risk");
         System.out.println("------------------------");
         System.out.println("PlayerSetup");
         System.out.println("------------------------");
-        Scanner setup = new Scanner(System.in);
+        Scanner globalScanner = ng.getScanner();
 
-        while(true){
-            try{
-                System.out.print("Number of Players: ");
-                playerSize = Integer.parseInt(setup.nextLine());
-                setupPlayerList(playerSize);
-                System.out.println();
-                break;
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-                continue;
-            }
-        }
-        rollForSetup();
+        String base = ng.getBase();
 
-        BoardManager bm = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
-        initializeTerritories(bm, setup);
-        System.out.println("------------------------");
-        System.out.println("Allocate the rest of your armies");
-        System.out.println("------------------------");
-        for (int i: playerTurnPattern) {
-            //shipAllArmies(bm, setup);
-            playerList[i].shipArmies(bm, setup);
-        }
+        int numPlayers = ng.getNumberPlayers(globalScanner);
 
-        PM = new PlayManager();
-        MM = new MoveManager();
-        addToMoveManager(bm, playerList, playerSize, -1);
-        boolean undolooper = true;
-        // Game Start
-        while(!isGameOver(bm)){
+        Player[] playerList = ng.setupPlayerList(numPlayers);
 
-            for (int i: playerTurnPattern)
-            {
-                undolooper = true;
-                do {
-                    System.out.println("Player " + i + " turn");
-                    // 1. place new Armies
-                    //playerList[i].addArmies(bm, setup);
-                    // 2. attacking
-                    //playerList[i].attack(bm, setup);
-                    // 3. fortifying position
-                    fortifyPlayersTerritory(bm, i);
-
-                    // undo recent section
-                    System.out.println("\n____________________________\nUNDO actions? Yes or No");
-                    String commitQuestion = setup.nextLine();
-
-                    if (commitQuestion.toLowerCase().equals("yes")) {
-                        // THEN UNDO
-                        Move last = MM.getLastMove();
-                        // Set Territories of player i to previous state
-                        playerList[i].setTerritories(last.playerTerritories.get(i));
-                        // Set BoardMap Territories to previous state
-                        bm.setBoardMap(last.CurrentTerritoryStatus);
-                    } else {
-                        undolooper = false;
-                        addToMoveManager(bm, playerList, playerSize, i);
-                        Move last = MM.getLastMove();
-                    }
-                }while(undolooper);
-
-            }
-        }
-
-    }
-
-    public static void addToMoveManager(BoardManager bm, Player[] list, int size, int playerID){
-        HashMap<String, Territory> moveMap = new HashMap<String, Territory>();
-        HashMap<String, Territory> boardMap = bm.getBoardMap();
-        HashMap<Integer, List<String>> playerTerritories = new HashMap<Integer, List<String>>();
-        for(String key: boardMap.keySet())
-        {
-            List<String> neighbors = boardMap.get(key).getNeighbors();
-            int occ = boardMap.get(key).getOccupantID();
-            boolean isOcc = boardMap.get(key).isOccupied();
-            int count = boardMap.get(key).getArmy().getInfantryCount();
-            moveMap.put(key, new Territory(isOcc, occ, new Army(count), neighbors));
-
-        }
-        for(int i=0; i<size; i++)
-        {
-            List<String> territoryList = new ArrayList<String>(list[i].getTerritories());
-            playerTerritories.put(i, territoryList);
-        }
-        MM.addMove(new Move(playerID, moveMap, playerTerritories));
-    }
-
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method for setting up list of players playing the game, throws an exception on
-    invalid player-size. Setups up playerList size with corresponding settings
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public static void setupPlayerList(int size) throws Exception{
-        if(size < 2 || size > 6)
-            throw new Exception("Error: This game mode only supports 2-6 players.");
-
-        playerList = new Player[size];
-        int default_infantry;
-
-        switch(size){
-            case 2:
-                default_infantry=40;
-                break;
-            case 3:
-                default_infantry=35;
-                break;
-            case 4:
-                default_infantry=30;
-                break;
-            case 5:
-                default_infantry=25;
-                break;
-            case 6:
-                default_infantry=20;
-                break;
-            default:
-                default_infantry=0;
-                break;
-        }
-
-        for(int a=0; a<size; a++){
-            playerList[a] = new Player(a, default_infantry);
-        }
-    }
-
-    /*///////////////////////////////////////////////////////////////////////
-    Method used to determine turn-pattern for players by rolling a dice called
-    turnSetupDice. Player who assumes the first highest number is considered
-    to play first
-    *//////////////////////////////////////////////////////////////////////*/
-    public static void rollForSetup(){
-        playerTurnPattern = new int[playerSize]; //Is this array necessary?
-        Dice turnSetupDice = new Dice();
-        int highestID = -1;
-        int highestNUM = 1;
+        int[] playerTurnPattern = new int[numPlayers];
+        Dice die = new Dice();
 
         System.out.println("-----------------------");
         System.out.println("BoardSetup");
@@ -166,174 +29,106 @@ public class GameManager {
         System.out.println("number, is considered to have the highest number");
         System.out.println("------------------------");
 
-        for(int i=0; i<playerSize; i++)
-        {
-            turnSetupDice.roll();
-            System.out.print("Rolling for Player#");
-            System.out.print(i + "..."+turnSetupDice.getDiceValue());
-            System.out.println();
-            if (turnSetupDice.getDiceValue() > highestNUM)
-            {
-                highestNUM = turnSetupDice.getDiceValue();
-                highestID = i;
-            }
-        }
-        setupTurnPattern(highestID);
-    }
+        int highestDieValue = ng.rollForSetup(die, numPlayers);
 
-    /*///////////////////////////////////////////////////////////////////////
-    Method serves to setup static member, playerTurnPattern. Argument i is the
-    index to start the pattern (which is considered the id of the player)
-     *//////////////////////////////////////////////////////////////////////*/
-    public static void setupTurnPattern(int i){
         System.out.println("\nOrder of Turns:");
-        for(int b=0; b<playerSize; b++)
+        for(int b=0; b<numPlayers; b++)
         {
-            playerTurnPattern[b] = (i+b)% playerSize;
+            playerTurnPattern[b] = (highestDieValue+b)% numPlayers;
             System.out.println((b+1)+ ". Player#" + playerTurnPattern[b]);
         }
+
+        BoardManager bm = ng.getBoardManager(base);
+
+        ng.initializeTerritories(bm, globalScanner, playerTurnPattern, playerList);
+
+        System.out.println("------------------------");
+        System.out.println("Allocate the rest of your armies");
+        System.out.println("------------------------");
+
+        for (int i: playerTurnPattern) {
+            playerList[i].shipArmies(bm, globalScanner);
+        }
+
+        runGame(ng, bm, numPlayers, playerList, playerTurnPattern, globalScanner);
+
     }
 
-    /*///////////////////////////////////////////////////////////////////////
-    Method serves to setup the BoardManager. Method runs while the boardmanager
-    has an unoccupied territory and allows the users to select a territory
-    per turn.
-     *//////////////////////////////////////////////////////////////////////*/
-    public static void initializeTerritories(BoardManager bm, Scanner setup){
-        while(!bm.isAllTerritoriesInitialized()) {
-            // FIX ERROR WHERE MORE THAN TWO PLAYERS GETS STUCK IN LOOP
-            for (int i : playerTurnPattern) {
-                bm.displayUntakenTerritories();                                                                         //BoardManager's displayUntakenTerritories to display untaken territories
-                playerList[i].displayPlayerTerritories(bm);                                                             //player's displayPlayerTerritories to display player's territories
-                bm.setInitialTerritory(playerList[i], setup);                                                                  //BoardManager queries user for which territory to occupy
+    public static void runGame(NewGame ng, BoardManager bm, int numPlayers, Player[] playerList, int[] playerTurnPattern, Scanner scanner) {
+        //PlayManager PM = new PlayManager();
+        MoveManager MM = new MoveManager();
+        initialize(ng, bm, MM, playerList, numPlayers, -1);
+
+        // Game Start
+        while(!isGameOver(bm, playerList)){
+            int turnNumber = 0;
+            Player playerCurrent = null;
+            for (int player: playerTurnPattern)
+            {
+                playerCurrent = playerList[player];
+                System.out.println("Player " + player + " turn");
+
+                Turn turn = new Turn(ng, bm, playerCurrent, scanner);
+
+                // undo recent section
+                System.out.println("\n____________________________\nUNDO actions? Yes or No");
+                String commitQuestion = scanner.nextLine();
+
+                if (commitQuestion.toLowerCase().equals("yes")) {
+                    player = undo(bm, MM, playerList, player);
+                }
+                else {
+                    Move current = MM.addToMoveManager(bm, MM, playerList, numPlayers, player);
+                    MM.addMove(current);
+                    //upload to S3
+                    //add turn integer to the move manager to indicate which turn
+                }
+
+                turnNumber++;
             }
         }
+    }
+
+    public static void initialize(NewGame ng, BoardManager bm, MoveManager MM, Player[] playerList, int numPlayers, int playerID) {
+        Move initialize = MM.addToMoveManager(bm, MM, playerList, numPlayers, -1);
+        MM.addMove(initialize);
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method checks if the game is over, by passing the boardmanager
     returns true if a player has all the territories
+
+    Also removes player from playerList if player has no territories
     *///////////////////////////////////////////////////////////////////////////////*/
-    public static boolean isGameOver(BoardManager bm){
-        for(Player i: playerList){
+    public static boolean isGameOver(BoardManager bm, Player[] playerList){
+        Player[] tempList = playerList.clone();
+        for(Player i: tempList){
             if (i.isPlayerTheWinner(bm)){
                 System.out.println("Someone won!?");
                 return true;
             }
+            //todo: remove player method
+            //if (i.hasPlayerLost(bm)) {
+            //    System.out.println("Player " + i + " is no longer in the game");
+            //    for (Player j = i; j<playerList.length - 1; j++) {
+            //        playerList[j] = playerList[j+1]
+            //    }
+            //}
         }
         return false;
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method below executes the third action a player can do in their turn.
-    Method calls fortify, showTerritories functions for player
-    Method requires index or Player Id as an argument, BoardManager passed
-
-    Refactor. Add Exception to transfer count.
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public static void fortifyPlayersTerritory(BoardManager bm, int id)
-    {
-        Scanner scan = new Scanner(System.in);
-        System.out.println("------------------------");
-        System.out.println("Fortify your territories");
-        System.out.println("by moving armies from one");
-        System.out.println("territory to another. ");
-        System.out.println("------------------------");
-        boolean invalid = false;
-        do {
-            try {
-                playerList[id].displayPlayerTerritories(bm);
-
-                System.out.print("\nMoveFrom: ");
-                String origin = scan.nextLine();
-                System.out.println();
-                if(playerList[id].ifPlayerHasTerritory(origin)){
-                    if (bm.getOccupantCount(origin) <= 1) {
-                        throw new Exception("Uh Oh! This territory only has one army. You cannot transfer the defending army of a territory.");
-                    }
-                    System.out.println("Neighboring Territories: ");
-                    playerList[id].displayPlayerNeighboringTerritories(bm, origin, false);
-                    System.out.println("Army Count: " + bm.getOccupantCount(origin));
-                } else
-                    throw new Exception("Player does not own territory " + origin);
-
-
-                int army_count = queryTransferCount();
-                if(bm.getOccupantCount(origin) > (army_count))
-                {
-                    System.out.print("\nMoveTo: ");
-                    String destination = scan.nextLine();
-                    System.out.println();
-                    if(playerList[id].ifPlayerHasTerritory(destination)){
-                        if(!bm.isTerritoryANeighborOf(destination, origin)) {
-                            throw new Exception("Uh Oh! The given destination territory is not adjacent to the given origin " + origin);
-                        }
-                        playerList[id].fortifyTerritory(bm, origin, destination, army_count);
-                    } else
-                        throw new Exception("Player does not own territory " + destination);
-
-                }else
-                    throw new Exception("Uh Oh! This territory does not have the given amount of armies to transfer");
-
-                invalid = false;
-            } catch (InputMismatchException k){
-                System.out.println("Error: Invalid input.");
-                invalid = true;
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                invalid = true;
-            }
-        }while(invalid);
+    public static int undo(BoardManager bm, MoveManager MM, Player[] playerList) {
+        // THEN UNDO
+        Move last = MM.getLastMove();
+        // Set Territories of player i to previous state
+        for (Player player: playerList) {
+            player.setTerritories(last.playerTerritories.get(player));
+        }
+        // Set BoardMap Territories to previous state
+        bm.setBoardMap(last.CurrentTerritoryStatus);
+        return player--;
     }
-
-    /*////////////////////////////////////////////////////////////////////////////////
-    Helper method for querying player for number of army to transfer
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public static int queryTransferCount(){
-        Scanner intScanner = new Scanner(System.in);
-        System.out.print("\nTransfer army: ");
-        int army_count = intScanner.nextInt();
-        System.out.println();
-        return army_count;
-    }
-
-    /*////////////////////////////////////////////////////////////////////////////////
-   Method checks the number of continents a player owns and designates more armies
-   *///////////////////////////////////////////////////////////////////////////////*/
-    public static int continentsOwned(Player current, BoardManager bm){
-        int moreArmies= 0;
-        String ownedContinents = " ";
-        if (current.numOfTerritories()<4)
-            return 0;
-        if ((current.getTerritories()).containsAll((bm.getContinentsMap("AUSTRALIA")))){
-            moreArmies =+ 2;
-            ownedContinents += "AUSTRALIA, ";
-        }
-        if ((current.getTerritories()).containsAll((bm.getContinentsMap("ASIA")))){
-            moreArmies += 7;
-            ownedContinents += "ASIA, ";
-        }
-        if ((current.getTerritories()).containsAll((bm.getContinentsMap("NORTH AMERICA")))){
-            moreArmies += 5;
-            ownedContinents += "NORTH AMERICA, ";
-        }
-        if ((current.getTerritories()).containsAll((bm.getContinentsMap("EUROPE")))){
-            moreArmies += 5;
-            ownedContinents += "EUROPE, ";
-        }
-        if ((current.getTerritories()).containsAll((bm.getContinentsMap("AFRICA")))){
-            moreArmies += 3;
-            ownedContinents += "AFRICA, ";
-        }
-        if ((current.getTerritories()).containsAll((bm.getContinentsMap("SOUTH AMERICA")))){
-            moreArmies += 2;
-            ownedContinents += "SOUTH AMERICA, ";
-        }
-        if(moreArmies!=0){
-            System.out.println("You get " + moreArmies + "armies because you own " + ownedContinents + "Congratulations!");
-        }
-        return moreArmies;
-    }
-
-
 }
+
+

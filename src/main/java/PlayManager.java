@@ -16,13 +16,21 @@ import com.google.gson.JsonObject;
 
 
 public class PlayManager {
-    private final AmazonS3 s3instance;
-    private String bucketForRisk;
+
+    public String createBucket() {
+        String bucketForRisk = "risk-project-team-one-" + UUID.randomUUID();
+        return bucketForRisk;
+    }
+
+    public AmazonS3 createInstance() {
+        AmazonS3 s3instance = AmazonS3ClientBuilder.defaultClient();
+        return s3instance;
+    }
 
     PlayManager(){
+        String bucket = createBucket();
+        AmazonS3 s3 = createInstance();
 
-        bucketForRisk = "risk-project-team-one-" + UUID.randomUUID();
-        s3instance = AmazonS3ClientBuilder.defaultClient();
 
 /*        try {
             if (!s3instance.doesBucketExistV2(bucketForRisk)) {

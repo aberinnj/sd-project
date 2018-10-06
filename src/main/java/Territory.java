@@ -33,12 +33,7 @@ public class Territory {
         if (type.equals("INFANTRY")){
             occupants.addInfantryCount(army);
         }
-        else if (type.equals("CAVALRY")){
-            occupants.addCavalryCount(army);
-        }
-        else if (type.equals("ARTILLERY")){
-            occupants.addArtilleryCount(army);
-        }else
+        else
             throw new Exception("Invalid Army Type ");
     }
 
@@ -49,12 +44,7 @@ public class Territory {
         if (type.equals("INFANTRY")){
             occupants.loseInfantry(army);
         }
-        else if (type.equals("CAVALRY")){
-            occupants.loseCavalry(army);
-        }
-        else if (type.equals("ARTILLERY")){
-            occupants.loseArtillery(army);
-        }else
+        else
             throw new Exception("Invalid Army Type ");
     }
 
@@ -88,7 +78,7 @@ public class Territory {
     *///////////////////////////////////////////////////////////////////////////////*/
     public int ArmyCount()
     {
-        return occupants.getInfantryCount() + 5*(occupants.getCavalryCount()) + 10*(occupants.getArtilleryCount());
+        return occupants.getInfantryCount();
     }
 
     public Army getArmy(){
@@ -100,7 +90,7 @@ public class Territory {
     Used only to show in displaying territories
     *///////////////////////////////////////////////////////////////////////////////*/
     public String seeArmyCount(){
-        return (occupants.getInfantryCount() + "/" + occupants.getCavalryCount() + "/" + occupants.getArtilleryCount());
+        return String.valueOf((occupants.getInfantryCount()));
     }
 
 
