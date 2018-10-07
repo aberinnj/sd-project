@@ -66,6 +66,11 @@ public class NewGameTest extends TestCase{
         Scanner territories = new Scanner(content);
         NewGame.initializeTerritories(bm, territories, playerTurnPattern, playerList);
 
+        MoveManager MM = new MoveManager();
+        GameManager.initialize(ng, bm, MM, playerList, 2, -1);
+
+        HashMap<String, Territory> map = bm.getBoardMap();
+
     }
 
 }
