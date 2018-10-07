@@ -1,3 +1,4 @@
+
 import java.util.*;
 
 public class Turn {
@@ -25,7 +26,7 @@ public class Turn {
         // 1. place new Armies
         addArmies();
         // 2. attacking
-        //attack(bm, setup);
+        attack();
         // 3. fortifying position
         fortifyPlayersTerritory();
     }
@@ -36,7 +37,7 @@ public class Turn {
     public void addArmies() {
 
         int newArmies = (3 + Math.max(0, (int) Math.ceil((territories.size() - 12) / 3)));
-        newArmies = newArmies + continentsOwned(bm);
+        newArmies = newArmies + player.continentsOwned(bm);
         System.out.println(newArmies + " new armies available");
 
         if (hand.size() < 3) System.out.println("You currently do not have enough cards to make an exchange.");
@@ -75,7 +76,13 @@ public class Turn {
     *///////////////////////////////////////////////////////////////////////////////*/
     public void fortifyPlayersTerritory()
     {
-        Scanner scan = new Scanner(System.in);
+        System.out.println("Would you like to fortify your territorues?");
+        String attack = scanner.nextLine();
+        if (attack.equals("No")) {
+            System.out.println("You have chosen not to fortify");
+            return;
+        }
+
         System.out.println("------------------------");
         System.out.println("Fortify your territories");
         System.out.println("by moving armies from one");
@@ -87,14 +94,13 @@ public class Turn {
                 player.displayPlayerTerritories(bm);
 
                 System.out.print("\nMoveFrom: ");
-                String origin = scan.nextLine();
+                String origin = scanner.nextLine();
                 System.out.println();
                 if(player.ifPlayerHasTerritory(origin)){
                     if (bm.getOccupantCount(origin) <= 1) {
                         throw new Exception("Uh Oh! This territory only has one army. You cannot transfer the defending army of a territory.");
                     }
-                    System.out.println("Neighboring Territories: ");
-                    player.displayPlayerNeighboringTerritories(bm, origin, false);
+                    player.displayPlayerNeighboringTerritories(bm, origin);
                     System.out.println("Army Count: " + bm.getOccupantCount(origin));
                 } else
                     throw new Exception("Player does not own territory " + origin);
@@ -104,7 +110,7 @@ public class Turn {
                 if(bm.getOccupantCount(origin) > (army_count))
                 {
                     System.out.print("\nMoveTo: ");
-                    String destination = scan.nextLine();
+                    String destination = scanner.nextLine();
                     System.out.println();
                     if(player.ifPlayerHasTerritory(destination)){
                         if(!bm.isTerritoryANeighborOf(destination, origin)) {
@@ -128,171 +134,171 @@ public class Turn {
         }while(invalid);
     }
 
-    public void attack(BoardManager bm, Scanner scanner) {
-        for (String territory: territories) {
-            player.displayPlayerNeighboringTerritories(bm, territory, true);
-        }
-        System.out.println("Would you like to attack? Please enter Yes or No");
-        String attack = scanner.nextLine();
-        if (attack == "Yes") {
-            boolean attacking = true;
-            while (attacking) {
-                boolean noTerritoryChosen = false;
-                String origin = "";
-                while (!noTerritoryChosen) {
-                    System.out.println("You have chosen to attack. Please select the territory you would like to attack with.");
-                    origin = scanner.nextLine();
-                    if (bm.getOccupantCount(origin) < 2) {
-                        System.out.println("That territory does not have enough armies to attack.");
-                        System.out.println("Please select a territory with at least two armies");
-                    }
-                    else noTerritoryChosen = true;
-                }
-                player.displayPlayerNeighboringTerritories(bm, origin, true);
-                System.out.println("Please select the territory you would like to attack.");
-                String defender = scanner.nextLine();
-                if (bm.isTerritoryANeighborOf(origin, defender) && !player.ifPlayerHasTerritory(defender)) { //Is this a good enough check?
-
-                    boolean attackCheck = false;
-                    int armiesToAttackWith = Integer.parseInt(null);
-                    while (!attackCheck) {  //check to ensure the number of attacking armies is proper
-                        System.out.println("How many armies would you like to attack with?");
-                        armiesToAttackWith = Integer.parseInt(scanner.nextLine());
-                        if (armiesToAttackWith > bm.getOccupantCount(origin) || armiesToAttackWith < 1 || armiesToAttackWith > 4) {
-                            System.out.println("Please enter a valid number of armies");
-                            armiesToAttackWith = Integer.parseInt(scanner.nextLine());
-                        }
-                        else attackCheck = true;
-                    }
-
-                    int possibleAttackDie = Math.min(armiesToAttackWith - 1, 3);
-                    System.out.println("You may use up to " + possibleAttackDie + ", how many would you like to use?");
-                    int numAttackDie = Integer.parseInt(scanner.nextLine()); //need check to ensure the proper amount of die
-
-                    boolean defenseCheck = false;
-                    int armiesToDefendWith = 0;
-                    while (!defenseCheck) {
-                        System.out.println("How many armies would you like to defend with?");
-                        armiesToDefendWith = Integer.parseInt(scanner.nextLine());
-                        if (armiesToDefendWith > bm.getOccupantCount(defender) || armiesToDefendWith < 1 || armiesToDefendWith > 2) {
-                            System.out.println("Please enter a valid number of armies");
-                            armiesToDefendWith = Integer.parseInt(scanner.nextLine());
-                        }
-                        else defenseCheck = true;
-                    }
-
-                    //int possibleDefenseDie = math.min(armiesToDefendWith, 3);
-                    int numDefenseDie;
-                    if (armiesToDefendWith == 2) {
-                        System.out.println("You may use 1 or 2 armies, how many would you like to use?");
-                        numDefenseDie = Integer.parseInt(scanner.nextLine()); //need check to ensure the proper amount of die
-                    }
-                    else {
-                        System.out.println("You are defending with one army");
-                        numDefenseDie = 1;
-                    }
-
-                    int[] attackDie = new int[numAttackDie];
-                    int[] defenseDie = new int[numDefenseDie];
-
-                    Dice dice = new Dice();
-                    int i, j;
-                    for (i = 0; i < numAttackDie; i++) {
-                        dice.roll();
-                        attackDie[i] = dice.getDiceValue();
-                    }
-
-                    Arrays.sort(attackDie);
-
-                    for (i = 0; i < numDefenseDie; i++) {
-                        dice.roll();
-                        defenseDie[i] = dice.getDiceValue();
-                    }
-
-                    Arrays.sort(defenseDie);
-                    // Print out the die values
-                    System.out.println("Attack Die Values:");
-                    for (i = 0; i < numAttackDie; i++) {
-                        System.out.print(attackDie[i] + ' ');
-                    }
-                    System.out.println("\nDefense Die Values:");
-                    for (i = 0; i < numDefenseDie; i++) {
-                        System.out.print(defenseDie[i] + ' ');
-                    }
-                    System.out.print("\n");
-
-                    // Compare Die
-                    int attackLoss = 0;
-                    int defenseLoss = 0;
-                    for (i = 0; i < Math.min(numDefenseDie, numAttackDie); i++) {
-                        if (defenseDie[i] < attackDie[i]) defenseLoss += 1;
-                        else attackLoss += 1;
-                    }
-
-                    // Remove armies from attacker and defender
-                    try {
-                        bm.removeOccupantsFrom(origin, attackLoss, "INFANTRY");
-                        bm.removeOccupantsFrom(defender, defenseLoss, "INFANTRY");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    //If defender lost all armies
-                    if (bm.getOccupantCount(defender) == 0) {
-                        bm.transferOwnership(origin, defender);
-                        System.out.println("You won a territory, you get to draw a card");
-                        Map.Entry<String, String> card = Deck.drawCard();
-                        System.out.println("Your card is " + card);
-                        hand.add(card);
-                    }
-
-                    System.out.println("Would you like to attack again? Yes/No");
-                    String ans = scanner.nextLine();
-                    if (ans == "No") {
-                        attacking = false;
-                    }
-                }
+    public String getAttacker() {
+        boolean noTerritoryChosen = false;
+        String attacker = null;
+        while (!noTerritoryChosen) {
+            System.out.println("You have chosen to attack. Please select the territory you would like to attack with.");
+            attacker = scanner.nextLine();
+            if (bm.getOccupantCount(attacker) < 2 || !player.ifPlayerHasTerritory(attacker)) {
+                System.out.println("That territory can not attack.");
             }
+            else noTerritoryChosen = true;
         }
-        else System.out.println("You have chosen not to attack");
+        return attacker;
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method checks the number of continents a player owns and designates more armies
-    *///////////////////////////////////////////////////////////////////////////////*/
-    private int continentsOwned(BoardManager bm){
-        int moreArmies= 0;
-        String ownedContinents = " ";
-        if (territories.size()<4) {
-            return 0;
+    public int getAttackArmies(String attacker) {
+        boolean attackCheck = false;
+        int armiesToAttackWith = 0;
+        while (!attackCheck) {  //check to ensure the number of attacking armies is proper
+            System.out.println("How many armies would you like to attack with?");
+            armiesToAttackWith = Integer.parseInt(scanner.nextLine());
+            if (armiesToAttackWith > bm.getOccupantCount(attacker) || armiesToAttackWith < 1 || armiesToAttackWith > 4) {
+                System.out.println("Please enter a valid number of armies");
+                armiesToAttackWith = Integer.parseInt(scanner.nextLine());
+            } else attackCheck = true;
         }
+        return armiesToAttackWith;
+    }
 
-        if (territories.containsAll(bm.getContinentsMap("AUSTRALIA"))){
-            moreArmies =+ 2;
-            ownedContinents += "AUSTRALIA, ";
-        }
-        if (territories.containsAll(bm.getContinentsMap("ASIA"))){
-            moreArmies += 7;
-            ownedContinents += "ASIA, ";
-        }
-        if (territories.containsAll(bm.getContinentsMap("NORTH AMERICA"))){
-            moreArmies += 5;
-            ownedContinents += "NORTH AMERICA, ";
-        }
-        if (territories.containsAll(bm.getContinentsMap("EUROPE"))){
-            moreArmies += 5;
-            ownedContinents += "EUROPE, ";
-        }
-        if (territories.containsAll(bm.getContinentsMap("AFRICA"))){
-            moreArmies += 3;
-            ownedContinents += "AFRICA, ";
-        }
-        if (territories.containsAll(bm.getContinentsMap("SOUTH AMERICA"))){
-            moreArmies += 2;
-            ownedContinents += "SOUTH AMERICA, ";
-        }
-        System.out.println("You get " + moreArmies + "armies because you own " + ownedContinents + "Congratulations!");
+    public int getNumAttackDie(int armiesToAttackWith) {
+        int numAttackDie = Math.min(armiesToAttackWith - 1, 3);
+        return numAttackDie;
+    }
 
-        return moreArmies;
+    public String getDefender(String attacker) {
+        System.out.println("Please select the territory you would like to attack.");
+        boolean hasDefender = false;
+        String defender = scanner.nextLine();
+        while (!hasDefender) {
+            if (bm.isTerritoryANeighborOf(attacker, defender) && !player.ifPlayerHasTerritory(defender)) {
+                hasDefender = true;
+            }
+            else {
+                System.out.println("That territory can not attack");
+                defender = scanner.nextLine();
+            }
+        }
+        return defender;
+    }
+
+    public int getDefenseArmies(String defender) {
+        boolean defenseCheck = false;
+        int armiesToDefendWith = 0;
+        while (!defenseCheck) {
+            System.out.println("How many armies would you like to defend with?");
+            armiesToDefendWith = Integer.parseInt(scanner.nextLine());
+            if (armiesToDefendWith > bm.getOccupantCount(defender) || armiesToDefendWith < 1 || armiesToDefendWith > 2) {
+                System.out.println("Please enter a valid number of armies");
+                armiesToDefendWith = Integer.parseInt(scanner.nextLine());
+            }
+            else defenseCheck = true;
+        }
+        return armiesToDefendWith;
+    }
+
+    public int getNumDefenseDie(int armiesToDefendWith) {
+        //int possibleDefenseDie = math.min(armiesToDefendWith, 3);
+        int numDefenseDie;
+        if (armiesToDefendWith == 2) {
+            System.out.println("You may use 1 or 2 armies, how many would you like to use?");
+            numDefenseDie = Integer.parseInt(scanner.nextLine()); //need check to ensure the proper amount of die
+        }
+        else {
+            System.out.println("You are defending with one army");
+            numDefenseDie = 1;
+        }
+        return numDefenseDie;
+    }
+
+    public void totalDefenseLoss(String attacker, String defender) {
+        bm.transferOwnership(attacker, defender);
+        System.out.println("You won a territory, you get to draw a card");
+        Map.Entry<String, String> card = Deck.drawCard();
+        System.out.println("Your card is " + card);
+        //implement function to move armies onto captured territories
+        //hand.add(card); //worry about cards later
+    }
+
+    public int[] getDieValues(int numDie, Dice dice) {
+        int[] Die = new int[numDie];
+        for (int i = 0; i < numDie; i++) {
+            dice.roll();
+            Die[i] = dice.getDiceValue();
+        }
+        Arrays.sort(Die);
+        for(int i=0; i<Die.length/2; i++){
+            int temp = Die[i];
+            Die[i] = Die[Die.length -i -1];
+            Die[Die.length -i -1] = temp;
+        }
+        return Die;
+    }
+
+    public void attack() {
+        player.displayAttackableNeighboringTerritories(bm);
+        while (true) {
+            System.out.println("Would you like to attack? Please enter Yes or No");
+            String attack = scanner.nextLine();
+            if (attack.equals("No")) {
+                System.out.println("You have chosen not to attack");
+                return;
+            }
+
+            String attacker = getAttacker();
+            List<String> targets = player.displayNeighborsAttacking(bm, attacker);
+            for (String target: targets){
+                System.out.println(target);
+            }
+            String defender = getDefender(attacker);
+
+            int attackArmies = getAttackArmies(attacker);
+
+            int numAttackDie = getNumAttackDie(attackArmies);
+
+            int defenseArmies = getDefenseArmies(defender);
+
+            int numDefenseDie = getNumDefenseDie(defenseArmies);
+
+            Dice dice = new Dice();
+            int[] defenseDie = getDieValues(numDefenseDie, dice);
+            int[] attackDie = getDieValues(numAttackDie, dice);
+
+            // Print out the die values
+            System.out.println("Attack Die Values:");
+            for (int i = 0; i < numAttackDie; i++) {
+                System.out.print(attackDie[i]);
+                System.out.print(' ');
+            }
+            System.out.println("\nDefense Die Values:");
+            for (int i = 0; i < numDefenseDie; i++) {
+                System.out.print(defenseDie[i]);
+                System.out.print(' ');
+            }
+            System.out.print("\n");
+
+            // Compare Die
+            int attackLoss = 0;
+            int defenseLoss = 0;
+            for (int i = 0; i < Math.min(numDefenseDie, numAttackDie); i++) {
+                if (defenseDie[i] < attackDie[i]) defenseLoss += 1;
+                else attackLoss += 1;
+            }
+
+            // Remove armies from attacker and defender
+            try {
+                bm.removeOccupantsFrom(attacker, attackLoss, "INFANTRY");
+                bm.removeOccupantsFrom(defender, defenseLoss, "INFANTRY");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //If defender lost all armies
+            if (bm.getOccupantCount(defender) == 0) {
+                totalDefenseLoss(attacker, defender);
+            }
+        }
     }
 
     /*////////////////////////////////////////////////////////////////////////////////

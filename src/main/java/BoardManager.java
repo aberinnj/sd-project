@@ -145,6 +145,14 @@ public class BoardManager {
         return boardMap.get(origin).getNeighbors().contains(country);
     }
 
+    public List<String> getNeighbors(String country) {
+        return boardMap.get(country).getNeighbors();
+    }
+
+    public int getTerritoryID(String country) {
+        return boardMap.get(country).getOccupantID();
+    }
+
     /*////////////////////////////////////////////////////////////////////////////////
     Method prompts user for a territory to send an infantry to and initialize an army in .
 

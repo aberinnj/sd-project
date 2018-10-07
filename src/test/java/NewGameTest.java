@@ -69,7 +69,15 @@ public class NewGameTest extends TestCase{
         MoveManager MM = new MoveManager();
         GameManager.initialize(ng, bm, MM, playerList, 2, -1);
 
+        String armyContent = readFile(base + "/src/test/java/input3.txt", StandardCharsets.UTF_8);
+        Scanner armyScanner = new Scanner(armyContent);
+        GameManager.shipArmies(playerTurnPattern,playerList,bm, armyScanner);
+
         HashMap<String, Territory> map = bm.getBoardMap();
+
+        String turnContent = readFile(base + "/src/test/java/input2.txt", StandardCharsets.UTF_8);
+        Scanner turnScanner = new Scanner(turnContent);
+        Turn turn = new Turn(ng, bm, playerList[0], turnScanner);
 
     }
 

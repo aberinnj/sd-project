@@ -85,7 +85,7 @@ public class NewGame {
     Method to initialize the board manager
      *//////////////////////////////////////////////////////////
     public static BoardManager getBoardManager(String base) { //todo creaete a more robust way of reading these files that aren't dependent on path naming conventions
-        BoardManager bm = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
+        BoardManager bm = new BoardManager(base + "/mapSource.json", base + "/deck.json");
         return bm;
     }
 

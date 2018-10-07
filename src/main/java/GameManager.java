@@ -46,15 +46,23 @@ public class GameManager {
         System.out.println("Allocate the rest of your armies");
         System.out.println("------------------------");
 
-        for (int i: playerTurnPattern) {
-            playerList[i].shipArmies(bm, globalScanner);
-        }
+        shipArmies(playerTurnPattern, playerList, bm, globalScanner);
 
         runGame(ng, bm, numPlayers, playerList, playerTurnPattern, globalScanner);
 
     }
 
-    public static void runGame(NewGame ng, BoardManager bm, int numPlayers, Player[] playerList, int[] playerTurnPattern, Scanner scanner) {
+    public static void shipArmies(int[] playerTurnPattern, Player[] playerList, BoardManager bm, Scanner globalScanner) {
+        for (int i: playerTurnPattern) {
+            playerList[i].shipArmies(bm, globalScanner);
+        }
+    }
+
+    public static void shipArmies() {
+
+    }
+
+    public static void runGame(NewGame ng, BoardManager bm, int numPlayers, Player[] playerList, int[] playerTurnPattern, Scanner scanner) throws Exception {
         //PlayManager PM = new PlayManager();
         MoveManager MM = new MoveManager();
         initialize(ng, bm, MM, playerList, numPlayers, -1);

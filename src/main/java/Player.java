@@ -48,7 +48,7 @@ public class Player {
      *///////////////////////////////////////////////////////////////////////////////*/
     public void displayPlayerTerritories(BoardManager bm){
         System.out.println("__________________________________________");
-        System.out.println("Infantry/Cavalry/Artillery Count And Player #"+id+" Territories");
+        System.out.println("Infantry Count And Player #"+id+" Territories");
 
         for(String country: territories){
             System.out.print(bm.getOccupantCount(country) + " ");
@@ -56,22 +56,42 @@ public class Player {
         }
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method displays Player's adjacent territories to given territory argument
-     *///////////////////////////////////////////////////////////////////////////////*/
-    public void displayPlayerNeighboringTerritories(BoardManager bm, String origin, boolean attacking) {
-        System.out.println("Infantry/Cavalry/Artillery Count And Neighboring Countries");
+    public void displayPlayerNeighboringTerritories(BoardManager bm, String origin) {
+        System.out.println("Neighboring Territories: ");
         for(String country: territories){
-            if (attacking) {
-                System.out.println(country + " Can Attack");
-                System.out.println("Army count: " + bm.getOccupantCount(country));
-            }
-            if(bm.isTerritoryANeighborOf(country, origin))
-            {
+            if (bm.isTerritoryANeighborOf(country, origin) && (bm.getTerritoryID(origin) == bm.getTerritoryID(country))) {
                 System.out.print(bm.getOccupantCountStatus(country) + " ");
                 System.out.println(country);
             }
         }
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    Method displays Player's adjacent territories to given territory argument
+     *///////////////////////////////////////////////////////////////////////////////*/
+    public void displayAttackableNeighboringTerritories(BoardManager bm) {
+        System.out.println("Infantry Count And Neighboring Countries");
+        for(String country: territories){
+            List<String> neighbors = bm.getNeighbors(country);
+            System.out.println(country + ", Army count: " + bm.getOccupantCount(country) + " Can Attack:");
+            for (String neighbor: neighbors) {
+                if (bm.getTerritoryID(neighbor) != bm.getTerritoryID(country)) {
+                    System.out.println(neighbor + ", Army count: " + bm.getOccupantCount(neighbor));
+                }
+            }
+        }
+    }
+
+    public List<String> displayNeighborsAttacking(BoardManager bm, String attacker) {
+        List<String> targets = new ArrayList<>();
+        System.out.println("Neighboring Territories: ");
+        List<String> neighbors = bm.getNeighbors(attacker);
+        for(String country: neighbors){
+            if (bm.getTerritoryID(attacker) != bm.getTerritoryID(country)) {
+                targets.add(bm.getOccupantCountStatus(country) + " " + country);
+            }
+        }
+        return targets;
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
@@ -173,8 +193,46 @@ public class Player {
     *///////////////////////////////////////////////////////////////////////////////*/
     public int numOfTerritories(){
             return territories.size();
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    Method checks the number of continents a player owns and designates more armies
+    *///////////////////////////////////////////////////////////////////////////////*/
+    public int continentsOwned(BoardManager bm){
+        int moreArmies= 0;
+        String ownedContinents = " ";
+        if (territories.size()<4) {
+            return 0;
         }
 
+        if (territories.containsAll(bm.getContinentsMap("AUSTRALIA"))){
+            moreArmies =+ 2;
+            ownedContinents += "AUSTRALIA, ";
+        }
+        if (territories.containsAll(bm.getContinentsMap("ASIA"))){
+            moreArmies += 7;
+            ownedContinents += "ASIA, ";
+        }
+        if (territories.containsAll(bm.getContinentsMap("NORTH AMERICA"))){
+            moreArmies += 5;
+            ownedContinents += "NORTH AMERICA, ";
+        }
+        if (territories.containsAll(bm.getContinentsMap("EUROPE"))){
+            moreArmies += 5;
+            ownedContinents += "EUROPE, ";
+        }
+        if (territories.containsAll(bm.getContinentsMap("AFRICA"))){
+            moreArmies += 3;
+            ownedContinents += "AFRICA, ";
+        }
+        if (territories.containsAll(bm.getContinentsMap("SOUTH AMERICA"))){
+            moreArmies += 2;
+            ownedContinents += "SOUTH AMERICA, ";
+        }
+        System.out.println("You get " + moreArmies + "armies because you own " + ownedContinents + "Congratulations!");
+
+        return moreArmies;
+    }
 
 
     public ArrayList<Entry<String, String>> getHand() {
