@@ -37,8 +37,16 @@ public class NewGameTest extends TestCase{
         int p = NewGame.getNumberPlayers(test);
         assertEquals(2, p);
 
+        for (int i = 0; i < 8; i++) {
+            try {
+                Player[] tempList = NewGame.setupPlayerList(i);
+                assertNotNull(tempList);
+            } catch(Exception e) {
+                continue;
+            }
+        }
+
         Player[] playerList = NewGame.setupPlayerList(p);
-        assertNotNull(playerList);
 
         Dice dice = new Dice();
 
