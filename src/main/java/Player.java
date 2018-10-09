@@ -40,7 +40,7 @@ public class Player {
     public void setTerritories(List<String> k)
     {
         territories.clear();
-        territories.addAll(k);
+        territories.addAll(k); //<<<< This is throwing an null pointer exception
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
