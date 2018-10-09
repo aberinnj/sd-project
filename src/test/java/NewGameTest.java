@@ -77,7 +77,7 @@ public class NewGameTest extends TestCase{
 
         String turnContent = readFile(base + "/src/test/java/input2.txt", StandardCharsets.UTF_8);
         Scanner turnScanner = new Scanner(turnContent);
-        Turn turn = new Turn(ng, bm, playerList[0], turnScanner);
+        Turn turn = new Turn(MM, ng, bm, playerList[0], playerList, turnScanner);
 
     }
 

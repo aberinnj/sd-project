@@ -58,10 +58,6 @@ public class GameManager {
         }
     }
 
-    public static void shipArmies() {
-
-    }
-
     public static void runGame(NewGame ng, BoardManager bm, int numPlayers, Player[] playerList, int[] playerTurnPattern, Scanner scanner) throws Exception {
         //PlayManager PM = new PlayManager();
         MoveManager MM = new MoveManager();
@@ -76,22 +72,7 @@ public class GameManager {
                 playerCurrent = playerList[player];
                 System.out.println("Player " + player + " turn");
 
-                Turn turn = new Turn(ng, bm, playerCurrent, scanner);
-
-                // undo recent section
-                System.out.println("\n____________________________\nUNDO actions? Yes or No");
-                String commitQuestion = scanner.nextLine();
-
-                if (commitQuestion.toLowerCase().equals("yes")) {
-                    undo(bm, MM, playerList);
-                    //player; figure out a way to let a the previous player go
-                }
-                else {
-                    Move current = MM.addToMoveManager(bm, MM, playerList, numPlayers, player);
-                    MM.addMove(current);
-                    //upload to S3
-                    //add turn integer to the move manager to indicate which turn
-                }
+                Turn turn = new Turn(MM, ng, bm, playerCurrent, playerList, scanner);
 
                 turnNumber++;
             }
@@ -125,17 +106,6 @@ public class GameManager {
             //}
         }
         return false;
-    }
-
-    public static void undo(BoardManager bm, MoveManager MM, Player[] playerList) {
-        // THEN UNDO
-        Move last = MM.getLastMove();
-        // Set Territories of player i to previous state
-        for (Player player: playerList) {
-            player.setTerritories(last.playerTerritories.get(player));
-        }
-        // Set BoardMap Territories to previous state
-        bm.setBoardMap(last.CurrentTerritoryStatus);
     }
 }
 

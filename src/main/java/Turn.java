@@ -2,33 +2,65 @@
 import java.util.*;
 
 public class Turn {
-
+    int numPlayers;
+    MoveManager MM = null;
     NewGame game = null;
     BoardManager bm = null;
     Player player = null;
     Scanner scanner = null;
     List<String> territories = null;
     ArrayList<Map.Entry<String, String>> hand = null;
+    Player[] playerList = null;
 
-    Turn(NewGame ng, BoardManager bm, Player playerCurrent, Scanner scanner) {
+    Turn(MoveManager MM, NewGame ng, BoardManager bm, Player playerCurrent, Player[] playerList, Scanner scanner) {
         this.game = ng;
         this.bm = bm;
-
+        this.MM = MM;
         this.player = playerCurrent;
         this.territories = playerCurrent.getTerritories();
         this.hand = playerCurrent.getHand();
-
         this.scanner = scanner;
-        turnFunciton();
+        this.playerList = playerList;
+        this.numPlayers = playerList.length;
+        turnFunction();
     }
 
-    public void turnFunciton() {
+    public void turnFunction() {
         // 1. place new Armies
         addArmies();
         // 2. attacking
         attack();
         // 3. fortifying position
         fortifyPlayersTerritory();
+
+        // undo recent section
+        System.out.println("\n____________________________\nUNDO actions? Yes or No");
+        String commitQuestion = scanner.nextLine();
+
+        if (commitQuestion.toLowerCase().equals("yes")) {
+            undo(bm, MM, playerList);
+            //player; figure out a way to let a the previous player go
+        }
+        else {
+            int playerID = player.getId();
+            Move current = MM.addToMoveManager(bm, MM, playerList, numPlayers, playerID);
+            MM.addMove(current);
+            //upload to S3
+            //add turn integer to the move manager to indicate which turn
+        }
+
+    }
+
+
+    public static void undo(BoardManager bm, MoveManager MM, Player[] playerList) {
+        // THEN UNDO
+        Move last = MM.getLastMove();
+        // Set Territories of player i to previous state
+        for (Player player: playerList) {
+            player.setTerritories(last.playerTerritories.get(player));
+        }
+        // Set BoardMap Territories to previous state
+        bm.setBoardMap(last.CurrentTerritoryStatus);
     }
 
     /*///////////////////////////////////////////////////////////////////////////////
@@ -67,6 +99,49 @@ public class Turn {
         return armies;
     }
 
+    public String getOriginFortify() throws Exception {
+        player.displayPlayerTerritories(bm);
+
+        System.out.print("\nMoveFrom: ");
+        String origin = scanner.nextLine();
+        System.out.println();
+        if(player.ifPlayerHasTerritory(origin)){
+            if (bm.getOccupantCount(origin) <= 1) {
+                throw new Exception("Uh Oh! This territory only has one army. You cannot transfer the defending army of a territory.");
+            }
+            player.displayPlayerNeighboringTerritories(bm, origin);
+            System.out.println("Army Count: " + bm.getOccupantCount(origin));
+        } else
+            throw new Exception("Player does not own territory " + origin);
+        return origin;
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    Helper method for querying player for number of army to transfer
+    *///////////////////////////////////////////////////////////////////////////////*/
+    public void queryTransfer(String origin) throws Exception {
+        Scanner intScanner = new Scanner(System.in);
+        System.out.print("\nTransfer army: ");
+        int army_count = intScanner.nextInt();
+        System.out.println();
+
+        if(bm.getOccupantCount(origin) > (army_count))
+        {
+            System.out.print("\nMoveTo: ");
+            String destination = scanner.nextLine();
+            System.out.println();
+            if(player.ifPlayerHasTerritory(destination)){
+                if(!bm.isTerritoryANeighborOf(destination, origin)) {
+                    throw new Exception("Uh Oh! The given destination territory is not adjacent to the given origin " + origin);
+                }
+                player.fortifyTerritory(bm, origin, destination, army_count);
+            } else
+                throw new Exception("Player does not own territory " + destination);
+
+        }else
+            throw new Exception("Uh Oh! This territory does not have the given amount of armies to transfer");
+    }
+
     /*////////////////////////////////////////////////////////////////////////////////
     Method below executes the third action a player can do in their turn.
     Method calls fortify, showTerritories functions for player
@@ -76,7 +151,7 @@ public class Turn {
     *///////////////////////////////////////////////////////////////////////////////*/
     public void fortifyPlayersTerritory()
     {
-        System.out.println("Would you like to fortify your territorues?");
+        System.out.println("Would you like to fortify your territories?");
         String attack = scanner.nextLine();
         if (attack.equals("No")) {
             System.out.println("You have chosen not to fortify");
@@ -88,42 +163,16 @@ public class Turn {
         System.out.println("by moving armies from one");
         System.out.println("territory to another. ");
         System.out.println("------------------------");
+
         boolean invalid = false;
         do {
             try {
-                player.displayPlayerTerritories(bm);
+                String origin = getOriginFortify();
 
-                System.out.print("\nMoveFrom: ");
-                String origin = scanner.nextLine();
-                System.out.println();
-                if(player.ifPlayerHasTerritory(origin)){
-                    if (bm.getOccupantCount(origin) <= 1) {
-                        throw new Exception("Uh Oh! This territory only has one army. You cannot transfer the defending army of a territory.");
-                    }
-                    player.displayPlayerNeighboringTerritories(bm, origin);
-                    System.out.println("Army Count: " + bm.getOccupantCount(origin));
-                } else
-                    throw new Exception("Player does not own territory " + origin);
-
-
-                int army_count = queryTransferCount();
-                if(bm.getOccupantCount(origin) > (army_count))
-                {
-                    System.out.print("\nMoveTo: ");
-                    String destination = scanner.nextLine();
-                    System.out.println();
-                    if(player.ifPlayerHasTerritory(destination)){
-                        if(!bm.isTerritoryANeighborOf(destination, origin)) {
-                            throw new Exception("Uh Oh! The given destination territory is not adjacent to the given origin " + origin);
-                        }
-                        player.fortifyTerritory(bm, origin, destination, army_count);
-                    } else
-                        throw new Exception("Player does not own territory " + destination);
-
-                }else
-                    throw new Exception("Uh Oh! This territory does not have the given amount of armies to transfer");
+                queryTransfer(origin);
 
                 invalid = false;
+
             } catch (InputMismatchException k){
                 System.out.println("Error: Invalid input.");
                 invalid = true;
@@ -176,7 +225,7 @@ public class Turn {
                 hasDefender = true;
             }
             else {
-                System.out.println("That territory can not attack");
+                System.out.println("That territory can not be attacked\n Please select again.");
                 defender = scanner.nextLine();
             }
         }
@@ -237,8 +286,9 @@ public class Turn {
     }
 
     public void attack() {
-        player.displayAttackableNeighboringTerritories(bm);
+
         while (true) {
+            player.displayAttackableNeighboringTerritories(bm);
             System.out.println("Would you like to attack? Please enter Yes or No");
             String attack = scanner.nextLine();
             if (attack.equals("No")) {
@@ -299,16 +349,5 @@ public class Turn {
                 totalDefenseLoss(attacker, defender);
             }
         }
-    }
-
-    /*////////////////////////////////////////////////////////////////////////////////
-    Helper method for querying player for number of army to transfer
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public static int queryTransferCount(){
-        Scanner intScanner = new Scanner(System.in);
-        System.out.print("\nTransfer army: ");
-        int army_count = intScanner.nextInt();
-        System.out.println();
-        return army_count;
     }
 }

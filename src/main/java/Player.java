@@ -56,39 +56,48 @@ public class Player {
         }
     }
 
+    /*/////////////////////
+    Display neighboring territories for a given territory (origin) that also belong to the same player
+     *////////////////
     public void displayPlayerNeighboringTerritories(BoardManager bm, String origin) {
         System.out.println("Neighboring Territories: ");
         for(String country: territories){
             if (bm.isTerritoryANeighborOf(country, origin) && (bm.getTerritoryID(origin) == bm.getTerritoryID(country))) {
-                System.out.print(bm.getOccupantCountStatus(country) + " ");
+                System.out.print('\t' + bm.getOccupantCountStatus(country) + " ");
                 System.out.println(country);
             }
         }
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
-    Method displays Player's adjacent territories to given territory argument
+    Method displays Player's possible targets for an attack (territories adjacent to owned territories that the player does not own)
      *///////////////////////////////////////////////////////////////////////////////*/
     public void displayAttackableNeighboringTerritories(BoardManager bm) {
         System.out.println("Infantry Count And Neighboring Countries");
         for(String country: territories){
+            int armies = bm.getOccupantCount(country);
             List<String> neighbors = bm.getNeighbors(country);
-            System.out.println(country + ", Army count: " + bm.getOccupantCount(country) + " Can Attack:");
-            for (String neighbor: neighbors) {
-                if (bm.getTerritoryID(neighbor) != bm.getTerritoryID(country)) {
-                    System.out.println(neighbor + ", Army count: " + bm.getOccupantCount(neighbor));
+            if (armies > 1 && neighbors.size() > 0) {
+                System.out.println(country + ", Army count: " + armies +", Can Attack:");
+                for (String neighbor : neighbors) {
+                    if (bm.getTerritoryID(neighbor) != bm.getTerritoryID(country)) {
+                        System.out.println("\t" + neighbor + ", Army count: " + bm.getOccupantCount(neighbor));
+                    }
                 }
             }
         }
     }
 
+    /*/////////////////////////////////
+    For a single territory display the neighbors that territory is able to attack
+     */
     public List<String> displayNeighborsAttacking(BoardManager bm, String attacker) {
         List<String> targets = new ArrayList<>();
-        System.out.println("Neighboring Territories: ");
+        System.out.println("Hostile Territories: ");
         List<String> neighbors = bm.getNeighbors(attacker);
         for(String country: neighbors){
             if (bm.getTerritoryID(attacker) != bm.getTerritoryID(country)) {
-                targets.add(bm.getOccupantCountStatus(country) + " " + country);
+                targets.add("\t" + bm.getOccupantCountStatus(country) + " " + country);
             }
         }
         return targets;

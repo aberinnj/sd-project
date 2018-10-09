@@ -21,7 +21,7 @@ public class MoveManager {
         return moveList.get(i);
     }
 
-    public static Move addToMoveManager(BoardManager bm, MoveManager MM, Player[] list, int size, int playerID){
+    public Move addToMoveManager(BoardManager bm, MoveManager MM, Player[] list, int size, int playerID){
         HashMap<String, Territory> moveMap = new HashMap<String, Territory>();
         HashMap<String, Territory> boardMap = bm.getBoardMap();
         HashMap<Integer, List<String>> playerTerritories = new HashMap<Integer, List<String>>();
