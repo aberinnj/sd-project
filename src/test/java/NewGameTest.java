@@ -1,81 +1,50 @@
 import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.ByteArrayInputStream;
 import java.util.*;
 
+/*////////////////////////////////////////////////////////////////////////////////
+NewGame Class starts a NewGame by initializing GameManager and runs a game
+todo: Write test case for main method by providing File
+*///////////////////////////////////////////////////////////////////////////////*/
 public class NewGameTest extends TestCase{
 
-    static String readFile(String path, Charset encoding)
-            throws IOException
-    {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding);
-    }
+    private NewGame ng;
 
     @Test
     public void testNewGame() throws Exception {
-        NewGame ng = new NewGame();
+        ng = new NewGame();
+        assertNotNull(ng.scanner);
+        assertNotNull(ng.base);
+        assertEquals(0, ng.getPlayerCount());
+        ng = null;
+    }
 
-        Scanner scanner = NewGame.provideScanner();
-        assertNotNull(scanner);
+    @Test
+    public void testPass()
+    {
+        ByteArrayInputStream in = new ByteArrayInputStream("2".getBytes());
+        System.setIn(in);
+        ng = new NewGame();
+        ng.setNumberOfPlayers();
+        assertEquals(2, ng.getPlayerCount());
+        System.setIn(System.in);
+        ng = null;
+    }
 
-        String base = NewGame.getBase();
-        assertNotNull(base);
-
-        BoardManager bm = NewGame.getBoardManager(base);
-        assertNotNull(bm);
-
-        Scanner test = new Scanner("2");
-        int p = NewGame.getNumberPlayers(test);
-        assertEquals(2, p);
-
-        for (int i = 0; i < 8; i++) {
-            try {
-                Player[] tempList = NewGame.setupPlayerList(i);
-                assertNotNull(tempList);
-            } catch(Exception e) {
-                continue;
-            }
-        }
-
-        Player[] playerList = NewGame.setupPlayerList(p);
-
-        Dice dice = new Dice();
-
-        int highest = NewGame.rollForSetup(dice, p);
-        assertNotSame(10, highest);
-
-        int[] playerTurnPattern = new int[p];
-
-        for(int b=0; b<p; b++)
-        {
-            playerTurnPattern[b] = (highest+b)% p;
-            System.out.println((b+1)+ ". Player#" + playerTurnPattern[b]);
-        }
-
-        String content = readFile(base + "/src/test/java/input.txt", StandardCharsets.UTF_8);
-
-        Scanner territories = new Scanner(content);
-        NewGame.initializeTerritories(bm, territories, playerTurnPattern, playerList);
-
-        MoveManager MM = new MoveManager();
-        GameManager.initialize(ng, bm, MM, playerList, 2, -1);
-
-        String armyContent = readFile(base + "/src/test/java/input3.txt", StandardCharsets.UTF_8);
-        Scanner armyScanner = new Scanner(armyContent);
-        GameManager.shipArmies(playerTurnPattern,playerList,bm, armyScanner);
-
-        HashMap<String, Territory> map = bm.getBoardMap();
-
-        String turnContent = readFile(base + "/src/test/java/input2.txt", StandardCharsets.UTF_8);
-        Scanner turnScanner = new Scanner(turnContent);
-        Turn turn = new Turn(MM, ng, bm, playerList[0], playerList, turnScanner);
-
+    @Test
+    public void testFail()
+    {
+        ByteArrayInputStream in = new ByteArrayInputStream("9".getBytes());
+        System.setIn(in);
+        ng = new NewGame();
+        ng.setNumberOfPlayers();
+        assertEquals(0, ng.getPlayerCount());
+        System.setIn(System.in);
+        ng = null;
     }
 
 }

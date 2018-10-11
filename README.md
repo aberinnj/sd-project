@@ -2,25 +2,14 @@
 
 Software Design class team project implementing a clone of the boardgame Risk.
 
-__Files and Program Flow__
-
-- GameManager - Handles all calls to setup, start, stop and restart a game.
-- BoardManager - Handles all board-related requests and responses. Also keeps track of Board pieces, cards, events
-- Player - Handles all events and requests involving player information
-- Army - Counter for game pieces
-- Dice - Simple Dice class
-- Territory - Handles all requests and responses involving Territories such as occupants, occupiedBy, isOccupied as well as neighboring territories
-- Deck
-
-
-__Summary__
-
-* GameManager sets up board, players, decks, and starts the game loop
-* BoardManager sets up Territories, and makes use of dices
-
-
 # Update Log
-__V.3.0__
+__V.0.4__
+- [ ] Notify players if their territories are under attack. (Remember the Observer Pattern)
+- [ ] Players can purchase in-game credit. They can use the credit to buy cards, buy undo actions, or transfer the credits to another player.
+- [ ] Post the number of territories conquered by each player on Twitter after each turn and at the end of the game. (https://developer.twitter.com/en/docs/developer-utilities/twitter-libraries.html or http://twitter4j.org/en/index.html )
+- [ ] Modify pom.xml to generate JavaDocs and class diagrams. Reference: https://maven.apache.org/plugins/maven-javadoc-plugin/examples/alternate-doclet.html
+
+__V.0.3__
 - Users can undo their actions
 - Your Program uses Amazon S3 to replay games (You get some Amazon credits through your GitHub student pack)
 - Test cases to cover at least 50% of the code. 

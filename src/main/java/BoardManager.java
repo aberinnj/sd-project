@@ -12,14 +12,15 @@ class Continent{
 BoardManager Class handles Territory and Continents, as well as the Deck
 
 Expects
+todo: fix bug with loop
 *///////////////////////////////////////////////////////////////////////////////*/
 public class BoardManager {
     private static HashMap<String, Territory> boardMap;
     private static HashMap<String, Continent> continentsMap;
     private static Deck gameDeck;
 
+    // Initializes the BoardManager variables and should be testable after
     BoardManager(String deckPath){
-    /*Initialize the BoardManager variables*/
         continentsMap = new HashMap<String,Continent>();
         boardMap = new HashMap<String, Territory>();
 
@@ -95,38 +96,28 @@ public class BoardManager {
     Method returns a the list of continents
     *///////////////////////////////////////////////////////////////////////////////*/
     public List<String> getContinentsMap(String name) {
-
         return continentsMap.get(name).FullContinent;
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method iterates through the hashmap boardMap and checks if the territory.isOccupied
-    Occupied below becomes false when a territory is not occupied
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public boolean isAllTerritoriesInitialized(){
-        boolean allOccupied = true;
-        for(HashMap.Entry<String, Territory> country: boardMap.entrySet()){
-            allOccupied = (allOccupied && country.getValue().isOccupied());
-            if (!allOccupied){
-                break;
-            }
+    // Method check if all territories are initialized and return boolean
+    public boolean isAllTerritoriesInitialized()
+    {
+        for(String country: boardMap.keySet()) {
+            if (!boardMap.get(country).isOccupied())
+                return false;
         }
-        return allOccupied;
+        return true;
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method iterates through the hashmap and displays all unoccupied territory
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public void displayUntakenTerritories(){
-        System.out.println("__________________________________________");
-        System.out.println("UNTAKEN-TERRITORIES");
+    // Displays free territories by printing to console
+    public void displayFreeTerritories(){
+        System.out.println("__Free Territories__");
 
         for(HashMap.Entry<String, Territory> country: boardMap.entrySet()){
             if(!boardMap.get(country.getKey()).isOccupied()){
                 System.out.println(country.getKey());
             }
         }
-
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
@@ -181,11 +172,7 @@ public class BoardManager {
                 player.shipArmy();
                 player.addTerritories(countryInput);
 
-
                 askAgainForInput = false;
-            } catch (InputMismatchException e){
-                System.out.print("Error: Invalid input.");
-                askAgainForInput = true;
             } catch (NullPointerException e){
                 System.out.print("Error: Country not found");
                 askAgainForInput = true;

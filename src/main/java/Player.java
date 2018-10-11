@@ -92,7 +92,7 @@ public class Player {
     For a single territory display the neighbors that territory is able to attack
      */
     public List<String> displayNeighborsAttacking(BoardManager bm, String attacker) {
-        List<String> targets = new ArrayList<>();
+        List<String> targets = new ArrayList<String>();
         System.out.println("Hostile Territories: ");
         List<String> neighbors = bm.getNeighbors(attacker);
         for(String country: neighbors){
@@ -114,8 +114,7 @@ public class Player {
     Method checks if player no longer has unused infantry pieces
      *///////////////////////////////////////////////////////////////////////////////*/
     public boolean isBaseEmpty(){
-        boolean isEmpty = (homebase.getInfantryCount() == 0);
-        return isEmpty;
+        return (homebase.getInfantryCount() == 0);
     }
 
     public void addArmies(int armies) { homebase.addInfantryCount(armies); }
@@ -150,7 +149,7 @@ public class Player {
     Moved the ship armies function here so there would be one function as well as to only allow one player to place armies
     at a time
     */
-    public void shipArmies(BoardManager bm, Scanner territoryScanner) {
+    public void deployInfantry(BoardManager bm, Scanner territoryScanner) {
         //boolean invalidTerritory = true;
         while (!isBaseEmpty()) {
             displayPlayerTerritories(bm);

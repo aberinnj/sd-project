@@ -15,22 +15,24 @@ public class NewGame {
     NewGame(){
         this.scanner = new Scanner(System.in);
         this.base = System.getProperty("user.dir");
-        while(setNumberOfPlayers(this.scanner));
+        playerCount = 0;
     }
 
-    // Make a new game, setup and run
+    // Make a new game, setup and run, the shorter, the better
     public static void main(String[] args) {
         NewGame NG = new NewGame();
-        GameManager GM = new GameManager(NG.scanner, NG.base, playerCount);
-        //GM.runSetup();
-        //GM.runGame(NG.scanner);
+        while(NG.setNumberOfPlayers()){}
+        GameManager GM = new GameManager(NG.scanner, NG.base, NG.getPlayerCount());
+        GM.runSetup(NG.scanner);
+        GM.runGame(NG.scanner);
     }
 
     // Query for number of players for this new game
-    public static boolean setNumberOfPlayers(Scanner scanner) {
+    public boolean setNumberOfPlayers() {
         System.out.println("Number of Players: ");
         try {
             int size = Integer.parseInt(scanner.nextLine());
+            System.out.println(size);
             if (size < 2 || size > 6) {
                 return true;
             } else{
@@ -43,15 +45,10 @@ public class NewGame {
         }
     }
 
-    public static void initializeTerritories(BoardManager bm, Scanner setup, int[] playerTurnPattern, Player[] playerList){
-        while(!bm.isAllTerritoriesInitialized()) {
-            // FIX ERROR WHERE MORE THAN TWO PLAYERS GETS STUCK IN LOOP
-            for (int i : playerTurnPattern) {
-                bm.displayUntakenTerritories();                                                                         //BoardManager's displayUntakenTerritories to display untaken territories
-                playerList[i].displayPlayerTerritories(bm);                                                             //player's displayPlayerTerritories to display player's territories
-                bm.setInitialTerritory(playerList[i], setup);                                                                  //BoardManager queries user for which territory to occupy
-            }
-        }
+    // made mainly for testing, playerCount can be accessed directly
+    public int getPlayerCount(){
+        return playerCount;
     }
+
 }
 

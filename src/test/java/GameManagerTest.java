@@ -58,11 +58,6 @@ public class GameManagerTest extends TestCase {
         assertEquals(1, ((Player) player).numOfTerritories());
     }
 
-    @Test(expected = FileNotFoundException.class)
-    public void testBoardFail() {
-        BoardManager fail = new BoardManager("failpath2");
-    }
-
     @Test
     public void testBoardManager() {
 
@@ -78,7 +73,7 @@ public class GameManagerTest extends TestCase {
     @Test
     public void testDeck() {
         Deck deck = new Deck(base + "/src/files/deck.json");
-        Deck fail = new Deck(base + "thisaintnodeck.json");
+        //Deck fail = new Deck(base + "thisaintnodeck.json");
         assertNotNull(deck.drawCard());
         assertNotNull(deck.drawCard());
         assertNotNull(deck.drawCard());

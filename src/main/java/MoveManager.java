@@ -27,11 +27,11 @@ public class MoveManager {
         HashMap<Integer, List<String>> playerTerritories = new HashMap<Integer, List<String>>();
         for(String key: boardMap.keySet())
         {
-            List<String> neighbors = boardMap.get(key).getNeighbors();
+            //String[] neighbors = Array<String>(boardMap.get(key).getNeighbors());
             int occ = boardMap.get(key).getOccupantID();
             boolean isOcc = boardMap.get(key).isOccupied();
             int count = boardMap.get(key).getArmy().getInfantryCount();
-            moveMap.put(key, new Territory(isOcc, occ, new Army(count), neighbors));
+            //moveMap.put(key, new Territory(neighbors));
 
         }
         for(int i=0; i<size; i++)

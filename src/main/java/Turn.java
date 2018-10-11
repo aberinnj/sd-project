@@ -4,7 +4,6 @@ import java.util.*;
 public class Turn {
     int numPlayers;
     MoveManager MM = null;
-    NewGame game = null;
     BoardManager bm = null;
     Player player = null;
     Scanner scanner = null;
@@ -12,8 +11,7 @@ public class Turn {
     ArrayList<Map.Entry<String, String>> hand = null;
     Player[] playerList = null;
 
-    Turn(MoveManager MM, NewGame ng, BoardManager bm, Player playerCurrent, Player[] playerList, Scanner scanner) {
-        this.game = ng;
+    Turn(MoveManager MM, BoardManager bm, Player playerCurrent, Player[] playerList, Scanner scanner) {
         this.bm = bm;
         this.MM = MM;
         this.player = playerCurrent;
@@ -26,11 +24,8 @@ public class Turn {
     }
 
     public void turnFunction() {
-        // 1. place new Armies
-        addArmies();
-        // 2. attacking
+        placeNewArmies();
         attack();
-        // 3. fortifying position
         fortifyPlayersTerritory();
 
         // undo recent section
@@ -66,7 +61,7 @@ public class Turn {
     /*///////////////////////////////////////////////////////////////////////////////
     Function to Add armies at the beginning of each turn
      */////////////////////////////////////////////////////////////////////
-    public void addArmies() {
+    public void placeNewArmies() {
 
         int newArmies = (3 + Math.max(0, (int) Math.ceil((territories.size() - 12) / 3)));
         newArmies = newArmies + player.continentsOwned(bm);
@@ -77,7 +72,7 @@ public class Turn {
         else newArmies += tradeCards();
 
         player.addArmies(newArmies);
-        player.shipArmies(bm, scanner);
+        player.deployInfantry(bm, scanner);
         //return newArmies;
     }
 
