@@ -1,82 +1,81 @@
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.lang.reflect.Type;
 import java.util.*;
 
 class Continent{
-    public List<String> FullContinent;
+    List<String> FullContinent;
 
-    Continent(List<String> k)
-    {
-        FullContinent = k;
+    Continent(String[] k) {
+        FullContinent = new ArrayList<String>();
+        FullContinent.addAll(Arrays.asList(k));
     }
-
 }
+/*////////////////////////////////////////////////////////////////////////////////
+BoardManager Class handles Territory and Continents, as well as the Deck
 
+Expects
+*///////////////////////////////////////////////////////////////////////////////*/
 public class BoardManager {
-
-    private static HashMap<String, Territory> boardMap;                                                                 // boardMap is a hashmap <TerritoryName, TerritoryObject>
-                                                                                                                        // TerritoryName is used as a key to get the corresponding object
-                                                                                                                        // TerritoryObject is an object of class Territory
-
-    private static HashMap<String, Continent> continentsMap;                         //continentsMap is hashmap <ContinentName, Terrtories> used to check
-
+    private static HashMap<String, Territory> boardMap;
+    private static HashMap<String, Continent> continentsMap;
     private static Deck gameDeck;
-    /*////////////////////////////////////////////////////////////////////////////////
-    Constructor, constructs map and puts it inside a hashmap
 
-    Make a parser and parse json to get map=[]
-    for each object inside map, get territoryName and neighborsObject
-    Assign neighborsObject into a list, territoryNeighbors and add into boardMap
-
-    Refactor.
-    *///////////////////////////////////////////////////////////////////////////////*/
-    BoardManager(String mapPath, String deckPath){
+    BoardManager(String deckPath){
+    /*Initialize the BoardManager variables*/
         continentsMap = new HashMap<String,Continent>();
         boardMap = new HashMap<String, Territory>();
-        try {
-            FileReader json = new FileReader(mapPath);
-            JsonParser parser = new JsonParser();
 
-            Gson gson = new Gson();
-            JsonObject rootObj = parser.parse(json).getAsJsonObject();
-            JsonArray mapArray = rootObj.getAsJsonArray("map");
+        boardMap.put("ALASKA", new Territory(new String[]{"KAMCHATKA", "NORTH WEST TERRITORY", "ALBERTA"}));
+        boardMap.put("NORTH WEST TERRITORY", new Territory(new String[]{"ALASKA", "ALBERTA", "ONTARIO", "GREENLAND"}));
+        boardMap.put("GREENLAND", new Territory(new String[]{"NORTH WEST TERRITORY", "ONTARIO", "QUEBEC", "ICELAND"}));
+        boardMap.put("ALBERTA", new Territory(new String[]{"ALASKA", "NORTH WEST TERRITORY", "ONTARIO", "WESTERN UNITED STATES"}));
+        boardMap.put("ONTARIO", new Territory(new String[]{"ALBERTA", "NORTH WEST TERRITORY", "QUEBEC", "GREENLAND", "WESTERN UNITED STATES", "EASTERN UNITED STATES"}));
+        boardMap.put("QUEBEC", new Territory(new String[]{"ONTARIO", "EASTERN UNITED STATES", "GREENLAND"}));
+        boardMap.put("WESTERN UNITED STATES", new Territory(new String[]{"ALBERTA", "ONTARIO", "EASTERN UNITED STATES", "CENTRAL AMERICA"}));
+        boardMap.put("EASTERN UNITED STATES", new Territory(new String[]{"WESTERN UNITED STATES", "ONTARIO", "QUEBEC", "CENTRAL AMERICA"}));
+        boardMap.put("CENTRAL AMERICA", new Territory(new String[]{"WESTERN UNITED STATES", "EASTERN UNITED STATES", "VENEZUELA"}));
+        boardMap.put("VENEZUELA", new Territory(new String[]{"CENTRAL AMERICA", "PERU", "BRAZIL"}));
+        boardMap.put("PERU", new Territory(new String[]{"VENEZUELA", "BRAZIL", "ARGENTINA"}));
+        boardMap.put("BRAZIL", new Territory(new String[]{"VENEZUELA", "PERU", "ARGENTINA", "NORTH AMERICA"}));
+        boardMap.put("ARGENTINA", new Territory(new String[]{"PERU", "BRAZIL"}));
+        boardMap.put("NORTH AFRICA", new Territory(new String[]{"BRAZIL", "SOUTHERN EUROPE", "EGYPT", "EAST AFRICA", "CONGO"}));
+        boardMap.put("CONGO", new Territory(new String[]{"NORTH AFRICA", "EAST AFRICA", "SOUTH AFRICA"}));
+        boardMap.put("EGYPT", new Territory(new String[]{"NORTH AFRICA", "SOUTHERN EUROPE", "MIDDLE EAST", "EAST AFRICA"}));
+        boardMap.put("EAST AFRICA", new Territory(new String[]{"NORTH AFRICA", "EGYPT", "MIDDLE EAST", "CONGO", "SOUTH AFRICA", "MADAGASCAR"}));
+        boardMap.put("SOUTH AFRICA", new Territory(new String[]{"CONGO", "EAST AFRICA", "MADAGASCAR"}));
+        boardMap.put("MADAGASCAR", new Territory(new String[]{"SOUTH AFRICA", "EAST AFRICA"}));
+        boardMap.put("MIDDLE EAST", new Territory(new String[]{"EGYPT", "EAST AFRICA", "SOUTHERN EUROPE", "UKRAINE", "AFGHANISTAN", "INDIA"}));
+        boardMap.put("INDIA", new Territory(new String[]{"MIDDLE EAST", "AFGHANISTAN", "CHINA", "SIAM"}));
+        boardMap.put("SIAM", new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"}));
+        boardMap.put("INDONESIA", new Territory(new String[]{"SIAM", "NEW GUINEA", "WESTERN AUSTRALIA"}));
+        boardMap.put("WESTERN AUSTRALIA", new Territory(new String[]{"INDONESIA", "NEW GUINEA", "EASTERN AUSTRALIA"}));
+        boardMap.put("EASTERN AUSTRALIA", new Territory(new String[]{"WESTERN AUSTRALIA", "NEW GUINEA"}));
+        boardMap.put("NEW GUINEA", new Territory(new String[]{"INDONESIA", "WESTERN AUSTRALIA", "EASTERN AUSTRALIA"}));
+        boardMap.put("CHINA", new Territory(new String[]{"SIAM", "INDIA", "AFGHANISTAN", "URAL", "SIBERIA", "MONGOLIA"}));
+        boardMap.put("AFGHANISTAN", new Territory(new String[]{"MIDDLE EAST", "INDIA", "CHINA", "URAL", "UKRAINE"}));
+        boardMap.put("URAL", new Territory(new String[]{"UKRAINE", "SIBERIA", "CHINA", "AFGHANISTAN"}));
+        boardMap.put("SIBERIA", new Territory(new String[]{"URAL", "CHINA", "MONGOLIA", "IRKUTSK", "YAKUTSK"}));
+        boardMap.put("YAKUTSK", new Territory(new String[]{"SIBERIA", "IRKUTSK", "KAMCHATKA"}));
+        boardMap.put("KAMCHATKA", new Territory(new String[]{"YAKUTSK", "IRKUTSK", "ALASKA", "JAPAN", "MONGOLIA"}));
+        boardMap.put("IRKUTSK", new Territory(new String[]{"SIBERIA", "YAKUTSK", "KAMCHATKA", "MONGOLIA"}));
+        boardMap.put("MONGOLIA", new Territory(new String[]{"SIBERIA", "IRKUTSK", "KAMCHATKA", "JAPAN", "CHINA"}));
+        boardMap.put("JAPAN", new Territory(new String[]{"KAMCHATKA", "MONGOLIA"}));
+        boardMap.put("UKRAINE", new Territory(new String[]{"SCANDINAVIA", "URAL", "AFGHANISTAN", "MIDDLE EAST", "SOUTHERN EUROPE", "NORTHERN EUROPE"}));
+        boardMap.put("SCANDINAVIA", new Territory(new String[]{"UKRAINE", "NORTHERN EUROPE", "GREAT BRITAIN", "ICELAND"}));
+        boardMap.put("ICELAND", new Territory(new String[]{"GREENLAND", "SCANDINAVIA", "GREAT BRITAIN"}));
+        boardMap.put("GREAT BRITAIN", new Territory(new String[]{"ICELAND", "SCANDINAVIA", "NORTHERN EUROPE", "WESTERN EUROPE"}));
+        boardMap.put("NORTHERN EUROPE", new Territory(new String[]{"GREAT BRITAIN", "SCANDINAVIA", "UKRAINE", "SOUTHERN EUROPE", "WESTERN EUROPE"}));
+        boardMap.put("SOUTHERN EUROPE", new Territory(new String[]{"WESTERN EUROPE", "NORTHERN EUROPE", "UKRAINE", "MIDDLE EAST", "EGYPT", "NORTH AFRICA"}));
+        boardMap.put("WESTERN EUROPE", new Territory(new String[]{"GREAT BRITAIN", "NORTHERN EUROPE", "SOUTHERN EUROPE", "NORTH AFRICA"}));
 
-            for(JsonElement mapItem: mapArray){
-                // gets {name, neighbors}
-                JsonObject territoryObject = mapItem.getAsJsonObject();
-                String territoryName = territoryObject.get("name").getAsString();
-                JsonArray neighborsObject = territoryObject.get("neighbors").getAsJsonArray();
+        continentsMap.put("NORTH AMERICA", new Continent(new String[]{"ALASKA", "NORTH WEST TERRITORY", "ALBERTA","ONTARIO","QUEBEC","GREENLAND", "WESTERN UNITED STATES", "EASTERN UNITED STATES", "CENTRAL AMERICA"}));
+        continentsMap.put("SOUTH AMERICA", new Continent(new String[]{"VENEZUELA", "BRAZIL", "PERU", "ARGENTINA"}));
+        continentsMap.put("EUROPE", new Continent(new String[]{"WESTERN EUROPE", "GREAT BRITAIN", "ICELAND", "SCANDINAVIA", "NORTHERN EUROPE", "SOUTHERN EUROPE", "UKRAINE"}));
+        continentsMap.put("AFRICA", new Continent(new String[]{"NORTH AFRICA", "EGYPT", "CONGO", "EAST AFRICA", "SOUTH AFRICA", "MADAGASCAR"}));
+        continentsMap.put("ASIA", new Continent(new String[]{"SIAM", "INDIA", "AFGHANISTAN", "URAL", "SIBERIA", "MONGOLIA", "CHINA", "MIDDLE EAST", "JAPAN", "YAKUTSK", "IRKUTSK", "KAMCHATKA"}));
+        continentsMap.put("AUSTRALIA", new Continent(new String[]{"WESTERN AUSTRALIA", "INDONESIA", "EASTERN AUSTRALIA", "NEW GUINEA"}));
 
-                // adds a new item where key: territoryName and value: a new territory object
-                Type listType= new TypeToken<List<String>>() {}.getType();
-                List<String> territoryNeighbors = gson.fromJson(neighborsObject, listType);
-                boardMap.put(territoryName, new Territory(false, -1, null, territoryNeighbors));
-            }
-
-            JsonArray continentArray = rootObj.getAsJsonArray("continents");
-            // gets {name, territories}
-            for(JsonElement continentItem: continentArray){
-                JsonObject continentObject = continentItem.getAsJsonObject();
-                String continentName = continentObject.get("name").getAsString();
-                JsonArray territoriesObject = continentObject.get("territories").getAsJsonArray();
-
-                Type listType= new TypeToken<List<String>>() {}.getType();
-                List<String> territoriesOfContinent = gson.fromJson(territoriesObject, listType);
-                //System.out.println(continentName);
-                continentsMap.put(continentName, new Continent(territoriesOfContinent));
-            }
-
-            gameDeck = new Deck(deckPath);
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
+        gameDeck = new Deck(deckPath);
     }
+
     public HashMap<String, Territory> getBoardMap(){
         return boardMap;
     }

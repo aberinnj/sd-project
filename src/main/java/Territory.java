@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Territory {
@@ -9,12 +11,13 @@ public class Territory {
     /*////////////////////////////////////////////////////////////////////////////////
     Constructor for a territory. occupants member is initially set to null
     *///////////////////////////////////////////////////////////////////////////////*/
-    Territory(boolean h, int i, Army j,List<String> k)
+    Territory(String[] neighborList)
     {
-        occupied = h;
-        occupiedByID = i;
-        occupants = j;
-        neighbors = k;
+        occupied = false;
+        occupiedByID = -1;
+        occupants = null;
+        neighbors = new ArrayList<String>();
+        neighbors.addAll(Arrays.asList(neighborList));
     }
 
     /*////////////////////////////////////////////////////////////////////////////////

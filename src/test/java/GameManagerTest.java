@@ -11,13 +11,14 @@ public class GameManagerTest extends TestCase {
 
     public static String base = System.getProperty("user.dir");
 
-    Object bm = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
+    Object bm = new BoardManager(base + "/src/files/deck.json");
     Object dice = new Dice();
     Object player = new Player(0, 40);
 
     @Test
     public void testGameManager() throws Exception {
-        GameManager gm = new GameManager();
+        Scanner scanner = new Scanner(System.in);
+        GameManager gm = new GameManager(scanner, System.getProperty("user.dir"), 3);
 
         String[] mainArgs= {"This Game SUCKS!!!"};
     }
@@ -59,7 +60,7 @@ public class GameManagerTest extends TestCase {
 
     @Test(expected = FileNotFoundException.class)
     public void testBoardFail() {
-        BoardManager fail = new BoardManager("failpath1", "failpath2");
+        BoardManager fail = new BoardManager("failpath2");
     }
 
     @Test
@@ -70,16 +71,13 @@ public class GameManagerTest extends TestCase {
 
         assertEquals(false, ((BoardManager) bm).isTerritoryANeighborOf("INDIA", "ALASKA"));
 
-        BoardManager test = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
+        BoardManager test = new BoardManager(base + "/src/files/deck.json");
         HashMap<String, Territory> map = (HashMap<String, Territory>) test.getBoardMap();
-
     }
-
-
 
     @Test
     public void testDeck() {
-        Deck deck = new Deck(base + "/src/main/java/deck.json");
+        Deck deck = new Deck(base + "/src/files/deck.json");
         Deck fail = new Deck(base + "thisaintnodeck.json");
         assertNotNull(deck.drawCard());
         assertNotNull(deck.drawCard());

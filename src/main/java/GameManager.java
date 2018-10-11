@@ -1,60 +1,105 @@
 import java.util.*;
 
 
+/*///////////////////////////////////////////////////////////////////////
+GameManager sets up the game by Initializing Players and the Board
+as well as the Deck
+
+Expects
+
+todo: create a more robust way of reading these files that aren't dependent on path naming conventions
+*//////////////////////////////////////////////////////////////////////*/
 public class GameManager {
+    static Dice die1;
+    static Dice die2;
+    static Dice die3;
+    static Player[] playerList;
+    static int[] playerTurnPattern;
+    static BoardManager bm;
 
+    // Sets up ALL Game Variables, which must be testable upon initialization
+    GameManager(Scanner scanner, String base, int playerCount) {
 
-    public static void main(String[] args) throws Exception {
-        NewGame ng = new NewGame();
+        die1 = new Dice();
+        die2 = new Dice();
+        die3 = new Dice();
 
-        // Game Setup
-        System.out.println("Game of Risk");
-        System.out.println("------------------------");
-        System.out.println("PlayerSetup");
-        System.out.println("------------------------");
-        Scanner globalScanner = ng.getScanner();
+        System.out.println("__Game of Risk__");
+        playerList = setPlayerList(playerCount);
 
-        String base = ng.getBase();
+        System.out.println("\n__Order of Turns:__");
+        playerTurnPattern = getTurnPattern(playerCount, getIndexOfHighestRollIn(playerCount));
 
-        int numPlayers = ng.getNumberPlayers(globalScanner);
-
-        Player[] playerList = ng.setupPlayerList(numPlayers);
-
-        int[] playerTurnPattern = new int[numPlayers];
-        Dice die = new Dice();
-
-        System.out.println("-----------------------");
-        System.out.println("BoardSetup");
-        System.out.println("Note: Whoever gets the first of the same highest");
-        System.out.println("number, is considered to have the highest number");
-        System.out.println("------------------------");
-
-        int highestDieValue = ng.rollForSetup(die, numPlayers);
-
-        System.out.println("\nOrder of Turns:");
-        for(int b=0; b<numPlayers; b++)
-        {
-            playerTurnPattern[b] = (highestDieValue+b)% numPlayers;
-            System.out.println((b+1)+ ". Player#" + playerTurnPattern[b]);
-        }
-
-        BoardManager bm = ng.getBoardManager(base);
-
-        ng.initializeTerritories(bm, globalScanner, playerTurnPattern, playerList);
-
-        System.out.println("------------------------");
-        System.out.println("Allocate the rest of your armies");
-        System.out.println("------------------------");
-
-        shipArmies(playerTurnPattern, playerList, bm, globalScanner);
-
-        runGame(ng, bm, numPlayers, playerList, playerTurnPattern, globalScanner);
+        System.out.println("__BoardSetup__");
+        bm = new BoardManager(base + "/src/files/deck.json");
 
     }
 
-    public static void shipArmies(int[] playerTurnPattern, Player[] playerList, BoardManager bm, Scanner globalScanner) {
+    // Initializes PlayerList Array with the right amount of Infantry
+    public static Player[] setPlayerList(int size){
+        Player[] playerList = new Player[size];
+        int default_infantry = 0;
+
+        switch(size){
+            case 2:
+                default_infantry=40;
+                break;
+            case 3:
+                default_infantry=35;
+                break;
+            case 4:
+                default_infantry=30;
+                break;
+            case 5:
+                default_infantry=25;
+                break;
+            case 6:
+                default_infantry=20;
+                break;
+        }
+
+        for(int a=0; a<size; a++){
+            playerList[a] = new Player(a, default_infantry);
+        }
+
+        return playerList;
+
+    }
+
+    // Get Highest Roll
+    public int getIndexOfHighestRollIn(int iterations){
+        int indexOfHighestRoll = -1;
+        int valueOfHighestRoll = 1;
+        for(int i=0; i<iterations; i++)
+        {
+            die1.roll();
+            if (die1.getDiceValue() > valueOfHighestRoll)
+            {
+                valueOfHighestRoll = die1.getDiceValue();
+                indexOfHighestRoll = i;
+            }
+        }
+        return indexOfHighestRoll;
+    }
+
+    // Setup UserTurnPattern and display (optional)
+    public static int[] getTurnPattern(int size, int highest) {
+        int[] array = new int[size];
+        for (int i = 0; i < size; i++) {
+            array[i] = (highest + i) % size;
+            System.out.println((i+1)+ ". Player#" + array[i]);
+        }
+        return array;
+    }
+
+
+    public static void runSetup(Scanner scanner)
+    {
+        //initializeTerritories(bm, scanner, playerTurnPattern, playerList);
+
+        System.out.println("__Allocate the rest of your armies__");
         for (int i: playerTurnPattern) {
-            playerList[i].shipArmies(bm, globalScanner);
+            playerList[i].shipArmies(bm, scanner);
         }
     }
 
@@ -84,12 +129,7 @@ public class GameManager {
         MM.addMove(initialize);
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method checks if the game is over, by passing the boardmanager
-    returns true if a player has all the territories
 
-    Also removes player from playerList if player has no territories
-    *///////////////////////////////////////////////////////////////////////////////*/
     public static boolean isGameOver(BoardManager bm, Player[] playerList){
         Player[] tempList = playerList.clone();
         for(Player i: tempList){

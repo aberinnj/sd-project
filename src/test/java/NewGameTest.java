@@ -1,15 +1,12 @@
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class NewGameTest extends TestCase{
 
@@ -24,7 +21,7 @@ public class NewGameTest extends TestCase{
     public void testNewGame() throws Exception {
         NewGame ng = new NewGame();
 
-        Scanner scanner = NewGame.getScanner();
+        Scanner scanner = NewGame.provideScanner();
         assertNotNull(scanner);
 
         String base = NewGame.getBase();

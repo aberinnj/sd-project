@@ -1,99 +1,48 @@
 import java.util.*;
 
+/*////////////////////////////////////////////////////////////////////////////////
+NewGame Class starts a NewGame by initializing GameManager and runs a game
+todo: AWS S3 Integration
+todo: Do not import all of java.util
+*///////////////////////////////////////////////////////////////////////////////*/
 public class NewGame {
+    Scanner scanner;
+    String base;
+    static int playerCount;
 
-    public static Scanner getScanner() {
-        Scanner scanner = new Scanner(System.in);
-        return scanner;
+    /* Initialize Member Variables
+     * If number of players is invalid or out-of-bounds, scan again */
+    NewGame(){
+        this.scanner = new Scanner(System.in);
+        this.base = System.getProperty("user.dir");
+        while(setNumberOfPlayers(this.scanner));
     }
 
-    public static String getBase() {
-        String base = System.getProperty("user.dir");
-        return base;
+    // Make a new game, setup and run
+    public static void main(String[] args) {
+        NewGame NG = new NewGame();
+        GameManager GM = new GameManager(NG.scanner, NG.base, playerCount);
+        //GM.runSetup();
+        //GM.runGame(NG.scanner);
     }
 
-    public static int getNumberPlayers(Scanner globalScanner) {
+    // Query for number of players for this new game
+    public static boolean setNumberOfPlayers(Scanner scanner) {
         System.out.println("Number of Players: ");
-        int numPlayers = Integer.parseInt(globalScanner.nextLine());
-        return numPlayers;
-
-    }
-
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method for setting up list of players playing the game, throws an exception on
-    invalid player-size. Setups up playerList size with corresponding settings
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public static Player[] setupPlayerList(int size) throws Exception{
-        if(size < 2 || size > 6)
-            throw new Exception("Error: This game mode only supports 2-6 players.");
-
-        Player[] playerList = new Player[size];
-        int default_infantry = 0;
-
-        switch(size){
-            case 2:
-                default_infantry=40;
-                break;
-            case 3:
-                default_infantry=35;
-                break;
-            case 4:
-                default_infantry=30;
-                break;
-            case 5:
-                default_infantry=25;
-                break;
-            case 6:
-                default_infantry=20;
-                break;
-        }
-
-        for(int a=0; a<size; a++){
-            playerList[a] = new Player(a, default_infantry);
-        }
-
-        return playerList;
-
-    }
-
-    /*///////////////////////////////////////////////////////////////////////
-    Method used to determine turn-pattern for players by rolling a dice called
-    turnSetupDice. Player who assumes the first highest number is considered
-    to play first
-    *//////////////////////////////////////////////////////////////////////*/
-    public static int rollForSetup(Dice turnSetupDice, int numPlayers) {
-
-        int highestID = -1;
-        int highestNUM = 1;
-
-        for(int i=0; i<numPlayers; i++)
-        {
-            turnSetupDice.roll();
-            System.out.print("Rolling for Player#");
-            System.out.print(i + "..."+turnSetupDice.getDiceValue());
-            System.out.println();
-            if (turnSetupDice.getDiceValue() > highestNUM)
-            {
-                highestNUM = turnSetupDice.getDiceValue();
-                highestID = i;
+        try {
+            int size = Integer.parseInt(scanner.nextLine());
+            if (size < 2 || size > 6) {
+                return true;
+            } else{
+                playerCount = size;
+                return false;
             }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
         }
-        return highestID;
     }
 
-    /*//////////////////////////////////////////////////////////
-    Method to initialize the board manager
-     *//////////////////////////////////////////////////////////
-    public static BoardManager getBoardManager(String base) { //todo creaete a more robust way of reading these files that aren't dependent on path naming conventions
-        BoardManager bm = new BoardManager(base + "/mapSource.json", base + "/deck.json");
-        return bm;
-    }
-
-    /*///////////////////////////////////////////////////////////////////////
-    Method serves to setup the BoardManager. Method runs while the boardmanager
-    has an unoccupied territory and allows the users to select a territory
-    per turn.
-     *//////////////////////////////////////////////////////////////////////*/
     public static void initializeTerritories(BoardManager bm, Scanner setup, int[] playerTurnPattern, Player[] playerList){
         while(!bm.isAllTerritoriesInitialized()) {
             // FIX ERROR WHERE MORE THAN TWO PLAYERS GETS STUCK IN LOOP
