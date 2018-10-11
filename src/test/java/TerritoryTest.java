@@ -31,7 +31,7 @@ public class TerritoryTest extends TestCase{
     public void testGetArmy() throws Exception {
         assertEquals(1, ((Territory) mainTerritory).getArmy().getInfantryCount());
 
-        assertEquals("1/0/0", ((Territory) mainTerritory).seeArmyCount());
+        assertEquals("1", ((Territory) mainTerritory).seeArmyCount());
     }
 
     @Test
