@@ -12,10 +12,11 @@ public class GameManager {
     static Dice die3;
     static Player[] playerList;
     static int[] playerTurnPattern;
-    static BoardManager bm;
+    static TurnManager TM;
+    private static BoardManager BM;
 
     // Sets up ALL Game Variables, which must be testable upon initialization
-    GameManager(Scanner scanner, String base, int playerCount) {
+    GameManager(String base, int playerCount) {
 
         die1 = new Dice();
         die2 = new Dice();
@@ -27,8 +28,14 @@ public class GameManager {
         playerTurnPattern = getTurnPattern(playerCount, getIndexOfHighestRollIn(playerCount));
 
         System.out.println("__BoardSetup__");
-        bm = new BoardManager(base + "/src/files/deck.json");
+        BM = new BoardManager(base + "/src/files/deck.json");
     }
+
+    public Player getPlayer(int playerID) {
+        return playerList[playerID];
+    }
+
+    public BoardManager getBM() {return BM;}
 
     // Initializes PlayerList Array with the right amount of Infantry
     public Player[] setPlayerList(int size){
@@ -89,65 +96,56 @@ public class GameManager {
 
 
     // Run setup to finish Game setup
-    public static void runSetup(Scanner scanner)
+    public void runSetup(Scanner scanner)
     {
         initializeTerritories(scanner);
 
         System.out.println("__Allocate the rest of your armies__");
         for (int i: playerTurnPattern) {
-            playerList[i].deployInfantry(bm, scanner);
+            getPlayer(i).deployInfantry(BM, scanner);
         }
     }
 
-    public static void runGame(Scanner scanner){
-        MoveManager MM = new MoveManager();
-        initialize(bm, MM, playerList, playerList.length, -1);
+    public static void runGame(GameManager GM, Scanner scanner){
+        TurnManager TM = new TurnManager();
 
         // Game Start
-        while(!isGameOver(bm, playerList)){
-            int turnNumber = 0;
-            Player playerCurrent = null;
-            for (int player: playerTurnPattern)
+        while(!GM.isGameOver()){
+            int turnNumber = 1;
+            for (int playerID: playerTurnPattern)
             {
-                playerCurrent = playerList[player];
-                System.out.println("Player " + player + " turn");
-
-                Turn turn = new Turn(MM, bm, playerCurrent, playerList, scanner);
+                System.out.println("Player " + playerID + " turn: ");
+                makeTurn(scanner, playerList[playerID]);
 
                 turnNumber++;
             }
         }
     }
 
-    public static void initialize(BoardManager bm, MoveManager MM, Player[] playerList, int numPlayers, int playerID) {
-        Move initialize = MM.addToMoveManager(bm, MM, playerList, numPlayers, -1);
-        MM.addMove(initialize);
+    // make a turn
+    public static Turn makeTurn(Scanner scanner, Player p) {
+        Turn k = new Turn(BM, p);
+        k.turnFunction(scanner);
+        return k;
     }
 
     // Display Free territories -- removed displayPlayerTerritories for simplicity and less console clutter
     public static void initializeTerritories(Scanner setup){
-        while(!bm.isAllTerritoriesInitialized()) {
+        while(!BM.isAllTerritoriesInitialized()) {
             for (int i : playerTurnPattern) {
-                bm.displayFreeTerritories();
-                bm.setInitialTerritory(playerList[i], setup);
+                BM.displayFreeTerritories();
+                BM.setInitialTerritory(playerList[i], setup);
             }
         }
     }
 
-    public static boolean isGameOver(BoardManager bm, Player[] playerList){
-        Player[] tempList = playerList.clone();
-        for(Player i: tempList){
-            if (i.isPlayerTheWinner(bm)){
+    // Player list only contains Players, and you can freely check if players have all the territories
+    public boolean isGameOver(){
+        for(Player i: playerList){
+            if (i.isPlayerTheWinner(BM)){
                 System.out.println("Someone won!?");
                 return true;
             }
-            //todo: remove player method
-            //if (i.hasPlayerLost(bm)) {
-            //    System.out.println("Player " + i + " is no longer in the game");
-            //    for (Player j = i; j<playerList.length - 1; j++) {
-            //        playerList[j] = playerList[j+1]
-            //    }
-            //}
         }
         return false;
     }

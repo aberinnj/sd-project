@@ -19,16 +19,19 @@ public class Player {
         return id;
     }
 
+    // adds a country to player's territories
     public void addTerritories(String country){
         territories.add(country);
     }
 
+    // removes a country from a player's territories
     public void loseTerritories(String country){
         if(ifPlayerHasTerritory(country)) {
             territories.remove(country);
         }
     }
 
+    // replaces all territories with expected List K
     public void setTerritories(List<String> k)
     {
         territories.clear();

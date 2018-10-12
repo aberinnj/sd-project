@@ -3,18 +3,21 @@ import java.util.*;
 /*////////////////////////////////////////////////////////////////////////////////
 NewGame Class starts a NewGame by initializing GameManager and runs a game
 todo: AWS S3 Integration
+todo: Broadcast to Twitter
 todo: Do not import all of java.util
 *///////////////////////////////////////////////////////////////////////////////*/
 public class NewGame {
     Scanner scanner;
     String base;
+    String gameID;
     static int playerCount;
 
     /* Initialize Member Variables
-     * If number of players is invalid or out-of-bounds, scan again */
+     * Note that playerCount is initialized to 0. Call setNumberOfPlayers to initialize*/
     NewGame(){
         this.scanner = new Scanner(System.in);
         this.base = System.getProperty("user.dir");
+        this.gameID = "risk_"+ UUID.randomUUID();
         playerCount = 0;
     }
 
@@ -23,9 +26,9 @@ public class NewGame {
         System.out.println("__Game of Risk__");
         NewGame NG = new NewGame();
         while(NG.setNumberOfPlayers()){}
-        GameManager GM = new GameManager(NG.scanner, NG.base, NG.getPlayerCount());
+        GameManager GM = new GameManager(NG.base, NG.getPlayerCount());
         GM.runSetup(NG.scanner);
-        GM.runGame(NG.scanner);
+        GM.runGame(GM, NG.scanner);
     }
 
     // Query for number of players for this new game

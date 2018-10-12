@@ -21,6 +21,7 @@ public class NewGameTest extends TestCase{
         ng = new NewGame();
         assertNotNull(ng.scanner);
         assertNotNull(ng.base);
+        assertNotNull(ng.gameID);
         assertEquals(0, ng.getPlayerCount());
         ng = null;
     }
@@ -61,6 +62,18 @@ public class NewGameTest extends TestCase{
         System.setIn(in);
         ng = new NewGame();
         ng.setNumberOfPlayers();
+        assertEquals(0, ng.getPlayerCount());
+        System.setIn(System.in);
+        ng = null;
+    }
+
+    @Test
+    public void testInvalid()
+    {
+        ByteArrayInputStream in = new ByteArrayInputStream("INVALID ".getBytes());
+        System.setIn(in);
+        ng = new NewGame();
+        assertFalse(ng.setNumberOfPlayers());
         assertEquals(0, ng.getPlayerCount());
         System.setIn(System.in);
         ng = null;

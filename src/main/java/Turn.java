@@ -1,82 +1,47 @@
 
 import java.util.*;
 
+
+/*///////////////////////////////////////////////////////////////////////////////
+Turn Class
+todo: make move/undo functions better
+ *//////////////////////////////////////////////////////////////////////////////
 public class Turn {
-    int numPlayers;
-    MoveManager MM = null;
-    BoardManager bm = null;
-    Player player = null;
-    Scanner scanner = null;
-    List<String> territories = null;
-    ArrayList<Map.Entry<String, String>> hand = null;
-    Player[] playerList = null;
+    BoardManager bm;
+    Player player;
+    ArrayList<Map.Entry<String, String>> hand;
 
-    Turn(MoveManager MM, BoardManager bm, Player playerCurrent, Player[] playerList, Scanner scanner) {
+    // Turn stores all game-board details and events from a specific turn
+    Turn(BoardManager bm, Player p) {
         this.bm = bm;
-        this.MM = MM;
-        this.player = playerCurrent;
-        this.territories = playerCurrent.getTerritories();
-        this.hand = playerCurrent.getHand();
-        this.scanner = scanner;
-        this.playerList = playerList;
-        this.numPlayers = playerList.length;
-        turnFunction();
+        this.player = p;
+        this.hand = p.getHand();
     }
 
-    public void turnFunction() {
-        placeNewArmies();
-        attack();
-        fortifyPlayersTerritory();
-
-        // undo recent section
-        System.out.println("\n____________________________\nUNDO actions? Yes or No");
-        String commitQuestion = scanner.nextLine();
-
-        if (commitQuestion.toLowerCase().equals("yes")) {
-            undo(bm, MM, playerList);
-            //player; figure out a way to let a the previous player go
-        }
-        else {
-            int playerID = player.getId();
-            Move current = MM.addToMoveManager(bm, MM, playerList, numPlayers, playerID);
-            MM.addMove(current);
-            //upload to S3
-            //add turn integer to the move manager to indicate which turn
-        }
-
+    public void turnFunction(Scanner scanner) {
+        placeNewArmies(scanner);
+        attack(scanner);
+        fortifyPlayersTerritory(scanner);
     }
 
 
-    public static void undo(BoardManager bm, MoveManager MM, Player[] playerList) {
-        // THEN UNDO
-        Move last = MM.getLastMove();
-        // Set Territories of player i to previous state
-        for (Player player: playerList) {
-            player.setTerritories(last.playerTerritories.get(player));
-        }
-        // Set BoardMap Territories to previous state
-        bm.setBoardMap(last.CurrentTerritoryStatus);
-    }
 
-    /*///////////////////////////////////////////////////////////////////////////////
-    Function to Add armies at the beginning of each turn
-     */////////////////////////////////////////////////////////////////////
-    public void placeNewArmies() {
+    public void placeNewArmies(Scanner scanner) {
 
-        int newArmies = (3 + Math.max(0, (int) Math.ceil((territories.size() - 12) / 3)));
+        int newArmies = (3 + Math.max(0, (int) Math.ceil((player.getTerritories().size() - 12) / 3.0)));
         newArmies = newArmies + player.continentsOwned(bm);
         System.out.println(newArmies + " new armies available");
 
         if (hand.size() < 3) System.out.println("You currently do not have enough cards to make an exchange.");
 
-        else newArmies += tradeCards();
+        else newArmies += tradeCards(scanner);
 
         player.addArmies(newArmies);
         player.deployInfantry(bm, scanner);
         //return newArmies;
     }
 
-    public int tradeCards() {
+    public int tradeCards(Scanner scanner) {
 
         int armies = 0;
         System.out.println("You have the following cards");
@@ -94,7 +59,7 @@ public class Turn {
         return armies;
     }
 
-    public String getOriginFortify() throws Exception {
+    public String getOriginFortify(Scanner scanner) throws Exception {
         player.displayPlayerTerritories(bm);
 
         System.out.print("\nMoveFrom: ");
@@ -114,7 +79,7 @@ public class Turn {
     /*////////////////////////////////////////////////////////////////////////////////
     Helper method for querying player for number of army to transfer
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void queryTransfer(String origin) throws Exception {
+    public void queryTransfer(String origin, Scanner scanner) throws Exception {
         Scanner intScanner = new Scanner(System.in);
         System.out.print("\nTransfer army: ");
         int army_count = intScanner.nextInt();
@@ -144,7 +109,7 @@ public class Turn {
 
     Refactor. Add Exception to transfer count.
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void fortifyPlayersTerritory()
+    public void fortifyPlayersTerritory(Scanner scanner)
     {
         System.out.println("Would you like to fortify your territories?");
         String attack = scanner.nextLine();
@@ -162,9 +127,9 @@ public class Turn {
         boolean invalid = false;
         do {
             try {
-                String origin = getOriginFortify();
+                String origin = getOriginFortify(scanner);
 
-                queryTransfer(origin);
+                queryTransfer(origin, scanner);
 
                 invalid = false;
 
@@ -178,7 +143,7 @@ public class Turn {
         }while(invalid);
     }
 
-    public String getAttacker() {
+    public String getAttacker(Scanner scanner) {
         boolean noTerritoryChosen = false;
         String attacker = null;
         while (!noTerritoryChosen) {
@@ -192,7 +157,7 @@ public class Turn {
         return attacker;
     }
 
-    public int getAttackArmies(String attacker) {
+    public int getAttackArmies(Scanner scanner, String attacker) {
         boolean attackCheck = false;
         int armiesToAttackWith = 0;
         while (!attackCheck) {  //check to ensure the number of attacking armies is proper
@@ -211,7 +176,7 @@ public class Turn {
         return numAttackDie;
     }
 
-    public String getDefender(String attacker) {
+    public String getDefender(Scanner scanner, String attacker) {
         System.out.println("Please select the territory you would like to attack.");
         boolean hasDefender = false;
         String defender = scanner.nextLine();
@@ -227,7 +192,7 @@ public class Turn {
         return defender;
     }
 
-    public int getDefenseArmies(String defender) {
+    public int getDefenseArmies(Scanner scanner, String defender) {
         boolean defenseCheck = false;
         int armiesToDefendWith = 0;
         while (!defenseCheck) {
@@ -242,7 +207,7 @@ public class Turn {
         return armiesToDefendWith;
     }
 
-    public int getNumDefenseDie(int armiesToDefendWith) {
+    public int getNumDefenseDie(Scanner scanner, int armiesToDefendWith) {
         //int possibleDefenseDie = math.min(armiesToDefendWith, 3);
         int numDefenseDie;
         if (armiesToDefendWith == 2) {
@@ -280,7 +245,7 @@ public class Turn {
         return Die;
     }
 
-    public void attack() {
+    public void attack(Scanner scanner) {
 
         while (true) {
             player.displayAttackableNeighboringTerritories(bm);
@@ -291,20 +256,20 @@ public class Turn {
                 return;
             }
 
-            String attacker = getAttacker();
+            String attacker = getAttacker(scanner);
             List<String> targets = bm.getEnemyNeighbors(attacker);
             for (String target: targets){
                 System.out.println(target);
             }
-            String defender = getDefender(attacker);
+            String defender = getDefender(scanner, attacker);
 
-            int attackArmies = getAttackArmies(attacker);
+            int attackArmies = getAttackArmies(scanner, attacker);
 
             int numAttackDie = getNumAttackDie(attackArmies);
 
-            int defenseArmies = getDefenseArmies(defender);
+            int defenseArmies = getDefenseArmies(scanner, defender);
 
-            int numDefenseDie = getNumDefenseDie(defenseArmies);
+            int numDefenseDie = getNumDefenseDie(scanner, defenseArmies);
 
             Dice dice = new Dice();
             int[] defenseDie = getDieValues(numDefenseDie, dice);

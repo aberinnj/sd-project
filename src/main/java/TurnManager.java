@@ -1,27 +1,29 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Stack;
 
-public class MoveManager {
-    private ArrayList<Move> moveList;
+/*///////////////////////////////////////////////////////////////////////////////
+TurnManager
+ *//////////////////////////////////////////////////////////////////////////////
+public class TurnManager {
+    private ArrayList<Turn> turnList;
 
-    public void addMove(Move i){
-        moveList.add(i);
+    public void addMove(Turn i){
+        turnList.add(i);
     }
 
     // Users can undo their actions
-    public Move getLastMove(){
-        return moveList.get(moveList.size()-1);
+    public Turn getLastMove(){
+        return turnList.get(turnList.size()-1);
     }
 
     // Users can replay games
-    public Move returnToMove(int i)
+    public Turn returnToMove(int i)
     {
-        return moveList.get(i);
+        return turnList.get(i);
     }
 
-    public Move addToMoveManager(BoardManager bm, MoveManager MM, Player[] list, int size, int playerID){
+    public void addToMoveManager(BoardManager bm, TurnManager MM, Player[] list, int size, int playerID){
         HashMap<String, Territory> moveMap = new HashMap<String, Territory>();
         HashMap<String, Territory> boardMap = bm.getBoardMap();
         HashMap<Integer, List<String>> playerTerritories = new HashMap<Integer, List<String>>();
@@ -39,11 +41,10 @@ public class MoveManager {
             List<String> territoryList = new ArrayList<String>(list[i].getTerritories());
             playerTerritories.put(i, territoryList);
         }
-        return new Move(playerID, moveMap, playerTerritories);
 
     }
 
-    MoveManager(){
-        moveList = new ArrayList<Move>();
+    TurnManager(){
+        turnList = new ArrayList<Turn>();
     }
 }
