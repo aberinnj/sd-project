@@ -72,17 +72,6 @@ public class Territory {
     *///////////////////////////////////////////////////////////////////////////////*/
     public int getOccupantID(){ return occupiedByID; }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method returns the number of occupants in the territory, as int (compared to method
-    below which only returns a string
-
-    Returns the number of infantry, as base unit.
-    Assumption: Cavalry = 5 Infantry and Artillery = 2 Cavalry
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public int ArmyCount()
-    {
-        return occupants.getInfantryCount();
-    }
 
     public Army getArmy(){
         return occupants;

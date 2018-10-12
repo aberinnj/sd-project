@@ -1,9 +1,5 @@
 import junit.framework.TestCase;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -13,7 +9,7 @@ public class TerritoryTest extends TestCase{
     private Territory mainTerritory;
 
     @Test
-    public void TestSimpleGets() {
+    public void testSimpleGets() {
         String[] k = new String[]{"INDIA", "CHINA", "INDONESIA"};
         mainTerritory = new Territory(k);
         mainTerritory.setTerritory(true, 0, new Army(1));
@@ -28,7 +24,7 @@ public class TerritoryTest extends TestCase{
     }
 
     @Test
-    public void TestInitialization() throws Exception {
+    public void testInitialization() throws Exception {
         Territory territoryInitialized;
         territoryInitialized = new Territory(new String[]{"KAMCHATKA", "NORTH WEST TERRITORY", "ALBERTA"});
         assertFalse(territoryInitialized.isOccupied());
@@ -36,14 +32,22 @@ public class TerritoryTest extends TestCase{
         assertNull(territoryInitialized.getArmy());
     }
 
-    @Test void TestAddOccupants() throws Exception {
+    @Test
+    public void testAddOccupants() throws Exception {
         mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
+        mainTerritory.setTerritory(true, 2, new Army(1));
         mainTerritory.addOccupants(5, "INFANTRY");
-        assertEquals(6, ((Territory) mainTerritory).ArmyCount());
-        mainTerritory.addOccupants(4, "INFANTRY");
-        assertEquals(2, ((Territory) mainTerritory).ArmyCount());
+        assertEquals(6, mainTerritory.getArmy().getInfantryCount());
     }
 
+    @Test
+    public void testLoseOccupants() throws Exception {
+        mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
+        mainTerritory.setTerritory(true, 2, new Army(6));
+        assertNotNull(mainTerritory.getArmy());
+        mainTerritory.loseOccupants(2, "INFANTRY");
+        assertEquals(4, mainTerritory.getArmy().getInfantryCount());
+    }
 
 
     @Test
@@ -60,7 +64,7 @@ public class TerritoryTest extends TestCase{
     public void testArmyCount() throws Exception {
         mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
         mainTerritory.setTerritory(true, 2, new Army(1));
-        assertEquals(1, mainTerritory.ArmyCount());
+        assertEquals(1, mainTerritory.getArmy().getInfantryCount());
     }
 
     @Test
@@ -71,7 +75,7 @@ public class TerritoryTest extends TestCase{
     }
 
     @Test
-    public void TestExceptionForOccupants(){
+    public void testExceptionForOccupants(){
         mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
         mainTerritory.setTerritory(true, 2, new Army(1));
         try {

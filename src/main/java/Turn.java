@@ -292,7 +292,7 @@ public class Turn {
             }
 
             String attacker = getAttacker();
-            List<String> targets = player.displayNeighborsAttacking(bm, attacker);
+            List<String> targets = bm.getEnemyNeighbors(attacker);
             for (String target: targets){
                 System.out.println(target);
             }

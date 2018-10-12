@@ -20,6 +20,7 @@ public class NewGame {
 
     // Make a new game, setup and run, the shorter, the better
     public static void main(String[] args) {
+        System.out.println("__Game of Risk__");
         NewGame NG = new NewGame();
         while(NG.setNumberOfPlayers()){}
         GameManager GM = new GameManager(NG.scanner, NG.base, NG.getPlayerCount());

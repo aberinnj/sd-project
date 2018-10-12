@@ -1,10 +1,12 @@
 import junit.framework.TestCase;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import sun.tools.jar.Main;
 
 import java.io.ByteArrayInputStream;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
 
 /*////////////////////////////////////////////////////////////////////////////////
 NewGame Class starts a NewGame by initializing GameManager and runs a game
@@ -22,6 +24,23 @@ public class NewGameTest extends TestCase{
         assertEquals(0, ng.getPlayerCount());
         ng = null;
     }
+
+    /*
+    @Test
+    public void testMain() throws Exception {
+        ng = new NewGame();
+        final InputStream old = System.in;
+        final FileInputStream fis = new FileInputStream(new File(ng.base + "/src/main/java/input.txt"));
+        System.setIn(fis);
+
+        ng.main(null);
+
+        System.setIn(old);
+        ng = null;
+    }
+    */
+
+
 
     @Test
     public void testPass()

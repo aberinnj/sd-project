@@ -1,5 +1,8 @@
 import java.util.*;
 
+/*////////////////////////////////////////////////////////////////////////////////
+Continent Class
+*///////////////////////////////////////////////////////////////////////////////*/
 class Continent{
     List<String> FullContinent;
 
@@ -77,6 +80,17 @@ public class BoardManager {
         gameDeck = new Deck(deckPath);
     }
 
+
+    public List<String> getEnemyNeighbors(String attacker) {
+        List<String> targets = new ArrayList<String>();
+        for(String country: getNeighborsOf(attacker)){
+            if (getTerritoryID(attacker) !=getTerritoryID(country)) {
+                targets.add(country);
+            }
+        }
+        return targets;
+    }
+
     public HashMap<String, Territory> getBoardMap(){
         return boardMap;
     }
@@ -135,7 +149,7 @@ public class BoardManager {
         return boardMap.get(origin).getNeighbors().contains(country);
     }
 
-    public List<String> getNeighbors(String country) {
+    public List<String> getNeighborsOf(String country) {
         return boardMap.get(country).getNeighbors();
     }
 
@@ -187,7 +201,7 @@ public class BoardManager {
     Method returns occupant count of a territory as int
     *///////////////////////////////////////////////////////////////////////////////*/
     public int getOccupantCount(String country){
-        return boardMap.get(country).ArmyCount();
+        return boardMap.get(country).getArmy().getInfantryCount();
     }
 
     /*////////////////////////////////////////////////////////////////////////////////

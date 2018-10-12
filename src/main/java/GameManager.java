@@ -21,7 +21,6 @@ public class GameManager {
         die2 = new Dice();
         die3 = new Dice();
 
-        System.out.println("__Game of Risk__");
         playerList = setPlayerList(playerCount);
 
         System.out.println("\n__Order of Turns:__");
@@ -32,7 +31,7 @@ public class GameManager {
     }
 
     // Initializes PlayerList Array with the right amount of Infantry
-    public static Player[] setPlayerList(int size){
+    public Player[] setPlayerList(int size){
         Player[] playerList = new Player[size];
         int default_infantry = 0;
 
@@ -79,7 +78,7 @@ public class GameManager {
     }
 
     // Setup UserTurnPattern and display (optional)
-    public static int[] getTurnPattern(int size, int highest) {
+    public int[] getTurnPattern(int size, int highest) {
         int[] array = new int[size];
         for (int i = 0; i < size; i++) {
             array[i] = (highest + i) % size;

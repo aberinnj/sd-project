@@ -1,36 +1,28 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Arrays;
 import java.util.Map.Entry;
 
+/*////////////////////////////////////////////////////////////////////////////////
+Player Class
+todo: setTerritories renders null throwing nullpointerexception in testing
+*///////////////////////////////////////////////////////////////////////////////*/
 public class Player {
 
-    private int id;                                                                                                     //simple id used for identifying player 0-5
-    private Army homebase;                                                                                              //initial number of infantry, holds initial values
-                                                                                                                        //use of int is also possible, but object Army is used instead in case setup changes
-                                                                                                                        //and players also start with other pieces than just the infantry
-    private List<String> territories;                                                                                   //List of player's territories
+    private int id;
+    private Army unassignedArmy;
+    private List<String> territories;
+    private ArrayList<Entry<String, String>> Hand;
 
-    private ArrayList<Entry<String, String>> Hand;                                                                      //List of cards a player has
-
-    /*////////////////////////////////////////////////////////////////////////////////
-    Get method, rerturns id
-     *///////////////////////////////////////////////////////////////////////////////*/
+    // get player id
     public int getId() {
         return id;
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Adds a country to Player's territory list
-     *///////////////////////////////////////////////////////////////////////////////*/
     public void addTerritories(String country){
         territories.add(country);
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Loses a territory.
-    *///////////////////////////////////////////////////////////////////////////////*/
     public void loseTerritories(String country){
         if(ifPlayerHasTerritory(country)) {
             territories.remove(country);
@@ -40,7 +32,7 @@ public class Player {
     public void setTerritories(List<String> k)
     {
         territories.clear();
-        territories.addAll(k); //<<<< This is throwing an null pointer exception
+        territories.addAll(k);
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
@@ -69,14 +61,14 @@ public class Player {
         }
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
+    /*//////////////////////////////////////////////    //////////////////////////////////
     Method displays Player's possible targets for an attack (territories adjacent to owned territories that the player does not own)
      *///////////////////////////////////////////////////////////////////////////////*/
     public void displayAttackableNeighboringTerritories(BoardManager bm) {
         System.out.println("Infantry Count And Neighboring Countries");
         for(String country: territories){
             int armies = bm.getOccupantCount(country);
-            List<String> neighbors = bm.getNeighbors(country);
+            List<String> neighbors = bm.getNeighborsOf(country);
             if (armies > 1 && neighbors.size() > 0) {
                 System.out.println(country + ", Army count: " + armies +", Can Attack:");
                 for (String neighbor : neighbors) {
@@ -88,20 +80,7 @@ public class Player {
         }
     }
 
-    /*/////////////////////////////////
-    For a single territory display the neighbors that territory is able to attack
-     */
-    public List<String> displayNeighborsAttacking(BoardManager bm, String attacker) {
-        List<String> targets = new ArrayList<String>();
-        System.out.println("Hostile Territories: ");
-        List<String> neighbors = bm.getNeighbors(attacker);
-        for(String country: neighbors){
-            if (bm.getTerritoryID(attacker) != bm.getTerritoryID(country)) {
-                targets.add("\t" + bm.getOccupantCountStatus(country) + " " + country);
-            }
-        }
-        return targets;
-    }
+
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method checks if player has a territory
@@ -114,22 +93,22 @@ public class Player {
     Method checks if player no longer has unused infantry pieces
      *///////////////////////////////////////////////////////////////////////////////*/
     public boolean isBaseEmpty(){
-        return (homebase.getInfantryCount() == 0);
+        return (unassignedArmy.getInfantryCount() == 0);
     }
 
-    public void addArmies(int armies) { homebase.addInfantryCount(armies); }
+    public void addArmies(int armies) { unassignedArmy.addInfantryCount(armies); }
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method Diminishes number of army
      *///////////////////////////////////////////////////////////////////////////////*/
     public void shipArmy(){
-        homebase.loseInfantry(1);
+        unassignedArmy.loseInfantry(1);
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method returns the total number of remaining infantry
      *///////////////////////////////////////////////////////////////////////////////*/
-    public int getRemainingArmies(){ return homebase.getInfantryCount(); }
+    public int getRemainingArmies(){ return unassignedArmy.getInfantryCount(); }
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method returns the total number of remaining infantry
@@ -260,7 +239,7 @@ public class Player {
     Player(int id, int infantryCount)
     {
         this.id = id;
-        homebase = new Army(infantryCount);
+        unassignedArmy = new Army(infantryCount);
         Hand = new ArrayList<Entry<String, String>>();
         territories = new ArrayList<String>();
     }
