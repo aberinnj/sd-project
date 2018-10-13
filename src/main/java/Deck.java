@@ -32,7 +32,7 @@ public class Deck {
             System.out.println("DRAWING from game-deck");
             return GameDeck.pop();
         } catch (EmptyStackException e) {
-            System.out.println("Game-deck is now empty.s");
+            System.out.println("Game-deck is now empty.");
             return null;
         }
     }

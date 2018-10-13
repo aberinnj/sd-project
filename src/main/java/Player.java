@@ -1,7 +1,5 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Map.Entry;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /*////////////////////////////////////////////////////////////////////////////////
 Player Class
@@ -12,8 +10,7 @@ public class Player {
     private int id;
     private Army unassignedArmy;
     private List<String> territories;
-    private ArrayList<Card> Hand;
-    private ArrayList<String> HandDesigns;
+    private HashMap<String, Stack<Card>> Hand;
 
     // get player id
     public int getId() {
@@ -172,16 +169,8 @@ public class Player {
         return moreArmies;
     }
 
-    public void addToHand(Card e){
-        Hand.add(e);
-        HandDesigns.add(e.getUnit());
-    }
-
-    public ArrayList<Card> getHand() {
+    public HashMap<String, Stack<Card>> getHand() {
         return Hand;
-    }
-    public ArrayList<String> getHandDesigns() {
-        return HandDesigns;
     }
 
 
@@ -192,8 +181,12 @@ public class Player {
     {
         this.id = id;
         unassignedArmy = new Army(infantryCount);
-        Hand = new ArrayList<Card>();
+        Hand = new HashMap<String, Stack<Card>>();
         territories = new ArrayList<String>();
-        HandDesigns = new ArrayList<String>();
+
+        Hand.put("INFANTRY", new Stack<Card>());
+        Hand.put("CAVALRY", new Stack<Card>());
+        Hand.put("ARTILLERY", new Stack<Card>());
+        Hand.put("WILD", new Stack<Card>());
     }
 }
