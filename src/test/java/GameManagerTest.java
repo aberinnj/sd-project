@@ -19,7 +19,7 @@ public class GameManagerTest extends TestCase {
         Player[] TestPlayerList2;
         Player[] TestPlayerList3;
         Player[] TestPlayerList4;
-        GM = new GameManager(System.getProperty("user.dir"), 3);
+        GM = new GameManager(3);
 
         TestPlayerList1 = GM.setPlayerList(2);
         assertEquals(40, TestPlayerList1[0].getRemainingArmies());
@@ -33,7 +33,7 @@ public class GameManagerTest extends TestCase {
 
     @Test
     public void testGameOver() {
-        GM = new GameManager(System.getProperty("user.dir"), 3);
+        GM = new GameManager(3);
 
         GM.getPlayer(2).addTerritories("ALASKA");
         assertFalse(GM.isGameOver());
@@ -182,7 +182,7 @@ public class GameManagerTest extends TestCase {
         System.setIn(in);
 
         Scanner thisScanner = new Scanner(System.in);
-        GM = new GameManager(System.getProperty("user.dir"), 2);
+        GM = new GameManager(2);
         GM.runSetup(GM, thisScanner);
         // Test Below
 
@@ -190,9 +190,8 @@ public class GameManagerTest extends TestCase {
         assertTrue(GM.getPlayer(1).isBaseEmpty());
 
         BoardManager BM = GM.getBM();
-        assertEquals(0, BM.displayFreeTerritories().size());
+        assertEquals(0, BM.getFreeTerritories().size());
 
         System.setIn(System.in);
     }
-
 }

@@ -2,6 +2,7 @@ import java.util.*;
 
 /*////////////////////////////////////////////////////////////////////////////////
 NewGame Class starts a NewGame by initializing GameManager and runs a game
+
 todo: AWS S3 Integration
 todo: Broadcast to Twitter
 todo: Do not import all of java.util
@@ -26,12 +27,13 @@ public class NewGame {
         System.out.println("__Game of Risk__");
         NewGame NG = new NewGame();
         while(NG.setNumberOfPlayers()){}
-        GameManager GM = new GameManager(NG.base, NG.getPlayerCount());
+        GameManager GM = new GameManager(NG.getPlayerCount());
         GM.runSetup(GM, NG.scanner);
         GM.runGame(GM, NG.scanner);
     }
 
     // Query for number of players for this new game
+    // Returns true if it succeeds, Returns false otherwise
     public boolean setNumberOfPlayers() {
         System.out.println("Number of Players: ");
         try {

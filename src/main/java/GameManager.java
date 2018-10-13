@@ -13,14 +13,16 @@ public class GameManager {
     private static BoardManager BM;
 
     // Sets up ALL Game Variables, which must be testable upon initialization
-    GameManager(String base, int playerCount) {
+    GameManager(int playerCount) {
         playerList = setPlayerList(playerCount);
 
         System.out.println("\n__Order of Turns:__");
         playerTurnPattern = getTurnPattern(playerCount, getIndexOfHighestRollIn(new Dice(), playerCount));
 
         System.out.println("__BoardSetup__");
-        BM = new BoardManager(base + "/src/files/deck.json");
+        BM = new BoardManager();
+
+        TM = new TurnManager();
     }
 
     public Player getPlayer(int playerID) {
@@ -87,7 +89,7 @@ public class GameManager {
     }
 
 
-    // Run setup to finish Game setup
+    // Run setup to finish Game setup for all players
     public static void runSetup(GameManager GM, Scanner scanner)
     {
         initializeTerritories(scanner);
@@ -99,16 +101,12 @@ public class GameManager {
     }
 
     public static void runGame(GameManager GM, Scanner scanner){
-        TM = new TurnManager();
         int turnID = 1;
-        // Game Start
         while(!GM.isGameOver()){
 
-            for (int playerID: playerTurnPattern)
-            {
+            for (int playerID: playerTurnPattern) {
                 System.out.println("Player " + playerID + " turn: ");
                 TM.save(makeTurn(scanner, playerList[playerID], turnID));
-
                 turnID++;
             }
         }
@@ -125,7 +123,7 @@ public class GameManager {
     public static void initializeTerritories(Scanner setup){
         while(!BM.isAllTerritoriesInitialized()) {
             for (int i : playerTurnPattern) {
-                for(String k : BM.displayFreeTerritories()) System.out.println(k);
+                for(String k : BM.getFreeTerritories()) System.out.println(k);
                 BM.setInitialTerritory(playerList[i], setup);
             }
         }

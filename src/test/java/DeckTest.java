@@ -6,16 +6,24 @@ Deck Test
 *///////////////////////////////////////////////////////////////////////////////*/
 public class DeckTest extends TestCase {
     @Test
-    public void testDeck() {
-        String base = System.getProperty("user.dir");
-        Deck deck = new Deck(base + "/src/files/deck.json");
-
-        assertNotNull(deck.drawCard());
-        assertNotNull(deck.drawCard());
-        assertNotNull(deck.drawCard());
-        assertNotNull(deck.drawCard());
-        assertNotNull(deck.drawCard());
-        assertNotSame(deck.drawCard(), Deck.drawCard());
+    public void testCard(){
+        Card k = new Card("INDIA", "INFANTRY");
+        assertEquals("INFANTRY", k.getUnit());
+        assertEquals("INDIA", k.getOrigin());
     }
+
+    @Test
+    public void testDeck() {
+        Deck deck = new Deck();
+
+        assertNotNull(deck.draw());
+        assertNotNull(deck.draw());
+        assertNotNull(deck.draw());
+        assertNotNull(deck.draw());
+        assertNotNull(deck.draw());
+        assertNotSame(deck.draw(), Deck.draw());
+    }
+
+
 
 }

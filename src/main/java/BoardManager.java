@@ -23,7 +23,7 @@ public class BoardManager {
     private static Deck gameDeck;
 
     // Initializes the BoardManager variables and should be testable after
-    BoardManager(String deckPath){
+    BoardManager(){
         continentsMap = new HashMap<String,Continent>();
         boardMap = new HashMap<String, Territory>();
 
@@ -77,7 +77,7 @@ public class BoardManager {
         continentsMap.put("ASIA", new Continent(new String[]{"SIAM", "INDIA", "AFGHANISTAN", "URAL", "SIBERIA", "MONGOLIA", "CHINA", "MIDDLE EAST", "JAPAN", "YAKUTSK", "IRKUTSK", "KAMCHATKA"}));
         continentsMap.put("AUSTRALIA", new Continent(new String[]{"WESTERN AUSTRALIA", "INDONESIA", "EASTERN AUSTRALIA", "NEW GUINEA"}));
 
-        gameDeck = new Deck(deckPath);
+        gameDeck = new Deck();
     }
 
 
@@ -112,8 +112,8 @@ public class BoardManager {
         return true;
     }
 
-    // Displays free territories by printing to console
-    public List<String> displayFreeTerritories(){
+    // Displays free territories
+    public List<String> getFreeTerritories(){
         System.out.println("__Free Territories__");
         List<String> listing = new ArrayList<String>();
 
@@ -125,17 +125,42 @@ public class BoardManager {
         return listing;
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method gets the number of territories involved in the game
-    currently being only used for checking if player has taken all the territories
-    *///////////////////////////////////////////////////////////////////////////////*/
+    // simply gets a player's territories, but most useful in getting territories a player can attack from
+    public List<String> getTerritories(Player p, boolean attacking)
+    {
+        List<String> listing = new ArrayList<String>();
+        for(String country: p.getTerritories()) {
+            if(attacking) {
+                if (boardMap.get(country).getArmy().getInfantryCount() > 1)
+                    listing.add(country);
+            } else{
+                listing.add(country);
+            }
+        }
+        return listing;
+    }
+
+
+    public List<String> getAllAdjacentEnemyTerritories(Player p) {
+        List<String> listing = new ArrayList<String>();
+        for(String country: getTerritories(p, false)){
+            for(String neighbor: getNeighborsOf(country))
+            {
+                if(!listing.contains(neighbor))
+                {
+                    listing.add(neighbor);
+                }
+            }
+        }
+        return listing;
+    }
+
+
     public int getNumberOfTerritories(){
         return boardMap.size();
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method returns true of a territory is adjacent to origin
-    *///////////////////////////////////////////////////////////////////////////////*/
+
     public boolean isTerritoryANeighborOf(String country, String origin){
         return boardMap.get(origin).getNeighbors().contains(country);
     }
@@ -148,15 +173,7 @@ public class BoardManager {
         return boardMap.get(country).getOccupantID();
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method prompts user for a territory to send an infantry to and initialize an army in .
 
-    Adds new Army to a territory
-    Diminishes number of player's initial number of infantry by 1(to transfer to territory)
-    Adds territory to Player's list of territories
-
-    Refactor.
-    *///////////////////////////////////////////////////////////////////////////////*/
     public void setInitialTerritory(Player player, Scanner country) {
         boolean askAgainForInput;
 
@@ -174,7 +191,7 @@ public class BoardManager {
                 }
 
                 boardMap.get(countryInput).setTerritory(true, player.getId(), new Army(1));
-                player.shipArmy();
+                player.deployArmies(1);
                 player.addTerritories(countryInput);
 
                 askAgainForInput = false;

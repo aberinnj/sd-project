@@ -38,40 +38,6 @@ public class Player {
         territories.addAll(k);
     }
 
-    /*/////////////////////
-    Display neighboring territories for a given territory (origin) that also belong to the same player
-     *////////////////
-    public void displayPlayerNeighboringTerritories(BoardManager bm, String origin) {
-        System.out.println("Neighboring Territories: ");
-        for(String country: territories){
-            if (bm.isTerritoryANeighborOf(country, origin) && (bm.getTerritoryID(origin) == bm.getTerritoryID(country))) {
-                System.out.print('\t' + bm.getOccupantCountStatus(country) + " ");
-                System.out.println(country);
-            }
-        }
-    }
-
-    /*//////////////////////////////////////////////    //////////////////////////////////
-    Method displays Player's possible targets for an attack (territories adjacent to owned territories that the player does not own)
-     *///////////////////////////////////////////////////////////////////////////////*/
-    public void displayAttackableNeighboringTerritories(BoardManager bm) {
-        System.out.println("Infantry Count And Neighboring Countries");
-        for(String country: territories){
-            int armies = bm.getOccupantCount(country);
-            List<String> neighbors = bm.getNeighborsOf(country);
-            if (armies > 1 && neighbors.size() > 0) {
-                System.out.println(country + ", Army count: " + armies +", Can Attack:");
-                for (String neighbor : neighbors) {
-                    if (bm.getTerritoryID(neighbor) != bm.getTerritoryID(country)) {
-                        System.out.println("\t" + neighbor + ", Army count: " + bm.getOccupantCount(neighbor));
-                    }
-                }
-            }
-        }
-    }
-
-
-
     /*////////////////////////////////////////////////////////////////////////////////
     Method checks if player has a territory
      *///////////////////////////////////////////////////////////////////////////////*/
@@ -91,8 +57,8 @@ public class Player {
     /*////////////////////////////////////////////////////////////////////////////////
     Method Diminishes number of army
      *///////////////////////////////////////////////////////////////////////////////*/
-    public void shipArmy(){
-        unassignedArmy.loseInfantry(1);
+    public void deployArmies(int i){
+        unassignedArmy.loseInfantry(i);
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
@@ -137,7 +103,7 @@ public class Player {
                 //invalidTerritory = false;
                 // transfer infantry to territory
                 bm.addOccupantsTo(territory, 1, "INFANTRY");
-                shipArmy();
+                deployArmies(1);
 
             } catch (Exception e) {
                 System.out.println(e.getMessage());

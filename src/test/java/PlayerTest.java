@@ -1,7 +1,6 @@
 import org.junit.Test;
 import junit.framework.TestCase;
 import java.util.ArrayList;
-import java.util.List;
 
 /*////////////////////////////////////////////////////////////////////////////////
 PlayerTest
@@ -34,8 +33,7 @@ public class PlayerTest extends TestCase{
 
     @Test
     public void testPlayer() throws Exception {
-        String base = System.getProperty("user.dir");
-        BoardManager bm = new BoardManager(base + "/src/files/deck.json");
+        BoardManager bm = new BoardManager();
         Player michaels;
 
 
@@ -54,7 +52,7 @@ public class PlayerTest extends TestCase{
 
 
         bm.addOccupantsTo("ALASKA", 5, "INFANTRY");
-        michaels.shipArmy();
+        michaels.deployArmies(1);
 
         michaels.fortifyTerritory(bm, "ALASKA", "ALBERTA", 2);
 
@@ -63,7 +61,7 @@ public class PlayerTest extends TestCase{
 
         assertFalse(michaels.isBaseEmpty());
 
-        michaels.shipArmy(); //armies = 39
+        michaels.deployArmies(1); //armies = 39
         assertNotSame(20, ((Player) michaels).getRemainingArmies());
 
         assertEquals(1, ((Player) michaels).numOfTerritories());
@@ -71,8 +69,7 @@ public class PlayerTest extends TestCase{
 
     @Test
     public void testContinentsOwned(){
-        String base = System.getProperty("user.dir");
-        BoardManager bm = new BoardManager(base + "/src/files/deck.json");
+        BoardManager bm = new BoardManager();
         Player p1 = new Player(1, 20);
 
         p1.getTerritories().add("ALASKA");

@@ -1,12 +1,14 @@
-
 import java.util.*;
 
-
 /*///////////////////////////////////////////////////////////////////////////////
-Turn Class
+Turn class only serves as a PROXY to GameManager. It DOES NOT copy game status.
+TurnManager deeply COPIES Turns
+
 todo: make move/undo functions better
+todo: (bug) fortify does not allow to user skip
  *//////////////////////////////////////////////////////////////////////////////
 public class Turn {
+    List<String> previousTerritories;
     BoardManager bm;
     Player player;
     ArrayList<Map.Entry<String, String>> hand;
@@ -14,25 +16,54 @@ public class Turn {
 
     // Turn stores all game-board details and events from a specific turn
     Turn(BoardManager bm, Player p, int id) {
+        this.previousTerritories = new ArrayList<String>();
         this.bm = bm;
         this.player = p;
         this.hand = p.getHand();
         this.turnId = id;
+
+        this.previousTerritories.addAll(p.getTerritories());
     }
+
 
     // Run each function
     public void turnFunction(Scanner scanner) {
         placeNewArmies(scanner);
         attack(scanner);
         fortifyPlayersTerritory(scanner);
+        earnCards();
+    }
+
+    // Passes if a new territory is added to player's territories
+    // Fails if there's no new territory added to player's territories
+    public boolean isPlayerEligibleToEarnCardsThisTurn() {
+        for(String k : player.getTerritories()) {
+            if( !previousTerritories.contains(k)) {
+                System.out.println("Player is eligible to earn a card for claiming a new Territory: claimed "+ k +".");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // earnCards draw a card and adds the card to the Player's hand
+    public void earnCards(){
+
     }
 
 
+    public int getFreeArmiesFromTerritoriesAndCards(){
+        int freebies =  0;
+        freebies += Math.max(3, (player.getTerritories().size() - player.getTerritories().size() % 3)/3);
+        freebies += player.continentsOwned(bm);
 
+        return freebies;
+    }
+
+    // Place New Armies from results received in getFreeArmiesFromTerritories
     public void placeNewArmies(Scanner scanner) {
 
-        int newArmies = (3 + Math.max(0, (int) Math.ceil((player.getTerritories().size() - 12) / 3.0)));
-        newArmies = newArmies + player.continentsOwned(bm);
+        int newArmies = getFreeArmiesFromTerritoriesAndCards();
         System.out.println(newArmies + " new armies available");
 
         if (hand.size() < 3) System.out.println("You currently do not have enough cards to make an exchange.");
@@ -62,7 +93,7 @@ public class Turn {
     public String getOriginFortify(Scanner scanner) throws Exception {
         System.out.println("__________________________________________");
         System.out.println("Infantry Count And Player #"+player.getId()+" Territories");
-        for (String i: player.getTerritories()) {System.out.println(bm.getOccupantCount(i) + " " + i);}
+        for (String i: bm.getTerritories(player, false)) {System.out.println(bm.getOccupantCount(i) + " " + i);}
 
         System.out.print("\nMoveFrom: ");
         String origin = scanner.nextLine();
@@ -71,7 +102,9 @@ public class Turn {
             if (bm.getOccupantCount(origin) <= 1) {
                 throw new Exception("Uh Oh! This territory only has one army. You cannot transfer the defending army of a territory.");
             }
-            player.displayPlayerNeighboringTerritories(bm, origin);
+            for(String i: bm.getNeighborsOf(origin)) {
+                System.out.println(i);
+            }
             System.out.println("Army Count: " + bm.getOccupantCount(origin));
         } else
             throw new Exception("Player does not own territory " + origin);
@@ -226,7 +259,7 @@ public class Turn {
     public void totalDefenseLoss(String attacker, String defender) {
         bm.transferOwnership(attacker, defender);
         System.out.println("You won a territory, you get to draw a card");
-        Map.Entry<String, String> card = Deck.drawCard();
+        Card card = Deck.draw();
         System.out.println("Your card is " + card);
         //implement function to move armies onto captured territories
         //hand.add(card); //worry about cards later
@@ -250,7 +283,8 @@ public class Turn {
     public void attack(Scanner scanner) {
 
         while (true) {
-            player.displayAttackableNeighboringTerritories(bm);
+            System.out.println("Infantry Count And Neighboring Countries");
+            bm.getAllAdjacentEnemyTerritories(player);
             System.out.println("Would you like to attack? Please enter Yes or No");
             String attack = scanner.nextLine();
             if (attack.equals("No")) {
