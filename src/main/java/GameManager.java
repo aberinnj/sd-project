@@ -48,7 +48,7 @@ public class GameManager {
 
         shipArmies(playerTurnPattern, playerList, bm, globalScanner);
 
-        runGame(ng, bm, numPlayers, playerList, playerTurnPattern, globalScanner);
+        runGame(ng, bm, numPlayers, playerList, playerTurnPattern, globalScanner, base);
 
     }
 
@@ -58,9 +58,9 @@ public class GameManager {
         }
     }
 
-    public static void runGame(NewGame ng, BoardManager bm, int numPlayers, Player[] playerList, int[] playerTurnPattern, Scanner scanner) throws Exception {
+    public static void runGame(NewGame ng, BoardManager bm, int numPlayers, Player[] playerList, int[] playerTurnPattern, Scanner scanner, String base) throws Exception {
         //PlayManager PM = new PlayManager();
-        MoveManager MM = new MoveManager();
+        MoveManager MM = new MoveManager(base);
         initialize(ng, bm, MM, playerList, numPlayers, -1);
 
         // Game Start
@@ -81,6 +81,7 @@ public class GameManager {
 
     public static void initialize(NewGame ng, BoardManager bm, MoveManager MM, Player[] playerList, int numPlayers, int playerID) {
         Move initialize = MM.addToMoveManager(bm, MM, playerList, numPlayers, -1);
+        System.out.println(initialize);
         MM.addMove(initialize);
     }
 

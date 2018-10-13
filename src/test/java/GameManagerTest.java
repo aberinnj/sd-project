@@ -63,21 +63,6 @@ public class GameManagerTest extends TestCase {
     }
 
     @Test
-    public void testBoardManager() {
-
-        assertEquals(false, ((BoardManager) bm).isAllTerritoriesInitialized());
-        assertEquals(42, ((BoardManager) bm).getNumberOfTerritories());
-
-        assertEquals(false, ((BoardManager) bm).isTerritoryANeighborOf("INDIA", "ALASKA"));
-
-        BoardManager test = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
-        HashMap<String, Territory> map = (HashMap<String, Territory>) test.getBoardMap();
-
-    }
-
-
-
-    @Test
     public void testDeck() {
         Deck deck = new Deck(base + "/src/main/java/deck.json");
         Deck fail = new Deck(base + "thisaintnodeck.json");

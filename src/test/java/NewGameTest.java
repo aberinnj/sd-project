@@ -66,7 +66,7 @@ public class NewGameTest extends TestCase{
         Scanner territories = new Scanner(content);
         NewGame.initializeTerritories(bm, territories, playerTurnPattern, playerList);
 
-        MoveManager MM = new MoveManager();
+        MoveManager MM = new MoveManager(base);
         GameManager.initialize(ng, bm, MM, playerList, 2, -1);
 
         String armyContent = readFile(base + "/src/test/java/input3.txt", StandardCharsets.UTF_8);
