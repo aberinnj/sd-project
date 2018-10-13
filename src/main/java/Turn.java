@@ -174,7 +174,7 @@ public class Turn {
                     if(player.getHand().get("INFANTRY").size() > 0)
                         listing.add(player.getHand().get("INFANTRY").pop());
                     else if(player.getHand().get("CAVALRY").size() > 0)
-                        listing.add(player.getHand().get("INFANTRY").pop());
+                        listing.add(player.getHand().get("CAVALRY").pop());
                     else if(player.getHand().get("ARTILLERY").size() > 0)
                         listing.add(player.getHand().get("ARTILLERY").pop());
                 }
@@ -209,9 +209,11 @@ public class Turn {
         for(Card e: player.getHand().get("ARTILLERY"))
             System.out.println(e.getOrigin() + " - " + e.getUnit());
 
-        if(baseQuery("Would you like to exchange your cards for units? Yes/ No", scanner)) {
+        if(getTotalCards() >= 5){
+            sum = calculateTradeableCard();
+            return sum;
+        } else if(baseQuery("Would you like to exchange your cards for units? Yes/ No", scanner)) {
             sum += calculateTradeableCard();
-
             return sum;
         } else
             return sum;
@@ -264,13 +266,7 @@ public class Turn {
             throw new Exception("Uh Oh! This territory does not have the given amount of armies to transfer");
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method below executes the third action a player can do in their turn.
-    Method calls fortify, showTerritories functions for player
-    Method requires index or Player Id as an argument, BoardManager passed
-
-    Refactor. Add Exception to transfer count.
-    *///////////////////////////////////////////////////////////////////////////////*/
+    //
     public void fortifyPlayersTerritory(Scanner scanner)
     {
         System.out.println("Would you like to fortify your territories?");
@@ -386,7 +382,7 @@ public class Turn {
     public void totalDefenseLoss(String attacker, String defender) {
         bm.transferOwnership(attacker, defender);
 
-        //hand.add(card); //worry about cards later
+
     }
 
     public int[] getDieValues(int numDie, Dice dice) {

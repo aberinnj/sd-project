@@ -102,9 +102,7 @@ public class BoardManager {
     // simply returns gamedeck
     public Deck getGameDeck() {return gameDeck;}
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method returns a the list of continents
-    *///////////////////////////////////////////////////////////////////////////////*/
+    // used for initialization in constructor above
     public List<String> getContinentsMap(String name) {
         return continentsMap.get(name).FullContinent;
     }
