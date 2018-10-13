@@ -6,12 +6,12 @@ TurnManager deeply COPIES Turns
 
 todo: make move/undo functions better
 todo: (bug) fortify does not allow to user skip
+todo: implement function to move armies onto captured territories
  *//////////////////////////////////////////////////////////////////////////////
 public class Turn {
     List<String> previousTerritories;
     BoardManager bm;
     Player player;
-    ArrayList<Map.Entry<String, String>> hand;
     int turnId;
 
     // Turn stores all game-board details and events from a specific turn
@@ -19,10 +19,20 @@ public class Turn {
         this.previousTerritories = new ArrayList<String>();
         this.bm = bm;
         this.player = p;
-        this.hand = p.getHand();
         this.turnId = id;
 
         this.previousTerritories.addAll(p.getTerritories());
+    }
+
+    public boolean baseQuery(String query, Scanner scanner)
+    {
+        String res;
+        do {
+            System.out.println(query);
+            res = scanner.nextLine();
+        }while(!res.toLowerCase().equals("Y") && !res.toLowerCase().equals("yes") && !res.toLowerCase().equals("N") && !res.toLowerCase().equals("no"));
+
+        return (res.toLowerCase().equals("Y") || res.toLowerCase().equals("yes"));
     }
 
 
@@ -48,46 +58,141 @@ public class Turn {
 
     // earnCards draw a card and adds the card to the Player's hand
     public void earnCards(){
-
+        if(isPlayerEligibleToEarnCardsThisTurn())
+            player.addToHand((bm.getGameDeck().draw()));
     }
 
 
-    public int getFreeArmiesFromTerritoriesAndCards(){
+    public int getFreeArmiesFromTerritoriesAndCards(Scanner scanner){
         int freebies =  0;
         freebies += Math.max(3, (player.getTerritories().size() - player.getTerritories().size() % 3)/3);
         freebies += player.continentsOwned(bm);
-
+        if(player.getHand().size() < 3){
+            System.out.println("You do not have enough cards to trade");
+        }else {
+            freebies += queryTrade(scanner);
+        }
         return freebies;
     }
 
     // Place New Armies from results received in getFreeArmiesFromTerritories
     public void placeNewArmies(Scanner scanner) {
 
-        int newArmies = getFreeArmiesFromTerritoriesAndCards();
+        int newArmies = getFreeArmiesFromTerritoriesAndCards(scanner);
         System.out.println(newArmies + " new armies available");
-
-        if (hand.size() < 3) System.out.println("You currently do not have enough cards to make an exchange.");
-
-        else newArmies += tradeCards(scanner);
-
         player.addArmies(newArmies);
         player.deployInfantry(bm, scanner);
-        //return newArmies;
     }
 
-    public int tradeCards(Scanner scanner) {
+    // handles calculations of trading-in a set
+    public int calculateTradeableCard()
+    {
+        int new_sum = 0;
+        // design-combinations
+        if ((player.getHandDesigns().contains("INFANTRY") && player.getHandDesigns().contains("INFANTRY") && player.getHandDesigns().contains("INFANTRY")) ||
+                (player.getHandDesigns().contains("CAVALRY") && player.getHandDesigns().contains("CAVALRY") && player.getHandDesigns().contains("CAVALRY")) ||
+                (player.getHandDesigns().contains("ARTILLERY") && player.getHandDesigns().contains("ARTILLERY") && player.getHandDesigns().contains("ARTILLERY")) ||
+                (player.getHandDesigns().contains("INFANTRY") && player.getHandDesigns().contains("CAVALRY") && player.getHandDesigns().contains("ARTILLERY")) ||
+                (player.getHandDesigns().contains("WILD"))){
+            bm.completeSets++;
+            if(bm.completeSets < 6)
+                new_sum += (2*bm.completeSets+2);
+            else if(bm.completeSets == 6)
+                new_sum += (2*bm.completeSets+3);
+            else
+                new_sum += (15+(bm.completeSets-6)*5);
 
-        int armies = 0;
+
+            // removal of set
+            if (player.getHandDesigns().contains("INFANTRY") && player.getHandDesigns().contains("INFANTRY") && player.getHandDesigns().contains("INFANTRY"))
+            {
+                int i = player.getHandDesigns().indexOf("INFANTRY");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+                i = player.getHandDesigns().indexOf("INFANTRY");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+                i = player.getHandDesigns().indexOf("INFANTRY");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+            } else if (player.getHandDesigns().contains("CAVALRY") && player.getHandDesigns().contains("CAVALRY") && player.getHandDesigns().contains("CAVALRY"))
+            {
+                int i = player.getHandDesigns().indexOf("CAVALRY");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+                i = player.getHandDesigns().indexOf("CAVALRY");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+                i = player.getHandDesigns().indexOf("CAVALRY");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+            } else if (player.getHandDesigns().contains("ARTILLERY") && player.getHandDesigns().contains("ARTILLERY") && player.getHandDesigns().contains("ARTILLERY"))
+            {
+                int i = player.getHandDesigns().indexOf("ARTILLERY");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+                i = player.getHandDesigns().indexOf("ARTILLERY");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+                i = player.getHandDesigns().indexOf("ARTILLERY");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+            } else if (player.getHandDesigns().contains("INFANTRY") && player.getHandDesigns().contains("CAVALRY") && player.getHandDesigns().contains("ARTILLERY"))
+            {
+                int i = player.getHandDesigns().indexOf("INFANTRY");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+                i = player.getHandDesigns().indexOf("CAVALRY");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+                i = player.getHandDesigns().indexOf("ARTILLERY");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+            } else {
+                int i = player.getHandDesigns().indexOf("WILD");
+                player.getHandDesigns().remove(i);
+                player.getHand().remove(i);
+                for(int k=0; k<2; k++) {
+                    if (!player.getHand().get(0).getUnit().equals("WILD")) {
+                        player.getHandDesigns().remove(0);
+                        player.getHand().remove(0);
+                    } else {
+                        player.getHandDesigns().remove(1);
+                        player.getHand().remove(1);
+                    }
+                }
+            }
+            System.out.println(new_sum);
+            return new_sum;
+        } else{
+            return new_sum;
+        }
+    }
+
+    // queries for trading
+    public int queryTrade(Scanner scanner) {
         System.out.println("You have the following cards");
-        player.displayHand();
-        String ans;
+        int sum = 0;
+        for(Card e: player.getHand())
+            System.out.println(e.getOrigin() + " - " + e.getUnit());
+        if(baseQuery("Would you like to exchange your cards for units? Yes/ No", scanner))
+        {
+            for(Card k: player.getHand())
+            {
+                // assign 2 armies to territory right away
+                if (player.getTerritories().contains(k.getOrigin()))
+                {
+                    System.out.println("One of your cards have been found to represent a territory you're currently occupying." +
+                            " +2 Armies will be added to your territory: "+ k.getOrigin());
+                    bm.addOccupantsTo(k.getOrigin(), 2, "INFANTRY");
+                    break;
+                }
+            }
+            sum += calculateTradeableCard();
 
-        do{
-            System.out.println("Would you like to exchange your cards for units? Yes/ No");
-            ans = scanner.nextLine();
-        }while (!ans.equals("Yes") && !ans.equals("No"));
-
-        return armies;
+            return sum;
+        } else
+            return sum;
     }
 
     public String getOriginFortify(Scanner scanner) throws Exception {
@@ -258,10 +363,7 @@ public class Turn {
 
     public void totalDefenseLoss(String attacker, String defender) {
         bm.transferOwnership(attacker, defender);
-        System.out.println("You won a territory, you get to draw a card");
-        Card card = Deck.draw();
-        System.out.println("Your card is " + card);
-        //implement function to move armies onto captured territories
+
         //hand.add(card); //worry about cards later
     }
 

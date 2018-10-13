@@ -12,16 +12,58 @@ public class DeckTest extends TestCase {
         assertEquals("INDIA", k.getOrigin());
     }
 
+    // Assumption:
+    // There are 42 cards in the deck
     @Test
     public void testDeck() {
         Deck deck = new Deck();
 
         assertNotNull(deck.draw());
-        assertNotNull(deck.draw());
-        assertNotNull(deck.draw());
-        assertNotNull(deck.draw());
-        assertNotNull(deck.draw());
-        assertNotSame(deck.draw(), Deck.draw());
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        assertNotSame(deck.draw(), deck.draw());
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        deck.draw();
+        assertNull(deck.draw());
     }
 
 

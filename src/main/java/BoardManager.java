@@ -21,6 +21,7 @@ public class BoardManager {
     private static HashMap<String, Territory> boardMap;
     private static HashMap<String, Continent> continentsMap;
     private static Deck gameDeck;
+    public int completeSets;
 
     // Initializes the BoardManager variables and should be testable after
     BoardManager(){
@@ -78,6 +79,8 @@ public class BoardManager {
         continentsMap.put("AUSTRALIA", new Continent(new String[]{"WESTERN AUSTRALIA", "INDONESIA", "EASTERN AUSTRALIA", "NEW GUINEA"}));
 
         gameDeck = new Deck();
+
+        completeSets = 0;
     }
 
 
@@ -91,9 +94,13 @@ public class BoardManager {
         return targets;
     }
 
+    // simply returns boardmap
     public HashMap<String, Territory> getBoardMap(){
         return boardMap;
     }
+
+    // simply returns gamedeck
+    public Deck getGameDeck() {return gameDeck;}
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method returns a the list of continents

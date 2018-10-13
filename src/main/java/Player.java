@@ -12,7 +12,8 @@ public class Player {
     private int id;
     private Army unassignedArmy;
     private List<String> territories;
-    private ArrayList<Entry<String, String>> Hand;
+    private ArrayList<Card> Hand;
+    private ArrayList<String> HandDesigns;
 
     // get player id
     public int getId() {
@@ -112,13 +113,7 @@ public class Player {
         }
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method executes movement of one army to another
-
-    Note: Add exceptions to invalid string values in case of a mistake on the programmer's
-    part
-    Assumption: Cavalry = 5 Infantry and Artillery = 2 Cavalry
-    *///////////////////////////////////////////////////////////////////////////////*/
+    //
     public void fortifyTerritory(BoardManager bm, String origin, String destination, int army) {
 
         bm.transferOccupantsFrom(origin, army, "INFANTRY");
@@ -177,17 +172,18 @@ public class Player {
         return moreArmies;
     }
 
+    public void addToHand(Card e){
+        Hand.add(e);
+        HandDesigns.add(e.getUnit());
+    }
 
-    public ArrayList<Entry<String, String>> getHand() {
+    public ArrayList<Card> getHand() {
         return Hand;
     }
-
-    public void displayHand() {
-        System.out.println("You have the current cards");
-        for (int i = 0; i < Hand.size();i++) {
-            System.out.println(Hand.get(i));
-        }
+    public ArrayList<String> getHandDesigns() {
+        return HandDesigns;
     }
+
 
     /*////////////////////////////////////////////////////////////////////////////////
     Constructor for making a player
@@ -196,7 +192,8 @@ public class Player {
     {
         this.id = id;
         unassignedArmy = new Army(infantryCount);
-        Hand = new ArrayList<Entry<String, String>>();
+        Hand = new ArrayList<Card>();
         territories = new ArrayList<String>();
+        HandDesigns = new ArrayList<String>();
     }
 }

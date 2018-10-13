@@ -25,11 +25,18 @@ Deck Class
  *//////////////////////////////////////////////////////////////////////////////
 public class Deck {
 
-    static Stack<Card> GameDeck;
+    Stack<Card> GameDeck;
 
-    public static Card draw() {
-        return GameDeck.pop();
+    public Card draw() {
+        try{
+            System.out.println("DRAWING from game-deck");
+            return GameDeck.pop();
+        } catch (EmptyStackException e) {
+            System.out.println("Game-deck is now empty.s");
+            return null;
+        }
     }
+
 
     Deck() {
         GameDeck = new Stack<Card>();
@@ -75,6 +82,9 @@ public class Deck {
         GameDeck.push(new Card("NORTHERN EUROPE", "INFANTRY"));
         GameDeck.push(new Card("SOUTHERN EUROPE", "CAVALRY"));
         GameDeck.push(new Card("WESTERN EUROPE", "ARTILLERY"));
+        GameDeck.push(new Card("WILD", "WILD"));
+        GameDeck.push(new Card("WILD", "WILD"));
+
 
         Collections.shuffle(GameDeck);
     }

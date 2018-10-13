@@ -85,6 +85,15 @@ public class TerritoryTest extends TestCase{
         {
             assertThat(e.getMessage(), e.getMessage().equals("Invalid Army Type "));
         }
+
+
+        try {
+            mainTerritory.loseOccupants(1, "NOT INFANTRY");
+            fail("Expecting an Exception to be thrown, invalid army type provided");
+        } catch (Exception e)
+        {
+            assertThat(e.getMessage(), e.getMessage().equals("Invalid Army Type "));
+        }
     }
 
 }
