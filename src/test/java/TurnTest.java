@@ -4,9 +4,10 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.util.Scanner;
 
+/*///////////////////////////////////////////////////////////////////////////////
+ *//////////////////////////////////////////////////////////////////////////////
 public class TurnTest extends TestCase {
 
-    // test if Turn
     @Test
     public void testTurn(){
 
@@ -17,7 +18,8 @@ public class TurnTest extends TestCase {
                 "ALASKA\n"+
                 "QUEBEC\n").getBytes());
         System.setIn(playerTerritoriesInput);
-        Scanner k = new Scanner(System.in);
+
+        GM.getPlayer(2).addTerritories("");
 
         System.setIn(System.in);
     }

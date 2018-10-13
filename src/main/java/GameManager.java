@@ -7,9 +7,6 @@ as well as the Deck
 todo: create a more robust way of reading these files that aren't dependent on path naming conventions
 *//////////////////////////////////////////////////////////////////////*/
 public class GameManager {
-    static Dice die1;
-    static Dice die2;
-    static Dice die3;
     static Player[] playerList;
     static int[] playerTurnPattern;
     static TurnManager TM;
@@ -17,15 +14,10 @@ public class GameManager {
 
     // Sets up ALL Game Variables, which must be testable upon initialization
     GameManager(String base, int playerCount) {
-
-        die1 = new Dice();
-        die2 = new Dice();
-        die3 = new Dice();
-
         playerList = setPlayerList(playerCount);
 
         System.out.println("\n__Order of Turns:__");
-        playerTurnPattern = getTurnPattern(playerCount, getIndexOfHighestRollIn(playerCount));
+        playerTurnPattern = getTurnPattern(playerCount, getIndexOfHighestRollIn(new Dice(), playerCount));
 
         System.out.println("__BoardSetup__");
         BM = new BoardManager(base + "/src/files/deck.json");
@@ -69,7 +61,7 @@ public class GameManager {
     }
 
     // Get Highest Roll
-    public int getIndexOfHighestRollIn(int iterations){
+    public int getIndexOfHighestRollIn(Dice die1,int iterations){
         int indexOfHighestRoll = -1;
         int valueOfHighestRoll = 1;
         for(int i=0; i<iterations; i++)
@@ -96,35 +88,35 @@ public class GameManager {
 
 
     // Run setup to finish Game setup
-    public void runSetup(Scanner scanner)
+    public static void runSetup(GameManager GM, Scanner scanner)
     {
         initializeTerritories(scanner);
 
         System.out.println("__Allocate the rest of your armies__");
         for (int i: playerTurnPattern) {
-            getPlayer(i).deployInfantry(BM, scanner);
+            GM.getPlayer(i).deployInfantry(BM, scanner);
         }
     }
 
     public static void runGame(GameManager GM, Scanner scanner){
-        TurnManager TM = new TurnManager();
-
+        TM = new TurnManager();
+        int turnID = 1;
         // Game Start
         while(!GM.isGameOver()){
-            int turnNumber = 1;
+
             for (int playerID: playerTurnPattern)
             {
                 System.out.println("Player " + playerID + " turn: ");
-                makeTurn(scanner, playerList[playerID]);
+                TM.save(makeTurn(scanner, playerList[playerID], turnID));
 
-                turnNumber++;
+                turnID++;
             }
         }
     }
 
     // make a turn
-    public static Turn makeTurn(Scanner scanner, Player p) {
-        Turn k = new Turn(BM, p);
+    public static Turn makeTurn(Scanner scanner, Player p, int id) {
+        Turn k = new Turn(BM, p, id);
         k.turnFunction(scanner);
         return k;
     }
@@ -133,7 +125,7 @@ public class GameManager {
     public static void initializeTerritories(Scanner setup){
         while(!BM.isAllTerritoriesInitialized()) {
             for (int i : playerTurnPattern) {
-                BM.displayFreeTerritories();
+                for(String k : BM.displayFreeTerritories()) System.out.println(k);
                 BM.setInitialTerritory(playerList[i], setup);
             }
         }

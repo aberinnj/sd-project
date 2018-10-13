@@ -27,6 +27,7 @@ public class NewGameTest extends TestCase{
     }
 
     /*
+    // This test requires a complete stream of inputs for a complete game
     @Test
     public void testMain() throws Exception {
         ng = new NewGame();

@@ -27,7 +27,7 @@ public class NewGame {
         NewGame NG = new NewGame();
         while(NG.setNumberOfPlayers()){}
         GameManager GM = new GameManager(NG.base, NG.getPlayerCount());
-        GM.runSetup(NG.scanner);
+        GM.runSetup(GM, NG.scanner);
         GM.runGame(GM, NG.scanner);
     }
 

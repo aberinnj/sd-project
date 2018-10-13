@@ -2,9 +2,13 @@
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.util.*;
 
 
+/*///////////////////////////////////////////////////////////////////////////////
+GameManagerTest
+ *//////////////////////////////////////////////////////////////////////////////
 public class GameManagerTest extends TestCase {
 
     GameManager GM;
@@ -75,6 +79,120 @@ public class GameManagerTest extends TestCase {
         GM.getPlayer(2).addTerritories("SOUTHERN EUROPE");
         GM.getPlayer(2).addTerritories("WESTERN EUROPE");
         assertTrue(GM.isGameOver());
+    }
+
+
+    //Assumptions:
+    // There are 42 territories as listed below
+    // A 2-player game gives 40 infantry -- yielding 19 infantry left to divide among player territories
+
+    @Test
+    public void testRunSetup(){
+        ByteArrayInputStream in = new ByteArrayInputStream(("" +
+                "ALASKA\n" +
+                "NORTH WEST TERRITORY\n" +
+                "GREENLAND\n" +
+                "ALBERTA\n" +
+                "ONTARIO\n" +
+                "QUEBEC\n" +
+                "WESTERN UNITED STATES\n" +
+                "EASTERN UNITED STATES\n" +
+                "CENTRAL AMERICA\n" +
+                "VENEZUELA\n" +
+                "PERU\n" +
+                "BRAZIL\n" +
+                "ARGENTINA\n" +
+                "NORTH AFRICA\n" +
+                "CONGO\n" +
+                "EGYPT\n" +
+                "EAST AFRICA\n" +
+                "SOUTH AFRICA\n" +
+                "MADAGASCAR\n" +
+                "MIDDLE EAST\n" +
+                "INDIA\n" +
+                "SIAM\n" +
+                "INDONESIA\n" +
+                "WESTERN AUSTRALIA\n" +
+                "EASTERN AUSTRALIA\n" +
+                "NEW GUINEA\n" +
+                "CHINA\n" +
+                "AFGHANISTAN\n" +
+                "URAL\n" +
+                "SIBERIA\n" +
+                "YAKUTSK\n" +
+                "KAMCHATKA\n" +
+                "IRKUTSK\n" +
+                "MONGOLIA\n" +
+                "JAPAN\n" +
+                "UKRAINE\n" +
+                "SCANDINAVIA\n" +
+                "ICELAND\n" +
+                "GREAT BRITAIN\n" +
+                "NORTHERN EUROPE\n" +
+                "SOUTHERN EUROPE\n" +
+                "WESTERN EUROPE\n"+
+
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n"
+
+                ).getBytes());
+        System.setIn(in);
+
+        Scanner thisScanner = new Scanner(System.in);
+        GM = new GameManager(System.getProperty("user.dir"), 2);
+        GM.runSetup(GM, thisScanner);
+        // Test Below
+
+        assertTrue(GM.getPlayer(0).isBaseEmpty());
+        assertTrue(GM.getPlayer(1).isBaseEmpty());
+
+        BoardManager BM = GM.getBM();
+        assertEquals(0, BM.displayFreeTerritories().size());
+
+        System.setIn(System.in);
     }
 
 }

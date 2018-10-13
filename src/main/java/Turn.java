@@ -10,14 +10,17 @@ public class Turn {
     BoardManager bm;
     Player player;
     ArrayList<Map.Entry<String, String>> hand;
+    int turnId;
 
     // Turn stores all game-board details and events from a specific turn
-    Turn(BoardManager bm, Player p) {
+    Turn(BoardManager bm, Player p, int id) {
         this.bm = bm;
         this.player = p;
         this.hand = p.getHand();
+        this.turnId = id;
     }
 
+    // Run each function
     public void turnFunction(Scanner scanner) {
         placeNewArmies(scanner);
         attack(scanner);
@@ -52,15 +55,14 @@ public class Turn {
             System.out.println("Would you like to exchange your cards for units? Yes/ No");
             ans = scanner.nextLine();
         }while (!ans.equals("Yes") && !ans.equals("No"));
-        //if (ans == "No") return 0;
-        //else {
 
-        //}
         return armies;
     }
 
     public String getOriginFortify(Scanner scanner) throws Exception {
-        player.displayPlayerTerritories(bm);
+        System.out.println("__________________________________________");
+        System.out.println("Infantry Count And Player #"+player.getId()+" Territories");
+        for (String i: player.getTerritories()) {System.out.println(bm.getOccupantCount(i) + " " + i);}
 
         System.out.print("\nMoveFrom: ");
         String origin = scanner.nextLine();
@@ -171,9 +173,9 @@ public class Turn {
         return armiesToAttackWith;
     }
 
+
     public int getNumAttackDie(int armiesToAttackWith) {
-        int numAttackDie = Math.min(armiesToAttackWith - 1, 3);
-        return numAttackDie;
+        return   Math.min(armiesToAttackWith - 1, 3);
     }
 
     public String getDefender(Scanner scanner, String attacker) {

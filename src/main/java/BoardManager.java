@@ -95,17 +95,6 @@ public class BoardManager {
         return boardMap;
     }
 
-    public void setBoardMap(HashMap<String, Territory> newBoardMap)
-    {
-        for(String i: boardMap.keySet())
-        {
-            boardMap.get(i).setTerritory(
-                    newBoardMap.get(i).isOccupied(),
-                    newBoardMap.get(i).getOccupantID(),
-                    new Army(newBoardMap.get(i).getArmy().getInfantryCount()));
-        }
-    }
-
     /*////////////////////////////////////////////////////////////////////////////////
     Method returns a the list of continents
     *///////////////////////////////////////////////////////////////////////////////*/
@@ -124,14 +113,16 @@ public class BoardManager {
     }
 
     // Displays free territories by printing to console
-    public void displayFreeTerritories(){
+    public List<String> displayFreeTerritories(){
         System.out.println("__Free Territories__");
+        List<String> listing = new ArrayList<String>();
 
         for(HashMap.Entry<String, Territory> country: boardMap.entrySet()){
             if(!boardMap.get(country.getKey()).isOccupied()){
-                System.out.println(country.getKey());
+                listing.add(country.getKey());
             }
         }
+        return listing;
     }
 
     /*////////////////////////////////////////////////////////////////////////////////

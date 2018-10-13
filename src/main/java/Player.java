@@ -38,19 +38,6 @@ public class Player {
         territories.addAll(k);
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method lists the Player's territories
-     *///////////////////////////////////////////////////////////////////////////////*/
-    public void displayPlayerTerritories(BoardManager bm){
-        System.out.println("__________________________________________");
-        System.out.println("Infantry Count And Player #"+id+" Territories");
-
-        for(String country: territories){
-            System.out.print(bm.getOccupantCount(country) + " ");
-            System.out.println(country);
-        }
-    }
-
     /*/////////////////////
     Display neighboring territories for a given territory (origin) that also belong to the same player
      *////////////////
@@ -134,11 +121,12 @@ public class Player {
     public void deployInfantry(BoardManager bm, Scanner territoryScanner) {
         //boolean invalidTerritory = true;
         while (!isBaseEmpty()) {
-            displayPlayerTerritories(bm);
+            System.out.println("__________________________________________");
+            System.out.println("Infantry Count And Player #"+id+" Territories");
+            for (String i: territories) {System.out.println(bm.getOccupantCount(i) + " " + i);}
 
             System.out.println("Remaining armies: " + getRemainingArmies());
             System.out.println("Select a territory to ship your Army to: ");
-            //Scanner territoryScanner = new Scanner(System.in);
 
             //while(invalidTerritory) {
             try {
@@ -191,9 +179,6 @@ public class Player {
     public int continentsOwned(BoardManager bm){
         int moreArmies= 0;
         String ownedContinents = " ";
-        if (territories.size()<4) {
-            return 0;
-        }
 
         if (territories.containsAll(bm.getContinentsMap("AUSTRALIA"))){
             moreArmies =+ 2;
@@ -218,8 +203,10 @@ public class Player {
         if (territories.containsAll(bm.getContinentsMap("SOUTH AMERICA"))){
             moreArmies += 2;
             ownedContinents += "SOUTH AMERICA, ";
+        }else{
+            ownedContinents += "NO CONTINENTS. ";
         }
-        System.out.println("You get " + moreArmies + "armies because you own " + ownedContinents + "Congratulations!");
+        System.out.println("You get " + moreArmies + " armies because you own " + ownedContinents + "Congratulations!");
 
         return moreArmies;
     }

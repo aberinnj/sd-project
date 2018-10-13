@@ -8,8 +8,8 @@ TurnManager
 public class TurnManager {
     private ArrayList<Turn> turnList;
 
-    public void addMove(Turn i){
-        turnList.add(i);
+    public void save(Turn t){
+        turnList.add(t);
     }
 
     // Users can undo their actions
