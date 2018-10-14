@@ -1,15 +1,12 @@
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class NewGameTest extends TestCase{
 
@@ -67,7 +64,8 @@ public class NewGameTest extends TestCase{
         NewGame.initializeTerritories(bm, territories, playerTurnPattern, playerList);
 
         MoveManager MM = new MoveManager(base);
-        GameManager.initialize(ng, bm, MM, playerList, 2, -1);
+        JSONhandler JH = new JSONhandler(bm, playerList, playerTurnPattern);
+        GameManager.initialize(JH, ng, bm, MM, playerList, 2, -1);
 
         String armyContent = readFile(base + "/src/test/java/input3.txt", StandardCharsets.UTF_8);
         Scanner armyScanner = new Scanner(armyContent);

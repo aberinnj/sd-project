@@ -45,6 +45,7 @@ public class Turn {
             int playerID = player.getId();
             Move current = MM.addToMoveManager(bm, MM, playerList, numPlayers, playerID);
             MM.addMove(current);
+
             //upload to S3
             //add turn integer to the move manager to indicate which turn
         }

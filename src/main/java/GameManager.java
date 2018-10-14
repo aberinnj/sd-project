@@ -1,3 +1,6 @@
+import com.google.gson.JsonObject;
+
+import java.io.IOException;
 import java.util.*;
 
 
@@ -15,40 +18,69 @@ public class GameManager {
         Scanner globalScanner = ng.getScanner();
 
         String base = ng.getBase();
-
-        int numPlayers = ng.getNumberPlayers(globalScanner);
-
-        Player[] playerList = ng.setupPlayerList(numPlayers);
-
-        int[] playerTurnPattern = new int[numPlayers];
-        Dice die = new Dice();
-
-        System.out.println("-----------------------");
-        System.out.println("BoardSetup");
-        System.out.println("Note: Whoever gets the first of the same highest");
-        System.out.println("number, is considered to have the highest number");
-        System.out.println("------------------------");
-
-        int highestDieValue = ng.rollForSetup(die, numPlayers);
-
-        System.out.println("\nOrder of Turns:");
-        for(int b=0; b<numPlayers; b++)
-        {
-            playerTurnPattern[b] = (highestDieValue+b)% numPlayers;
-            System.out.println((b+1)+ ". Player#" + playerTurnPattern[b]);
-        }
-
         BoardManager bm = ng.getBoardManager(base);
 
-        ng.initializeTerritories(bm, globalScanner, playerTurnPattern, playerList);
+        int turnNumber;
 
-        System.out.println("------------------------");
-        System.out.println("Allocate the rest of your armies");
-        System.out.println("------------------------");
+        System.out.println("Would you like to load a saved game?");
+        String answer = globalScanner.nextLine();
+        int numPlayers = 0;
+        Player[] playerList;
+        int[] playerTurnPattern;
 
-        shipArmies(playerTurnPattern, playerList, bm, globalScanner);
+        if (answer.equalsIgnoreCase("Yes")) {
 
-        runGame(ng, bm, numPlayers, playerList, playerTurnPattern, globalScanner, base);
+            System.out.println("Which turn would you like to load from?");
+            System.out.println("Enter -1 to begin from the beginning");
+            turnNumber = Integer.parseInt(globalScanner.nextLine());
+
+            LoadGame LG = new LoadGame();
+            JsonObject loadedTurn = LG.LoadGame(turnNumber, bm);
+            numPlayers = LG.getNumPlayers(loadedTurn);
+
+            playerList = LG.setPlayers(bm, numPlayers, loadedTurn);
+
+            playerTurnPattern = new int[numPlayers];
+
+        }
+
+
+        else {
+
+            numPlayers = ng.getNumberPlayers(globalScanner);
+
+            playerList = ng.setupPlayerList(numPlayers);
+
+            playerTurnPattern = new int[numPlayers];
+            Dice die = new Dice();
+
+            System.out.println("-----------------------");
+            System.out.println("BoardSetup");
+            System.out.println("Note: Whoever gets the first of the same highest");
+            System.out.println("number, is considered to have the highest number");
+            System.out.println("------------------------");
+
+            int highestDieValue = ng.rollForSetup(die, numPlayers);
+
+            System.out.println("\nOrder of Turns:");
+            for(int b=0; b<numPlayers; b++)
+            {
+                playerTurnPattern[b] = (highestDieValue+b)% numPlayers;
+                System.out.println((b+1)+ ". Player#" + playerTurnPattern[b]);
+            }
+
+            ng.initializeTerritories(bm, globalScanner, playerTurnPattern, playerList);
+
+            System.out.println("------------------------");
+            System.out.println("Allocate the rest of your armies");
+            System.out.println("------------------------");
+
+            shipArmies(playerTurnPattern, playerList, bm, globalScanner);
+
+            turnNumber = 0;
+        }
+
+        runGame(ng, bm, numPlayers, playerList, playerTurnPattern, globalScanner, base, turnNumber);
 
     }
 
@@ -58,14 +90,14 @@ public class GameManager {
         }
     }
 
-    public static void runGame(NewGame ng, BoardManager bm, int numPlayers, Player[] playerList, int[] playerTurnPattern, Scanner scanner, String base) throws Exception {
-        //PlayManager PM = new PlayManager();
+    public static void runGame(NewGame ng, BoardManager bm, int numPlayers, Player[] playerList, int[] playerTurnPattern, Scanner scanner, String base, int turns) throws Exception {
         MoveManager MM = new MoveManager(base);
-        initialize(ng, bm, MM, playerList, numPlayers, -1);
+        JSONhandler JH = new JSONhandler(bm, playerList, playerTurnPattern);
+        initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
 
         // Game Start
         while(!isGameOver(bm, playerList)){
-            int turnNumber = 0;
+            int turnNumber = turns;
             Player playerCurrent = null;
             for (int player: playerTurnPattern)
             {
@@ -73,16 +105,22 @@ public class GameManager {
                 System.out.println("Player " + player + " turn");
 
                 Turn turn = new Turn(MM, ng, bm, playerCurrent, playerList, scanner);
-
+                JH.JSONwriter(turnNumber);
                 turnNumber++;
+
+                System.out.println("Save Game?");
+                String ans = scanner.nextLine().toLowerCase();
+                if (ans == "yes") {
+                    JH.upload();
+                }
             }
         }
     }
 
-    public static void initialize(NewGame ng, BoardManager bm, MoveManager MM, Player[] playerList, int numPlayers, int playerID) {
+    public static void initialize(JSONhandler JH, NewGame ng, BoardManager bm, MoveManager MM, Player[] playerList, int numPlayers, int playerID) throws IOException {
         Move initialize = MM.addToMoveManager(bm, MM, playerList, numPlayers, -1);
-        System.out.println(initialize);
         MM.addMove(initialize);
+        JH.JSONinitializer(-1);
     }
 
     /*////////////////////////////////////////////////////////////////////////////////

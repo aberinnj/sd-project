@@ -24,6 +24,8 @@ public class Deck {
         return out;
     }
 
+    public static ArrayList<Entry<String, String>> getDeck() { return Deck; }
+
     Deck(String path) {
 
         //Create a hashtable of the cards from the original Risk game version
