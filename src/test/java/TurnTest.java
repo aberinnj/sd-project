@@ -480,4 +480,28 @@ public class TurnTest extends TestCase {
         assertEquals(1, GM.getBM().getOccupantCount(attacking));
 
     }
+
+    // testing Attack requires a deeper knowledge of what is being changed under the hood
+    @Test
+    public void testAttack(){
+        ByteArrayInputStream in = new ByteArrayInputStream((
+                "yes\n" + "INDONESIA\n" + "NEW GUINEA\n" + "1\n1\nNO\n").getBytes());
+        System.setIn(in);
+        Scanner sp = new Scanner(System.in);
+        GameManager GM = new GameManager(2);
+        Player p1 = new Player(1, 5);
+        Player p2 = new Player(0, 5);
+        GM.getBM().initializeTerritory(p1, "INDONESIA", 2);
+        GM.getBM().initializeTerritory(p1, "WESTERN AUSTRALIA", 2);
+        GM.getBM().initializeTerritory(p1, "EASTERN AUSTRALIA", 2);
+        GM.getBM().initializeTerritory(p2, "NEW GUINEA", 2);
+        GM.getBM().initializeTerritory(p2, "SIAM", 2);
+
+
+        Turn t1 = new Turn(GM.getBM(), p1, 22);
+        t1.attack(GM, sp);
+
+        assertEquals(1, GM.getBM().getOccupantCount("INDONESIA"));
+        System.setIn(in);
+    }
 }

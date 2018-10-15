@@ -155,6 +155,8 @@ public class BoardManager {
                 System.out.println("Error: Territory is not adjacent to origin. ");
                 return null;
             }
+        } else {
+            return null;
         }
         return country;
     }
@@ -194,6 +196,8 @@ public class BoardManager {
                 return 0;
             }
 
+        } else {
+            return 0;
         }
         return count;
     }

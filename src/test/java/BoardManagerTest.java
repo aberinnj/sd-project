@@ -23,7 +23,7 @@ public class BoardManagerTest extends TestCase {
     @Test
     public void testQueryTerritory(){
         ByteArrayInputStream in = new ByteArrayInputStream((
-                "FAILURE\nALBERTA\nINDIA\nBRAZIL\nPERU\nALASKA\nALBERTA\nVENEZUELA\nARGENTINA\nJAPAN\nPERU\nINDIA\nALBERTA\nBRAZIL"
+                "FAILURE\nALBERTA\nINDIA\nBRAZIL\nPERU\nALASKA\nALBERTA\nVENEZUELA\nARGENTINA\nJAPAN\nPERU\nINDIA\nALBERTA\nBRAZIL\nALASKA"
                 ).getBytes());
         System.setIn(in);
         Scanner scanner = new Scanner(System.in);
@@ -77,6 +77,7 @@ public class BoardManagerTest extends TestCase {
         assertNull(bm.queryTerritory(scanner, "", "FORTIFY", p1, "PERU"));
         // NOT NULL - BRAZIL is adj to PERU
         assertNotNull(bm.queryTerritory(scanner, "", "FORTIFY", p1 , "PERU"));
+        assertNull(bm.queryTerritory(scanner, "", "UNKNOWN-FAILURE", p2 , "PERU"));
 
         System.setIn(System.in);
 
@@ -85,8 +86,8 @@ public class BoardManagerTest extends TestCase {
     @Test
     public void testQueryCount() {
         ByteArrayInputStream in = new ByteArrayInputStream((
-                "NaN\n3\n4\n2\n4\n1\n4"
-                ).getBytes());
+                "NaN\n3\n4\n2\n4\n1\n4\n2\n1\n2\n"
+        ).getBytes());
         System.setIn(in);
         Scanner scanner = new Scanner(System.in);
 
@@ -110,7 +111,9 @@ public class BoardManagerTest extends TestCase {
         // Error, Not enough for fortifying
         assertEquals(0, bm.queryCount(scanner, "", "FORTIFY", p, "ALASKA"));
         assertEquals(4, bm.queryCount(scanner, "", "FORTIFY", p, "ALBERTA"));
-
+        assertEquals(2, bm.queryCount(scanner, "", "ATTACK", p, "INDIA"));
+        assertEquals(1, bm.queryCount(scanner, "", "DEFEND", p, "ALASKA"));
+        assertEquals(0, bm.queryCount(scanner, "", "DEFAULTED-TO-ZERO", p, "ALBERTA"));
     }
 
     // Not meant for CodeCoverage but to assure that there are no errors in board-data
