@@ -17,11 +17,17 @@ public class GameManager {
         playerList = setPlayerList(playerCount);
 
         System.out.println("\n__Order of Turns:__");
-        playerTurnPattern = getTurnPattern(playerCount, getIndexOfHighestRollIn(new Dice(), playerCount));
+        Dice k = new Dice();
+        ArrayList<Integer> diceArr = new ArrayList<Integer>();
+        for( int i=0; i<playerCount; i++ ) {
+            k.roll();
+            diceArr.add(k.getDiceValue());
+        }
+
+        playerTurnPattern = getTurnPattern(playerCount, getIndexOfHighestRollIn(diceArr, playerCount));
 
         System.out.println("__BoardSetup__");
         BM = new BoardManager();
-
         TM = new TurnManager();
     }
 
@@ -63,15 +69,14 @@ public class GameManager {
     }
 
     // Get Highest Roll
-    public int getIndexOfHighestRollIn(Dice die1,int iterations){
-        int indexOfHighestRoll = -1;
-        int valueOfHighestRoll = 1;
-        for(int i=0; i<iterations; i++)
+    public int getIndexOfHighestRollIn(ArrayList<Integer> diceList,int iterations){
+        int indexOfHighestRoll = 0;
+        int valueOfHighestRoll = diceList.get(0);
+        for(int i=1; i<iterations; i++)
         {
-            die1.roll();
-            if (die1.getDiceValue() > valueOfHighestRoll)
+            if (diceList.get(i) > valueOfHighestRoll)
             {
-                valueOfHighestRoll = die1.getDiceValue();
+                valueOfHighestRoll = diceList.get(i);
                 indexOfHighestRoll = i;
             }
         }
@@ -88,15 +93,13 @@ public class GameManager {
         return array;
     }
 
-
     // Run setup to finish Game setup for all players
-    public static void runSetup(GameManager GM, Scanner scanner)
-    {
-        initializeTerritories(scanner);
-
-        System.out.println("__Allocate the rest of your armies__");
-        for (int i: playerTurnPattern) {
-            GM.getPlayer(i).deployInfantry(BM, scanner);
+    public static void runSetup(GameManager GM, Scanner scanner) {
+        System.out.println("__CLAIM TERRITORIES__");
+        GM.initializeTerritories(scanner);
+        System.out.println("__STRENGTHEN TERRITORIES__");
+        for (int id: playerTurnPattern) {
+            GM.strengthenTerritories(scanner, id);
         }
     }
 
@@ -104,29 +107,61 @@ public class GameManager {
         int turnID = 1;
         while(!GM.isGameOver()){
 
-            for (int playerID: playerTurnPattern) {
-                System.out.println("Player " + playerID + " turn: ");
-                TM.save(makeTurn(scanner, playerList[playerID], turnID));
+            for (int id: playerTurnPattern) {
+                System.out.println("Player " + id + " turn: ");
+                TM.save(makeTurn(GM, scanner, playerList[id], turnID));
                 turnID++;
             }
         }
     }
 
     // make a turn
-    public static Turn makeTurn(Scanner scanner, Player p, int id) {
+    public static Turn makeTurn(GameManager GM, Scanner scanner, Player p, int id) {
         Turn k = new Turn(BM, p, id);
-        k.turnFunction(scanner);
+        k.turnFunction(GM, scanner);
         return k;
     }
 
     // Display Free territories -- removed displayPlayerTerritories for simplicity and less console clutter
-    public static void initializeTerritories(Scanner setup){
-        while(!BM.isAllTerritoriesInitialized()) {
-            for (int i : playerTurnPattern) {
-                for(String k : BM.getFreeTerritories()) System.out.println(k);
-                BM.setInitialTerritory(playerList[i], setup);
+    public void initializeTerritories(Scanner scanner){
+        String territory;
+        while(BM.getFreeTerritories().size() > 0) {
+            for (int id : playerTurnPattern) {
+
+                System.out.println("__Free Territories__");
+                for(String k : BM.getFreeTerritories())
+                    System.out.println(k);
+
+                do{
+                    territory = BM.queryTerritory(scanner, "Player #" + id + " -- Territory select: ",
+                            "INITIALIZE", playerList[id], "");
+                } while(territory == null);
+
+                BM.initializeTerritory(playerList[id], territory, 1);
             }
         }
+    }
+
+    public void strengthenTerritories(Scanner scanner, int id) {
+        String territory;
+
+            while (playerList[id].getNumberOfArmies() > 0) {
+
+                System.out.println("Infantry Count And Player #"+ id +" Territories");
+
+                for (String country: playerList[id].getTerritories()) {
+                    System.out.println(BM.getOccupantCount(country) + " " + country);}
+
+                System.out.println("Remaining armies: " + playerList[id].getNumberOfArmies());
+                System.out.println("Select a territory to ship your Army to: ");
+
+                do{
+                    territory = BM.queryTerritory(scanner, "Player #" + id + " -- Territory select: ",
+                            "STRENGTHEN", playerList[id], "");
+                } while(territory == null);
+
+                BM.strengthenTerritory(playerList[id], territory, 1);
+            }
     }
 
     // Player list only contains Players, and you can freely check if players have all the territories

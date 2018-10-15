@@ -32,7 +32,7 @@ public class TurnManager {
             //String[] neighbors = Array<String>(boardMap.get(key).getNeighborsOf());
             int occ = boardMap.get(key).getOccupantID();
             boolean isOcc = boardMap.get(key).isOccupied();
-            int count = boardMap.get(key).getArmy().getInfantryCount();
+            int count = bm.getOccupantCount(key);
             //moveMap.put(key, new Territory(neighbors));
 
         }

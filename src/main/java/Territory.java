@@ -32,23 +32,17 @@ public class Territory {
     /*////////////////////////////////////////////////////////////////////////////////
     Adds number of occupants, depending on type
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void addOccupants(int army, String type) throws Exception{
-        if (type.equals("INFANTRY")){
+    public void addOccupants(int army, ArmyType type){
+        if (type.equals(ArmyType.INFANTRY))
             occupants.addInfantryCount(army);
-        }
-        else
-            throw new Exception("Invalid Army Type ");
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
     Subtracts number of occupants, depending on type
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void loseOccupants(int army, String type) throws Exception{
-        if (type.equals("INFANTRY")){
+    public void loseOccupants(int army, ArmyType type){
+        if (type.equals(ArmyType.INFANTRY))
             occupants.loseInfantry(army);
-        }
-        else
-            throw new Exception("Invalid Army Type ");
     }
 
     public void transferOwnership(int newOwner) {

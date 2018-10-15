@@ -36,7 +36,7 @@ public class TerritoryTest extends TestCase{
     public void testAddOccupants() throws Exception {
         mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
         mainTerritory.setTerritory(true, 2, new Army(1));
-        mainTerritory.addOccupants(5, "INFANTRY");
+        mainTerritory.addOccupants(5, ArmyType.INFANTRY);
         assertEquals(6, mainTerritory.getArmy().getInfantryCount());
     }
 
@@ -45,7 +45,7 @@ public class TerritoryTest extends TestCase{
         mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
         mainTerritory.setTerritory(true, 2, new Army(6));
         assertNotNull(mainTerritory.getArmy());
-        mainTerritory.loseOccupants(2, "INFANTRY");
+        mainTerritory.loseOccupants(2, ArmyType.INFANTRY);
         assertEquals(4, mainTerritory.getArmy().getInfantryCount());
     }
 
@@ -72,28 +72,6 @@ public class TerritoryTest extends TestCase{
         mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
         mainTerritory.setTerritory(true, 2, new Army(4));
         assertEquals("4", mainTerritory.seeArmyCount());
-    }
-
-    @Test
-    public void testExceptionForOccupants(){
-        mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
-        mainTerritory.setTerritory(true, 2, new Army(1));
-        try {
-            mainTerritory.addOccupants(1, "NOT INFANTRY");
-            fail("Expecting an Exception to be thrown, invalid army type provided");
-        } catch (Exception e)
-        {
-            assertThat(e.getMessage(), e.getMessage().equals("Invalid Army Type "));
-        }
-
-
-        try {
-            mainTerritory.loseOccupants(1, "NOT INFANTRY");
-            fail("Expecting an Exception to be thrown, invalid army type provided");
-        } catch (Exception e)
-        {
-            assertThat(e.getMessage(), e.getMessage().equals("Invalid Army Type "));
-        }
     }
 
 }

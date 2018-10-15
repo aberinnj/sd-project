@@ -22,13 +22,13 @@ public class GameManagerTest extends TestCase {
         GM = new GameManager(3);
 
         TestPlayerList1 = GM.setPlayerList(2);
-        assertEquals(40, TestPlayerList1[0].getRemainingArmies());
+        assertEquals(40, TestPlayerList1[0].getNumberOfArmies());
         TestPlayerList2 = GM.setPlayerList(4);
-        assertEquals(30, TestPlayerList2[0].getRemainingArmies());
+        assertEquals(30, TestPlayerList2[0].getNumberOfArmies());
         TestPlayerList3 = GM.setPlayerList(5);
-        assertEquals(25, TestPlayerList3[0].getRemainingArmies());
+        assertEquals(25, TestPlayerList3[0].getNumberOfArmies());
         TestPlayerList4 = GM.setPlayerList(6);
-        assertEquals(20, TestPlayerList4[0].getRemainingArmies());
+        assertEquals(20, TestPlayerList4[0].getNumberOfArmies());
     }
 
     @Test
@@ -186,8 +186,8 @@ public class GameManagerTest extends TestCase {
         GM.runSetup(GM, thisScanner);
         // Test Below
 
-        assertTrue(GM.getPlayer(0).isBaseEmpty());
-        assertTrue(GM.getPlayer(1).isBaseEmpty());
+        assertTrue(GM.getPlayer(0).getNumberOfArmies() == 0);
+        assertTrue(GM.getPlayer(1).getNumberOfArmies()==0);
 
         BoardManager BM = GM.getBM();
         assertEquals(0, BM.getFreeTerritories().size());

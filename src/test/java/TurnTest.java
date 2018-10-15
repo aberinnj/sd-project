@@ -7,6 +7,8 @@ import java.util.Scanner;
 
 /*///////////////////////////////////////////////////////////////////////////////
 Turn Class test cases
+
+todo: clean placeNewArmies test below, read comments.
  *//////////////////////////////////////////////////////////////////////////////
 public class TurnTest extends TestCase {
 
@@ -16,9 +18,9 @@ public class TurnTest extends TestCase {
         GameManager GM = new GameManager(3);
 
         Turn k = new Turn(GM.getBM(), GM.getPlayer(2), 12);
-        assertEquals(35, k.player.getRemainingArmies());
-        GM.getPlayer(2).deployArmies(1);
-        assertEquals(34, k.player.getRemainingArmies());
+        assertEquals(35, k.player.getNumberOfArmies());
+        GM.getPlayer(2).loseArmies(1);
+        assertEquals(34, k.player.getNumberOfArmies());
         assertEquals(12, k.turnId);
     }
 
@@ -90,7 +92,7 @@ public class TurnTest extends TestCase {
         k.player.addTerritories("BRAZIL");
         k.player.addTerritories("ARGENTINA");
 
-        k.bm.getBoardMap().get("PERU").setTerritory(true, 2, new Army(2));
+        k.BM.getBoardMap().get("PERU").setTerritory(true, 2, new Army(2));
         // No longer less-than 3
         // 3 cards minimum from territories + NO to trade
         // NOTE: additions due to occupying a territory a card represents -- are automatically added to that territory
@@ -99,7 +101,7 @@ public class TurnTest extends TestCase {
         k.player.getHand().get("CAVALRY").push(new Card("MIDDLE EAST", "CAVALRY"));
         assertEquals(3, k.getFreeArmiesFromTerritoriesAndCards(placeholder));
         assertEquals(7, k.getFreeArmiesFromTerritoriesAndCards(placeholder));
-        assertEquals(4, k.bm.getOccupantCount("PERU"));
+        assertEquals(4, k.BM.getOccupantCount("PERU"));
         System.setIn(System.in);
     }
 
@@ -124,7 +126,7 @@ public class TurnTest extends TestCase {
         k.player.getHand().get("INFANTRY").push(new Card("NORTHERN EUROPE", "INFANTRY"));
         k.player.getHand().get("INFANTRY").push(new Card("MIDDLE EAST", "INFANTRY"));
         assertEquals(9, k.getFreeArmiesFromTerritoriesAndCards(placeholder));
-        assertEquals(0, k.getTotalCards());
+        assertEquals(0, k.player.getTotalCards());
 
         System.setIn(System.in);
     }
@@ -152,7 +154,7 @@ public class TurnTest extends TestCase {
         k.player.getHand().get("INFANTRY").push(new Card("JAPAN", "INFANTRY"));
         // 3+4 from trade
         assertEquals(7, k.getFreeArmiesFromTerritoriesAndCards(placeholder));
-        assertEquals(1, k.getTotalCards());
+        assertEquals(1, k.player.getTotalCards());
 
         System.setIn(System.in);
 
@@ -179,29 +181,29 @@ public class TurnTest extends TestCase {
         k.player.getHand().get("INFANTRY").push(new Card("MIDDLE EAST", "INFANTRY"));
         assertEquals(15, k.getFreeArmiesFromTerritoriesAndCards(placeholder));
 
-        k.bm.getBoardMap().get("ARGENTINA").setTerritory(true, 2, new Army(5));
+        k.BM.getBoardMap().get("ARGENTINA").setTerritory(true, 2, new Army(5));
         // 3+15
         k.player.getHand().get("INFANTRY").push(new Card("ARGENTINA", "INFANTRY"));
         k.player.getHand().get("INFANTRY").push(new Card("NORTHERN EUROPE", "INFANTRY"));
         k.player.getHand().get("INFANTRY").push(new Card("MIDDLE EAST", "INFANTRY"));
         assertEquals(18, k.getFreeArmiesFromTerritoriesAndCards(placeholder));
-        assertEquals(7, k.bm.getOccupantCount("ARGENTINA"));
+        assertEquals(7, k.BM.getOccupantCount("ARGENTINA"));
 
         // 3+20
-        k.bm.getBoardMap().get("BRAZIL").setTerritory(true, 2, new Army(10));
+        k.BM.getBoardMap().get("BRAZIL").setTerritory(true, 2, new Army(10));
         k.player.getHand().get("WILD").push(new Card("BRAZIL", "WILD"));
         k.player.getHand().get("CAVALRY").push(new Card("NORTHERN EUROPE", "CAVALRY"));
         k.player.getHand().get("ARTILLERY").push(new Card("MIDDLE EAST", "ARTILLERY"));
         assertEquals(23, k.getFreeArmiesFromTerritoriesAndCards(placeholder));
-        assertEquals(12, k.bm.getOccupantCount("BRAZIL"));
+        assertEquals(12, k.BM.getOccupantCount("BRAZIL"));
 
         // 3+25
-        k.bm.getBoardMap().get("PERU").setTerritory(true, 2, new Army(8));
+        k.BM.getBoardMap().get("PERU").setTerritory(true, 2, new Army(8));
         k.player.getHand().get("CAVALRY").push(new Card("ALASKA", "CAVALRY"));
         k.player.getHand().get("INFANTRY").push(new Card("PERU", "INFANTRY"));
         k.player.getHand().get("ARTILLERY").push(new Card("MIDDLE EAST", "ARTILLERY"));
         assertEquals(28, k.getFreeArmiesFromTerritoriesAndCards(placeholder));
-        assertEquals(10, k.bm.getOccupantCount("PERU"));
+        assertEquals(10, k.BM.getOccupantCount("PERU"));
 
         System.setIn(System.in);
 
@@ -239,7 +241,7 @@ public class TurnTest extends TestCase {
         k.player.getHand().get("INFANTRY").push(new Card("PERU", "INFANTRY"));
         k.player.getHand().get("CAVALRY").push(new Card("ARGENTINA", "CAVALRY"));
         k.player.getHand().get("CAVALRY").push(new Card("MIDDLE EAST", "CAVALRY"));
-        assertEquals(8, k.getTotalCards());
+        assertEquals(8, k.player.getTotalCards());
     }
 
 
@@ -257,7 +259,7 @@ public class TurnTest extends TestCase {
         k.player.addTerritories("PERU");
         k.earnCards();
 
-        assertEquals(1, k.getTotalCards());
+        assertEquals(1, k.player.getTotalCards());
 
 
         Turn m = new Turn(GM.getBM(), GM.getPlayer(1), 1);
@@ -266,6 +268,8 @@ public class TurnTest extends TestCase {
     }
 
 
+    // BELOW test is fragile. remove the k.player.addTerritories and k.BM.getBoardMap().get(country).setTerritory
+    // method calls. Use k.BM.initializeTerritory instead, which does both
     @Test
     public void testPlaceNewArmies(){
         GameManager GM = new GameManager(6);
@@ -310,7 +314,7 @@ public class TurnTest extends TestCase {
                         "CHINA\n"    +
                         "CHINA\n"    +
                         "CHINA\n"    +
-                        "CHINA\n" ).getBytes());
+                        "CHINA\n").getBytes());
         System.setIn(in);
         Scanner scanner = new Scanner(System.in);
 
@@ -337,23 +341,22 @@ public class TurnTest extends TestCase {
         k.player.getHand().get("CAVALRY").push(new Card("AFGHANISTAN", "CAVALRY"));
 
         ///////
-        k.bm.getBoardMap().get("NORTH AFRICA").setTerritory(true, 0, new Army(3));
-        k.bm.getBoardMap().get("EAST AFRICA").setTerritory(true, 0, new Army(3));
-        k.bm.getBoardMap().get("SOUTH AFRICA").setTerritory(true, 0, new Army(5));
+        k.BM.getBoardMap().get("NORTH AFRICA").setTerritory(true, 0, new Army(3));
+        k.BM.getBoardMap().get("EAST AFRICA").setTerritory(true, 0, new Army(3));
+        k.BM.getBoardMap().get("SOUTH AFRICA").setTerritory(true, 0, new Army(5));
 
-        k.bm.getBoardMap().get("PERU").setTerritory(true, 0, new Army(1));
-        k.bm.getBoardMap().get("BRAZIL").setTerritory(true, 0, new Army(1));
-        k.bm.getBoardMap().get("ARGENTINA").setTerritory(true, 0, new Army(1));
+        k.BM.getBoardMap().get("PERU").setTerritory(true, 0, new Army(1));
+        k.BM.getBoardMap().get("BRAZIL").setTerritory(true, 0, new Army(1));
+        k.BM.getBoardMap().get("ARGENTINA").setTerritory(true, 0, new Army(1));
 
-        k.bm.getBoardMap().get("CONGO").setTerritory(true, 0, new Army(1));
-        k.bm.getBoardMap().get("EGYPT").setTerritory(true, 0, new Army(1));
-        k.bm.getBoardMap().get("MADAGASCAR").setTerritory(true, 0, new Army(1));
+        k.BM.getBoardMap().get("CONGO").setTerritory(true, 0, new Army(1));
+        k.BM.getBoardMap().get("EGYPT").setTerritory(true, 0, new Army(1));
+        k.BM.getBoardMap().get("MADAGASCAR").setTerritory(true, 0, new Army(1));
 
-        k.bm.getBoardMap().get("INDIA").setTerritory(true, 0, new Army(2));
-        k.bm.getBoardMap().get("INDONESIA").setTerritory(true, 0, new Army(1));
-        k.bm.getBoardMap().get("SIAM").setTerritory(true, 0, new Army(1));
-        k.bm.getBoardMap().get("CHINA").setTerritory(true, 0, new Army(1));
-
+        k.BM.getBoardMap().get("INDIA").setTerritory(true, 0, new Army(2));
+        k.BM.getBoardMap().get("INDONESIA").setTerritory(true, 0, new Army(1));
+        k.BM.getBoardMap().get("SIAM").setTerritory(true, 0, new Army(1));
+        k.BM.getBoardMap().get("CHINA").setTerritory(true, 0, new Army(1));
 
         // 20 default infantry
         // +4 for occupying 12 territories
@@ -361,19 +364,19 @@ public class TurnTest extends TestCase {
         // +4 for first-trade
         // 31 total infantry
         // DIRECTLY +2 to PERU
-        k.placeNewArmies(scanner);
-        assertEquals(7, k.bm.getOccupantCount("NORTH AFRICA"));
-        assertEquals(5, k.bm.getOccupantCount("EAST AFRICA"));
-        assertEquals(12, k.bm.getOccupantCount("SOUTH AFRICA"));
+        k.placeNewArmies(GM, scanner);
+        assertEquals(7, k.BM.getOccupantCount("NORTH AFRICA"));
+        assertEquals(5, k.BM.getOccupantCount("EAST AFRICA"));
+        assertEquals(12, k.BM.getOccupantCount("SOUTH AFRICA"));
 
-        assertEquals(5, k.bm.getOccupantCount("INDIA"));
-        assertEquals(5, k.bm.getOccupantCount("INDONESIA"));
-        assertEquals(5, k.bm.getOccupantCount("SIAM"));
-        assertEquals(5, k.bm.getOccupantCount("CHINA"));
+        assertEquals(5, k.BM.getOccupantCount("INDIA"));
+        assertEquals(5, k.BM.getOccupantCount("INDONESIA"));
+        assertEquals(5, k.BM.getOccupantCount("SIAM"));
+        assertEquals(5, k.BM.getOccupantCount("CHINA"));
 
-        assertEquals(1, k.bm.getOccupantCount("CONGO"));
-        assertEquals(1, k.bm.getOccupantCount("EGYPT"));
-        assertEquals(1, k.bm.getOccupantCount("MADAGASCAR"));
+        assertEquals(1, k.BM.getOccupantCount("CONGO"));
+        assertEquals(1, k.BM.getOccupantCount("EGYPT"));
+        assertEquals(1, k.BM.getOccupantCount("MADAGASCAR"));
 
         ArrayList<String> expectedAbleTerritories = new ArrayList<String>(){{
             add("NORTH AFRICA");
@@ -388,13 +391,13 @@ public class TurnTest extends TestCase {
             add("CHINA");}};
 
         ArrayList<String> listing = new ArrayList<String>();
-        listing.addAll(k.bm.getTerritories(k.player, true));
+        listing.addAll(k.BM.getAbleTerritories(k.player, true));
         for(String i: listing)
         {
             assertTrue(listing.contains(i));
         }
 
-        assertTrue(k.player.isBaseEmpty());
+        assertTrue(k.player.getNumberOfArmies() == 0);
         System.setIn(System.in);
     }
 }

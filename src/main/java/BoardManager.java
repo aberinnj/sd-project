@@ -1,3 +1,4 @@
+import java.text.ParseException;
 import java.util.*;
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -12,10 +13,10 @@ class Continent{
     }
 }
 /*////////////////////////////////////////////////////////////////////////////////
-BoardManager Class handles Territory and Continents, as well as the Deck
+BoardManager class HANDLES TERRITORY, CONTINENT and DECK
 
 Expects
-todo: fix bug with loop
+todo: fix addTo and RemoveFrom below
 *///////////////////////////////////////////////////////////////////////////////*/
 public class BoardManager {
     private static HashMap<String, Territory> boardMap;
@@ -39,7 +40,7 @@ public class BoardManager {
         boardMap.put("CENTRAL AMERICA", new Territory(new String[]{"WESTERN UNITED STATES", "EASTERN UNITED STATES", "VENEZUELA"}));
         boardMap.put("VENEZUELA", new Territory(new String[]{"CENTRAL AMERICA", "PERU", "BRAZIL"}));
         boardMap.put("PERU", new Territory(new String[]{"VENEZUELA", "BRAZIL", "ARGENTINA"}));
-        boardMap.put("BRAZIL", new Territory(new String[]{"VENEZUELA", "PERU", "ARGENTINA", "NORTH AMERICA"}));
+        boardMap.put("BRAZIL", new Territory(new String[]{"VENEZUELA", "PERU", "ARGENTINA", "NORTH AFRICA"}));
         boardMap.put("ARGENTINA", new Territory(new String[]{"PERU", "BRAZIL"}));
         boardMap.put("NORTH AFRICA", new Territory(new String[]{"BRAZIL", "SOUTHERN EUROPE", "EGYPT", "EAST AFRICA", "CONGO"}));
         boardMap.put("CONGO", new Territory(new String[]{"NORTH AFRICA", "EAST AFRICA", "SOUTH AFRICA"}));
@@ -83,15 +84,118 @@ public class BoardManager {
         completeSets = 0;
     }
 
+    // queryTerritory consults with the boardMap for territories
+    public String queryTerritory(Scanner scanner, String query, String type, Player p, String origin) {
+        System.out.println(query);
+        String country = scanner.nextLine();
 
-    public List<String> getEnemyNeighbors(String attacker) {
-        List<String> targets = new ArrayList<String>();
-        for(String country: getNeighborsOf(attacker)){
-            if (getTerritoryID(attacker) !=getTerritoryID(country)) {
-                targets.add(country);
+        // ALL queries for a territory requires a country to exist
+        if (!boardMap.containsKey(country)) {
+            System.out.println("Error: Territory not found. ");
+            return null;
+        }
+
+        // strengthening requires a country to be owned by the player
+        if (type.equals("STRENGTHEN")) {
+            if(boardMap.get(country).getOccupantID() != p.getId()) {
+                System.out.println("Error: Territory not owned. ");
+                return null;
+            }
+
+        // initialization requires a country selected to be free
+        } else if (type.equals("INITIALIZE")) {
+            if(boardMap.get(country).isOccupied()){
+                System.out.println("Error: Territory already occupied. ");
+                return null;
+            }
+
+        // attacking from a country requires the country to be a player's territory, the army count be > 1 and the enemy neighbors to be > 1
+        } else if (type.equals("ATTACK_FROM")) {
+            if(boardMap.get(country).getOccupantID() != p.getId()) {
+                System.out.println("Error: Territory not owned. ");
+                return null;
+            } else if ( getOccupantCount(country) <= 1) {
+                System.out.println("Error: Territory not valid to attack from. ");
+                return null;
+            } else if ( getAllAdjacentEnemyTerritories(p.getId(), country).size() == 0) {
+                System.out.println("Error: Territory seems to have no neighbors that can be attacked. ");
+                return null;
+            }
+
+        // selecting an enemy country requires the country to be an enemy's territory and adjacent to an origin
+        } else if (type.equals("ATTACK")) {
+            if(boardMap.get(country).getOccupantID() == p.getId()) {
+                System.out.println("Error: Territory is not an enemy territory. ");
+                return null;
+            } else if (!getAllAdjacentEnemyTerritories(p.getId(), origin).contains(country)) {
+                System.out.println("Error: Territory is not adjacent to origin. ");
+                return null;
+            }
+
+
+        // fortifying from a country requires the country to be player's territory, the army count to be more than one and the friendly neighbors to be > 0
+        } else if (type.equals("FORTIFY_FROM")) {
+            if(boardMap.get(country).getOccupantID() != p.getId()) {
+                System.out.println("Error: Territory not owned. ");
+                return null;
+            } else if ( boardMap.get(country).getArmy().getInfantryCount() <= 1) {
+                System.out.println("Error: Territory not valid to fortify from. ");
+                return null;
+            } else if ( getAllAdjacentTerritories(p.getId(), country).size() == 0) {
+                System.out.println("Error: Territory seems to have no neighbors to fortify. ");
+                return null;
+            }
+
+        // selecting a country to fortify requires the country to be the player's territory and adjacent to an origin
+        } else if (type.equals("FORTIFY")) {
+            if(boardMap.get(country).getOccupantID() != p.getId()) {
+                System.out.println("Error: Territory is not an territory. ");
+                return null;
+            } else if (getNeighborsOf(origin).contains(country)) {
+                System.out.println("Error: Territory is not adjacent to origin. ");
+                return null;
             }
         }
-        return targets;
+        return country;
+    }
+
+    // queryCount consults with territory-occupantCount
+    public int queryCount(Scanner scanner, String query, String type, Player p, String origin) {
+        System.out.println(query);
+        int count;
+        try{
+            count = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e){
+            System.out.println("Error: input is not a number. ");
+            return 0;
+        }
+
+        // for attacks, the number of dice that can be rolled is 1, 2 or 3, the count of occupants must also be more than 1
+        if(type.equals("ATTACK")) {
+            if(getOccupantCount(origin) <= (count)) {
+                System.out.println("Error: " + origin + " does not have enough armies to roll " + count + " dice. ");
+                return 0;
+            } else if (count > 3) {
+                System.out.println("Warning: The maximum is 3 dice. Defaulting dice roll to 3." );
+                return 3;
+            }
+
+        } else if (type.equals("DEFEND")) {
+            if(getOccupantCount(origin) < count) {
+                System.out.println("Error: " + origin + " does not have enough armies to roll " + count + " dice. ");
+                return 0;
+            } else if (count > 2) {
+                System.out.println("Warning: The maximum is 2 dice. Defaulting dice roll to 2." );
+                return 2;
+            }
+        } else if (type.equals("FORTIFY")) {
+            if(getOccupantCount(origin) <= count) {
+                System.out.println("Error: There are not enough occupants in " + origin + " to transfer " + count + " armies. ");
+                return 0;
+            }
+
+        }
+        return count;
     }
 
     // simply returns boardmap
@@ -107,19 +211,8 @@ public class BoardManager {
         return continentsMap.get(name).FullContinent;
     }
 
-    // Method check if all territories are initialized and return boolean
-    public boolean isAllTerritoriesInitialized()
-    {
-        for(String country: boardMap.keySet()) {
-            if (!boardMap.get(country).isOccupied())
-                return false;
-        }
-        return true;
-    }
-
     // Displays free territories
     public List<String> getFreeTerritories(){
-        System.out.println("__Free Territories__");
         List<String> listing = new ArrayList<String>();
 
         for(HashMap.Entry<String, Territory> country: boardMap.entrySet()){
@@ -130,13 +223,12 @@ public class BoardManager {
         return listing;
     }
 
-    // simply gets a player's territories, but most useful in getting territories a player can attack from
-    public List<String> getTerritories(Player p, boolean attacking)
-    {
+    // Gets a player's territories, but most useful in getting territories a player can attack from
+    public List<String> getAbleTerritories(Player p, boolean attacking) {
         List<String> listing = new ArrayList<String>();
         for(String country: p.getTerritories()) {
             if(attacking) {
-                if (boardMap.get(country).getArmy().getInfantryCount() > 1)
+                if (getOccupantCount(country) > 1)
                     listing.add(country);
             } else{
                 listing.add(country);
@@ -145,69 +237,45 @@ public class BoardManager {
         return listing;
     }
 
-
-    public List<String> getAllAdjacentEnemyTerritories(Player p) {
+    // Get All
+    public List<String> getAllAdjacentTerritories(int id, String countryOfOrigin) {
         List<String> listing = new ArrayList<String>();
-        for(String country: getTerritories(p, false)){
-            for(String neighbor: getNeighborsOf(country))
-            {
-                if(!listing.contains(neighbor))
-                {
-                    listing.add(neighbor);
-                }
-            }
+        for(String country: getNeighborsOf(countryOfOrigin)){
+            if(boardMap.get(country).getOccupantID() == id)
+                listing.add(country);
         }
         return listing;
     }
 
-
-    public int getNumberOfTerritories(){
-        return boardMap.size();
-    }
-
-
-    public boolean isTerritoryANeighborOf(String country, String origin){
-        return boardMap.get(origin).getNeighbors().contains(country);
+    public List<String> getAllAdjacentEnemyTerritories(int id, String countryOfOrigin) {
+        List<String> listing = new ArrayList<String>();
+         for(String country: getNeighborsOf(countryOfOrigin)){
+            if(boardMap.get(country).getOccupantID() != id)
+                listing.add(country);
+        }
+        return listing;
     }
 
     public List<String> getNeighborsOf(String country) {
         return boardMap.get(country).getNeighbors();
     }
 
-    public int getTerritoryID(String country) {
-        return boardMap.get(country).getOccupantID();
+    // Takes care of setting territories for initialization // can also be used after winning a territory
+    // Note: Attacking takes an amount of armies and places them into player's placeholder Army
+    public void initializeTerritory(Player p, String territory, int armyCount ){
+        boardMap.get(territory).setTerritory(true, p.getId(), new Army(armyCount));
+        p.addTerritories(territory);
+        p.loseArmies(armyCount);
     }
 
+    public void strengthenTerritory(Player p, String territory, int armyCount) {
+        addOccupantsTo(territory, armyCount);
+        p.loseArmies(armyCount);
+    }
 
-    public void setInitialTerritory(Player player, Scanner country) {
-        boolean askAgainForInput;
-
-        System.out.println("__________________________________________");
-        System.out.println("Player #" + player.getId());
-        //Scanner country = new Scanner(System.in);
-        do{
-            try {
-                System.out.println();
-                System.out.print("Select: ");
-                String countryInput = country.nextLine();
-
-                if (boardMap.get(countryInput).isOccupied()){
-                    throw new Exception("Error: Chosen country already occupied.");
-                }
-
-                boardMap.get(countryInput).setTerritory(true, player.getId(), new Army(1));
-                player.deployArmies(1);
-                player.addTerritories(countryInput);
-
-                askAgainForInput = false;
-            } catch (NullPointerException e){
-                System.out.print("Error: Country not found");
-                askAgainForInput = true;
-            } catch (Exception e){
-                System.out.print(e.getMessage());
-                askAgainForInput = true;
-            }
-        } while(askAgainForInput);
+    public void fortifyTerritory(String origin, String territory, int armyCount) {
+        removeOccupantsFrom(origin, armyCount);
+        addOccupantsTo(territory, armyCount);
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
@@ -218,50 +286,15 @@ public class BoardManager {
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
-    Method returns occupant count of a territory as a STATUS string
-    Used in displaying territories with the count of user armies in it
     *///////////////////////////////////////////////////////////////////////////////*/
-    public String getOccupantCountStatus(String country){
-        return boardMap.get(country).seeArmyCount();
+    public void addOccupantsTo(String country, int count) {
+        boardMap.get(country).addOccupants(count, ArmyType.INFANTRY);
+
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method adds occupants to a territory that has already been occupied.
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public void addOccupantsTo(String country, int count, String type){
-        try {
-            boardMap.get(country).addOccupants(count, type);
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-    }
+    public void removeOccupantsFrom(String country, int count) {
+        boardMap.get(country).loseOccupants(count, ArmyType.INFANTRY);
 
-    public void removeOccupantsFrom(String country, int count, String type) {
-        try {
-            boardMap.get(country).loseOccupants(count, type);
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-    }
-
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method loses occupants in a territory
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public void transferOccupantsFrom(String country, int count, String type){
-        try {
-            boardMap.get(country).loseOccupants(count, type);
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public void transferOwnership(String attacker, String defender) {
-        try {
-            int newOwner = boardMap.get(attacker).getOccupantID();
-            boardMap.get(defender).transferOwnership(newOwner);
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-        }
     }
 
 }
