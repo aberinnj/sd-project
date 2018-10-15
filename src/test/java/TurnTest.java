@@ -8,7 +8,7 @@ import java.util.Scanner;
 /*///////////////////////////////////////////////////////////////////////////////
 Turn Class test cases
 
-todo: clean placeNewArmies test below, read comments.
+todo: clean placeNewArmies test below, read comments included.
  *//////////////////////////////////////////////////////////////////////////////
 public class TurnTest extends TestCase {
 
@@ -399,5 +399,85 @@ public class TurnTest extends TestCase {
 
         assertTrue(k.player.getNumberOfArmies() == 0);
         System.setIn(System.in);
+    }
+
+
+    @Test
+    public void testFortify(){
+        ByteArrayInputStream in = new ByteArrayInputStream((
+                "Yes\n" +
+                "INDONESIA\n" +
+                "NEW GUINEA\n" +
+                "1\n").getBytes());
+        System.setIn(in);
+        Scanner sp = new Scanner(System.in);
+        BoardManager BM = new BoardManager();
+        Player p1 = new Player(1, 5);
+        BM.initializeTerritory(p1, "INDONESIA", 2);
+        BM.initializeTerritory(p1, "WESTERN AUSTRALIA", 2);
+        BM.initializeTerritory(p1, "EASTERN AUSTRALIA", 2);
+        BM.initializeTerritory(p1, "NEW GUINEA", 2);
+
+        Turn k = new Turn(BM, p1, 2);
+        k.fortifyTerritories(sp);
+
+        assertEquals(1, BM.getOccupantCount("INDONESIA"));
+        assertEquals(3, BM.getOccupantCount("NEW GUINEA"));
+        System.setIn(System.in);
+    }
+
+    @Test
+    public void testBattle(){
+        GameManager GM = new GameManager(2);
+        Turn k = new Turn(GM.getBM(), GM.getPlayer(1), 25);
+        int attackerDice = 3;//count of dice -- 3 armies
+
+        String defending = "NORTH AFRICA";
+        String attacking = "CONGO";
+
+
+        GM.getBM().initializeTerritory(GM.getPlayer(0), defending, 2);
+        GM.getBM().initializeTerritory(GM.getPlayer(1), attacking, 4);
+
+        ArrayList<Integer> attacker_dice = new ArrayList<Integer>(){{add(5); add(2); add(1);}}; // win
+        ArrayList<Integer> defender_dice = new ArrayList<Integer>(){{add(1); add(3);}};
+
+        // Attacker wins and claims territory
+        k.battle(GM, attackerDice, defending, attacking, attacker_dice, defender_dice);
+        assertTrue(k.player.getTerritories().contains(defending));
+        assertEquals(3, GM.getBM().getOccupantCount(defending));
+        // Defender no longer
+        assertFalse(GM.getPlayer(0).getTerritories().contains(defending));
+
+        /////////////////////////////////////////////////////////////////////////////////
+        defending = "ALASKA";
+        attacking = "KAMCHATKA";
+
+        GM.getBM().initializeTerritory(GM.getPlayer(0), defending, 1);
+        GM.getBM().initializeTerritory(GM.getPlayer(1), attacking, 2);
+        attacker_dice = new ArrayList<Integer>(){{add(5);}}; // tie (lose 1 army) attack fails
+        defender_dice = new ArrayList<Integer>(){{add(5);}};
+
+        // Attacker fails, Defender still has defending territory
+        k.battle(GM, 1, defending, attacking, attacker_dice, defender_dice);
+        assertTrue(GM.getPlayer(0).getTerritories().contains(defending));
+        // Attacker fails and should have less army in attacking territory
+        assertEquals(1, GM.getBM().getOccupantCount(attacking));
+
+        /////////////////////////////////////////////////////////////////////////////////
+        defending = "ALASKA";
+        attacking = "KAMCHATKA";
+
+        GM.getBM().initializeTerritory(GM.getPlayer(0), defending, 1);
+        GM.getBM().initializeTerritory(GM.getPlayer(1), attacking, 2);
+        attacker_dice = new ArrayList<Integer>(){{add(2);}}; // tie (lose 1 army) attack fails
+        defender_dice = new ArrayList<Integer>(){{add(5);}};
+
+        // Attacker fails, Defender still has defending territory
+        k.battle(GM, 1, defending, attacking, attacker_dice, defender_dice);
+        assertTrue(GM.getPlayer(0).getTerritories().contains(defending));
+        // Attacker fails and should have less army in attacking territory
+        assertEquals(1, GM.getBM().getOccupantCount(attacking));
+
     }
 }

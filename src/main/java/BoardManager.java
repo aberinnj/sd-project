@@ -151,7 +151,7 @@ public class BoardManager {
             if(boardMap.get(country).getOccupantID() != p.getId()) {
                 System.out.println("Error: Territory is not an territory. ");
                 return null;
-            } else if (getNeighborsOf(origin).contains(country)) {
+            } else if (!getNeighborsOf(origin).contains(country)) {
                 System.out.println("Error: Territory is not adjacent to origin. ");
                 return null;
             }

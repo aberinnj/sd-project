@@ -23,23 +23,8 @@ public class BoardManagerTest extends TestCase {
     @Test
     public void testQueryTerritory(){
         ByteArrayInputStream in = new ByteArrayInputStream((
-                "NoTerritory\n"     +
-                "ALASKA\n"          +
-                "KAMCHATKA\n"       +
-                "NORTH WEST TERRITORY\n"    +
-
-                "ALASKA\n"          +
-                "ALBERTA\n" +
-                        "BRAZIL\n"    +
-                        "ALASKA\n"          +
-                        "ALBERTA\n" +
-
-                        "ALASKA\n"  +
-                        "ALBERTA\n" +
-                        "ALBERTA\n" +
-
-                        "ALBERTA\n" +
-                        "INDIA").getBytes());
+                "FAILURE\nALBERTA\nINDIA\nBRAZIL\nPERU\nALASKA\nALBERTA\nVENEZUELA\nARGENTINA\nJAPAN\nPERU\nINDIA\nALBERTA\nBRAZIL"
+                ).getBytes());
         System.setIn(in);
         Scanner scanner = new Scanner(System.in);
 
@@ -48,46 +33,50 @@ public class BoardManagerTest extends TestCase {
         bm.initializeTerritory(p1, "ALBERTA", 1);
         bm.initializeTerritory(p1, "INDIA", 25);
         bm.initializeTerritory(p1, "BRAZIL", 2);
-        bm.initializeTerritory(p1, "VENEZUELA", 2);
+        bm.initializeTerritory(p1, "VENEZUELA", 1);
         bm.initializeTerritory(p1, "PERU", 2);
         bm.initializeTerritory(p1, "ARGENTINA", 2);
         bm.initializeTerritory(p1, "NORTH AFRICA", 5);
+        bm.initializeTerritory(p1, "MONGOLIA", 1);
+        bm.initializeTerritory(p1, "KAMCHATKA", 1);
 
 
         Player p2 = new Player(0, 25);
         bm.initializeTerritory(p2, "ALASKA", 25);
-        bm.initializeTerritory(p2, "KAMCHATKA", 25);
         bm.initializeTerritory(p2, "NORTH WEST TERRITORY", 21);
+        bm.initializeTerritory(p2, "JAPAN", 25);
 
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "NULL", p1, ""));
-        assertNotNull(bm.queryTerritory(scanner, "Territory: ", "STRENGTHEN", p2, ""));
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "INITIALIZE", p1, ""));
-        // territory not owned
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "ATTACK_FROM", p1, ""));
 
-        // territory not
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "ATTACK_FROM", p1, ""));
-        // territory not valid to attack from
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "ATTACK_FROM", p1, ""));
-        // territory has no neighbors to attack
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "ATTACK_FROM", p1, ""));
+        // Testing NULLs (queryTerritory returns null for invalid inputs) for ALL query types
 
-        // territory  is not an enemy territory
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "ATTACK", p2, "INDIA"));
-        // territory is not adjacent to origin
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "ATTACK", p1, "INDIA"));
-
-        // territory not owned
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "FORTIFY_FROM", p1, ""));
-        // territory not valid to fortify from
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "FORTIFY_FROM", p1, ""));
-        // territory not valid to attack from
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "FORTIFY_FROM", p1, ""));
-
-        // territory  is not an enemy territory
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "FORTIFY", p2, "INDIA"));
-        // territory is not adjacent to origin
-        assertNull(bm.queryTerritory(scanner, "Territory: ", "FORTIFY", p2, "ALBERTA"));
+        //Error territory not found
+        assertNull(bm.queryTerritory(scanner, "", "FAILS-ANYWAY", p2, "ORIGIN IS ONLY FOR FORTIFY AND ATTACK"));
+        //Error: territory not owned - ALBERTA is P1's
+        assertNull(bm.queryTerritory(scanner, "", "STRENGTHEN", p2, ""));
+        //INDIA is P1's
+        assertNull(bm.queryTerritory(scanner, "", "ATTACK_FROM", p2, ""));
+        //BRAZIL is P1's
+        assertNull(bm.queryTerritory(scanner, "", "FORTIFY_FROM", p2, ""));
+        //PERU is P1's
+        assertNull(bm.queryTerritory(scanner, "", "FORTIFY", p2, ""));
+        //Error: Territory already occupied - ALASKA already claimed
+        assertNull(bm.queryTerritory(scanner, "", "INITIALIZE", p1, ""));
+        //Error: Not a valid territory to attack from - ALBERTA only has 1 army
+        assertNull(bm.queryTerritory(scanner, "", "ATTACK_FROM", p1, ""));
+        //Error: Not a valid territory to attack from - VENEZUELA only has 1 army
+        assertNull(bm.queryTerritory(scanner, "", "FORTIFY_FROM", p1, ""));
+        //Error: Territory has no adjacent enemies - ARGENTINA
+        assertNull(bm.queryTerritory(scanner, "", "ATTACK_FROM", p1, ""));
+        //Error: Territory has no adjacent friendly territories -- JAPAN is surrounded by enemies
+        assertNull(bm.queryTerritory(scanner, "", "FORTIFY_FROM", p2, ""));
+        //Error: Not an enemy territory - PERU
+        assertNull(bm.queryTerritory(scanner, "", "ATTACK", p1, "BRAZIL"));
+        //Error: Not adjacent - INDIA
+        assertNull(bm.queryTerritory(scanner, "", "ATTACK", p2, "ALASKA"));
+        //Error: Not adjacent - ALBERTA
+        assertNull(bm.queryTerritory(scanner, "", "FORTIFY", p1, "PERU"));
+        // NOT NULL - BRAZIL is adj to PERU
+        assertNotNull(bm.queryTerritory(scanner, "", "FORTIFY", p1 , "PERU"));
 
         System.setIn(System.in);
 
@@ -96,24 +85,32 @@ public class BoardManagerTest extends TestCase {
     @Test
     public void testQueryCount() {
         ByteArrayInputStream in = new ByteArrayInputStream((
-                "NAN\n3\n5\n3\n2\n1\n2\n4").getBytes());
+                "NaN\n3\n4\n2\n4\n1\n4"
+                ).getBytes());
         System.setIn(in);
         Scanner scanner = new Scanner(System.in);
 
+
         BoardManager bm = new BoardManager();
         Player p = new Player(2, 3);
-        bm.initializeTerritory(p, "ALASKA", 2);
+        bm.initializeTerritory(p, "ALASKA", 1);
         bm.initializeTerritory(p, "ALBERTA", 5);
-        bm.initializeTerritory(p, "INDIA", 1);
-
-        assertEquals(0, bm.queryCount(scanner, "", "ATTACK", p, "ALASKA"));
+        bm.initializeTerritory(p, "INDIA", 3);
+        bm.initializeTerritory(p, "JAPAN", 2);
+        //Error, cannot convert to number
+        assertEquals(0, bm.queryCount(scanner, "", "ATTACK", p, ""));
+        //Error, not enough armies
+        assertEquals(0, bm.queryCount(scanner, "", "ATTACK", p, "INDIA"));
+        // Warning defaulted to 3
         assertEquals(3, bm.queryCount(scanner, "", "ATTACK", p, "ALBERTA"));
+        //Error, not enough armies
         assertEquals(0, bm.queryCount(scanner, "", "DEFEND", p, "ALASKA"));
+        // Warning defaulted to 2
         assertEquals(2, bm.queryCount(scanner, "", "DEFEND", p, "ALBERTA"));
-        assertEquals(2, bm.queryCount(scanner, "", "DEFEND", p, "ALASKA"));
-        assertEquals(0, bm.queryCount(scanner, "", "FORTIFY", p, "INDIA"));
+        // Error, Not enough for fortifying
         assertEquals(0, bm.queryCount(scanner, "", "FORTIFY", p, "ALASKA"));
-        assertEquals(0, bm.queryCount(scanner, "", "FORTIFY", p, "INDIA"));
+        assertEquals(4, bm.queryCount(scanner, "", "FORTIFY", p, "ALBERTA"));
+
     }
 
     // Not meant for CodeCoverage but to assure that there are no errors in board-data
@@ -158,8 +155,24 @@ public class BoardManagerTest extends TestCase {
         {
             System.err.println(e.getMessage());
         }
+    }
+    @Test
+    public void testGetAdjacentTerritories(){
+        bm = new BoardManager();
 
+        Player p2 = new Player(0, 5);
+        bm.initializeTerritory(p2, "PERU", 2);
+        bm.initializeTerritory(p2, "ARGENTINA", 2);
+        bm.initializeTerritory(p2, "VENEZUELA", 2);
+        bm.initializeTerritory(p2, "BRAZIL", 2);
 
+        List<String> playerTerritories = new ArrayList<String>();
+        playerTerritories.addAll(bm.getAllAdjacentTerritories(p2.getId(), "PERU"));
+        String[] expectedTerritories = new String[]{"ARGENTINA", "VENEZUELA", "BRAZIL"};
+        for(String expected: expectedTerritories)
+        {
+            assertTrue(playerTerritories.contains(expected));
+        }
     }
 
     @Test

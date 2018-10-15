@@ -4,8 +4,7 @@ import java.util.*;
 Turn class only serves as a PROXY to GameManager. It DOES NOT copy game status.
 TurnManager deeply COPIES Turns
 
-todo: make move/undo functions better
-todo: (bug) fortify does not allow to user skip
+todo: test manually if successfull attack transfers work(eg. amount of armies transferred out of an attacking territory)
 todo: find a way to test functions where there are dice rolls (battle func)
  *//////////////////////////////////////////////////////////////////////////////
 public class Turn {
@@ -216,44 +215,10 @@ public class Turn {
             return sum;
     }
 
-    //
-    public void fortifyTerritories(Scanner scanner)
-    {
-        String origin;
-        String destination;
-        int transfer;
-        System.out.println("__FORTIFY TERRITORIES__");
-        if(baseQuery("Would you like to fortify your territories?", scanner))
-        {
-            for(String country: BM.getAbleTerritories(player, false)) {
-                System.out.println(country + ": " + BM.getOccupantCount(country) + " armies");
-            }
 
-            do{
-                origin = BM.queryTerritory(scanner, "From: ", "FORTIFY_FROM", player, "");
-            }while(origin == null);
-
-            System.out.println("Territories fortify-able from " + origin);
-            for(String country: BM.getAllAdjacentTerritories(player.getId(), origin)) {
-                System.out.println(country);
-            }
-
-            do{
-                destination = BM.queryTerritory(scanner, "Fortify: ",
-                        "FORTIFY", player, origin);
-            }while(destination == null);
-
-            do{
-                transfer = BM.queryCount(scanner, "Transfer: ", "FORTIFY", player, origin);
-            } while(transfer == 0);
-
-            BM.fortifyTerritory(origin, destination, transfer);
-        }
-
-
-    }
-
-    // Attack function
+    /*////////////////////////////////////////////////////////////////////////////////
+    Attacking and battle
+    *///////////////////////////////////////////////////////////////////////////////*/
     public void attack(GameManager GM, Scanner scanner) {
         System.out.println("__LAUNCH AN ATTACK__");
         System.out.println("List of your territories and enemy territories you can attack:");
@@ -301,20 +266,20 @@ public class Turn {
             }
 
             // Deciding battles
-            battle(GM, attackerDice, defenderDice, territory, origin, attacker_dice, defender_dice);
+            battle(GM, attackerDice, territory, origin, attacker_dice, defender_dice);
         }
     }
 
     // Battle function
-    public void battle(GameManager GM, int attackerDice, int defenderDice, String defending, String attacking, ArrayList<Integer> attacker_dice, ArrayList<Integer> defender_dice){
+    public void battle(GameManager GM, int attackerDice, String defending, String attacking, ArrayList<Integer> attacker_dice, ArrayList<Integer> defender_dice){
 
         int topIndexAttacker;
         int topIndexDefender;
         int potentialTransfer = attackerDice;
 
         do {
-            topIndexAttacker = GM.getIndexOfHighestRollIn(attacker_dice, attackerDice);
-            topIndexDefender = GM.getIndexOfHighestRollIn(defender_dice, defenderDice);
+            topIndexAttacker = GM.getIndexOfHighestRollIn(attacker_dice, attacker_dice.size());
+            topIndexDefender = GM.getIndexOfHighestRollIn(defender_dice, defender_dice.size());
 
             System.out.println("Attacker: "+attacker_dice.get(topIndexAttacker) + " vs. Defender: " + defender_dice.get(topIndexDefender));
 
@@ -326,6 +291,8 @@ public class Turn {
                 if(BM.getOccupantCount(defending) == 0) {
                     System.out.println("The ATTACK is a success! " + defending + " is captured.");
                     GM.getPlayer(BM.getBoardMap().get(defending).getOccupantID()).loseTerritories(defending);
+                    BM.getBoardMap().get(attacking).loseOccupants(potentialTransfer, ArmyType.INFANTRY);
+                    GM.getPlayer(player.getId()).addArmies(potentialTransfer);
                     BM.initializeTerritory(player, defending, potentialTransfer);
 
                     break;
@@ -360,6 +327,46 @@ public class Turn {
             if(attacker_dice.size() == 0 || defender_dice.size() == 0) break;
 
         } while(true);
+
+    }
+
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    Trading is simple
+    *///////////////////////////////////////////////////////////////////////////////*/
+    public void fortifyTerritories(Scanner scanner)
+    {
+        String origin;
+        String destination;
+        int transfer;
+        System.out.println("__FORTIFY TERRITORIES__");
+        if(baseQuery("Would you like to fortify your territories?", scanner))
+        {
+            for(String country: BM.getAbleTerritories(player, false)) {
+                System.out.println(country + ": " + BM.getOccupantCount(country) + " armies");
+            }
+
+            do{
+                origin = BM.queryTerritory(scanner, "From: ", "FORTIFY_FROM", player, "");
+            }while(origin == null);
+
+            System.out.println("Territories fortify-able from " + origin);
+            for(String country: BM.getAllAdjacentTerritories(player.getId(), origin)) {
+                System.out.println(country);
+            }
+
+            do{
+                destination = BM.queryTerritory(scanner, "Fortify: ",
+                        "FORTIFY", player, origin);
+            }while(destination == null);
+
+            do{
+                transfer = BM.queryCount(scanner, "Transfer: ", "FORTIFY", player, origin);
+            } while(transfer == 0);
+
+            BM.fortifyTerritory(origin, destination, transfer);
+        }
+
 
     }
 }
