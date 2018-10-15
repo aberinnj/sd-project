@@ -141,9 +141,11 @@ public class TurnTest extends TestCase {
 
         Turn k = new Turn(GM.getBM(), GM.getPlayer(2), 0);
         // total of 3 territories
-        k.player.addTerritories("PERU");
-        k.player.addTerritories("BRAZIL");
-        k.player.addTerritories("ARGENTINA");
+        k.BM.initializeTerritory(k.player, "PERU", 8);
+        k.BM.initializeTerritory(k.player, "BRAZIL", 10);
+        k.BM.initializeTerritory(k.player, "ARGENTINA", 5);
+        k.BM.initializeTerritory(k.player, "JAPAN", 5);
+
         // No longer less-than 3
         // NOTE: additions due to occupying a territory a card represents -- are automatically added to that territory
         // 3 cards minimum + 0 with no full-set to trade +
@@ -151,18 +153,17 @@ public class TurnTest extends TestCase {
         k.player.getHand().get("ARTILLERY").push(new Card("NORTHERN EUROPE", "ARTILLERY"));
         k.player.getHand().get("CAVALRY").push(new Card("MIDDLE EAST", "CAVALRY"));
         assertEquals(3, k.getFreeArmiesFromTerritoriesAndCards(placeholder));
-        k.player.getHand().get("INFANTRY").push(new Card("JAPAN", "INFANTRY"));
+        k.player.getHand().get("INFANTRY").push(new Card("KAMCHATKA", "INFANTRY"));
         // 3+4 from trade
         assertEquals(7, k.getFreeArmiesFromTerritoriesAndCards(placeholder));
         assertEquals(1, k.player.getTotalCards());
 
-        System.setIn(System.in);
-
-
         // 3+6 from trade
+        // 2 extra armies goes to NORTHERN EUROPE for trading in a set with northern europe (currently occupying)
         k.player.getHand().get("ARTILLERY").push(new Card("ALASKA", "ARTILLERY"));
-        k.player.getHand().get("ARTILLERY").push(new Card("NORTHERN EUROPE", "ARTILLERY"));
+        k.player.getHand().get("ARTILLERY").push(new Card("JAPAN", "ARTILLERY"));
         assertEquals(9, k.getFreeArmiesFromTerritoriesAndCards(placeholder));
+        assertEquals(7, k.BM.getOccupantCount("JAPAN"));
 
         // 3+8
         k.player.getHand().get("WILD").push(new Card("ALASKA", "WILD"));
@@ -181,7 +182,6 @@ public class TurnTest extends TestCase {
         k.player.getHand().get("INFANTRY").push(new Card("MIDDLE EAST", "INFANTRY"));
         assertEquals(15, k.getFreeArmiesFromTerritoriesAndCards(placeholder));
 
-        k.BM.getBoardMap().get("ARGENTINA").setTerritory(true, 2, new Army(5));
         // 3+15
         k.player.getHand().get("INFANTRY").push(new Card("ARGENTINA", "INFANTRY"));
         k.player.getHand().get("INFANTRY").push(new Card("NORTHERN EUROPE", "INFANTRY"));
@@ -190,7 +190,6 @@ public class TurnTest extends TestCase {
         assertEquals(7, k.BM.getOccupantCount("ARGENTINA"));
 
         // 3+20
-        k.BM.getBoardMap().get("BRAZIL").setTerritory(true, 2, new Army(10));
         k.player.getHand().get("WILD").push(new Card("BRAZIL", "WILD"));
         k.player.getHand().get("CAVALRY").push(new Card("NORTHERN EUROPE", "CAVALRY"));
         k.player.getHand().get("ARTILLERY").push(new Card("MIDDLE EAST", "ARTILLERY"));
@@ -198,7 +197,6 @@ public class TurnTest extends TestCase {
         assertEquals(12, k.BM.getOccupantCount("BRAZIL"));
 
         // 3+25
-        k.BM.getBoardMap().get("PERU").setTerritory(true, 2, new Army(8));
         k.player.getHand().get("CAVALRY").push(new Card("ALASKA", "CAVALRY"));
         k.player.getHand().get("INFANTRY").push(new Card("PERU", "INFANTRY"));
         k.player.getHand().get("ARTILLERY").push(new Card("MIDDLE EAST", "ARTILLERY"));
@@ -485,7 +483,21 @@ public class TurnTest extends TestCase {
     @Test
     public void testAttack(){
         ByteArrayInputStream in = new ByteArrayInputStream((
-                "yes\n" + "INDONESIA\n" + "NEW GUINEA\n" + "1\n1\nNO\n").getBytes());
+                "yes\n" +
+                        "ALASKA\n" + // failQuery
+                        "SIAM\n" +  // failQuery
+                        "INDONESIA\n" +  // passQuery
+
+                        "EASTERN AUSTRALIA\n" + // failQuery
+                        "INDIA\n"+  // failQuery
+                        "NEW GUINEA\n" +    // passQuery
+                        "45\n"+ // fail
+                        "2\n"+ // fail
+                        "1\n"+ // pass
+                        "3\n"+ //fail
+                        "1\n"+ // pass
+                        "NO\n"  // end iteration
+        ).getBytes());
         System.setIn(in);
         Scanner sp = new Scanner(System.in);
         GameManager GM = new GameManager(2);
@@ -494,13 +506,15 @@ public class TurnTest extends TestCase {
         GM.getBM().initializeTerritory(p1, "INDONESIA", 2);
         GM.getBM().initializeTerritory(p1, "WESTERN AUSTRALIA", 2);
         GM.getBM().initializeTerritory(p1, "EASTERN AUSTRALIA", 2);
-        GM.getBM().initializeTerritory(p2, "NEW GUINEA", 2);
+        GM.getBM().initializeTerritory(p2, "NEW GUINEA", 1);
         GM.getBM().initializeTerritory(p2, "SIAM", 2);
+        GM.getBM().initializeTerritory(p2, "INDIA", 2);
 
 
         Turn t1 = new Turn(GM.getBM(), p1, 22);
         t1.attack(GM, sp);
 
+        System.out.println(GM.getBM().getOccupantCount("INDONESIA"));
         assertEquals(1, GM.getBM().getOccupantCount("INDONESIA"));
         System.setIn(in);
     }
