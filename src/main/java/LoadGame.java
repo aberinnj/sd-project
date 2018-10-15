@@ -47,7 +47,7 @@ public class LoadGame {
                 int territoryArmy = tempTerriory.get(territoryName).getAsInt();
 
                 tempPlayer.addTerritories(territoryName);
-                bm.addOccupantsTo(territoryName, territoryArmy, "INFANTRY");
+                bm.addOccupantsTo(territoryName, territoryArmy);
             }
 
             //JsonArray hand = (JsonArray) jsonObject.get("Hand");

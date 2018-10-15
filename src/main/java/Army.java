@@ -1,19 +1,31 @@
+enum ArmyType {
+    INFANTRY
+}
+
+/*////////////////////////////////////////////////////////////////////////////////
+Army class
+
+todo: Add functionality for CAVALRY/ARTILLERY
+*///////////////////////////////////////////////////////////////////////////////*/
 public class Army {
     private int INFANTRY;
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Contructor for building an army
-    *///////////////////////////////////////////////////////////////////////////////*/
+    // army constructor sets the value of army
     Army(int j){
         INFANTRY =j;
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Function for getting values, incrementing and decrementing
-    *///////////////////////////////////////////////////////////////////////////////*/
+    // returns the current infantry count;
     public int getInfantryCount(){
         return INFANTRY;
     }
-    public void addInfantryCount(int k) { INFANTRY += k; }
-    public void loseInfantry(int k){ INFANTRY -= k;}
+    // adds a k-number of infantry to army
+    public void addInfantryCount(int k) {
+        INFANTRY += k;
+    }
+
+    // removes k-number of infantry from army
+    public void loseInfantry(int k){
+        INFANTRY -= k;
+    }
 }

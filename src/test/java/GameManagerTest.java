@@ -2,102 +2,199 @@
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
+import java.io.ByteArrayInputStream;
 import java.util.*;
-import java.util.ArrayList;
-import java.util.List;
 
+
+/*///////////////////////////////////////////////////////////////////////////////
+GameManagerTest
+ *//////////////////////////////////////////////////////////////////////////////
 public class GameManagerTest extends TestCase {
 
-    public static String base = System.getProperty("user.dir");
-
-    Object bm = new BoardManager(base + "/src/main/java/mapSource.json", base + "/src/main/java/deck.json");
-    Object dice = new Dice();
-    Object player = new Player(0, 40);
+    GameManager GM;
 
     @Test
-    public void testGameManager() throws Exception {
-        GameManager gm = new GameManager();
+    public void testGameManagerPlayerList() throws Exception {
+        Player[] TestPlayerList1;
+        Player[] TestPlayerList2;
+        Player[] TestPlayerList3;
+        Player[] TestPlayerList4;
+        GM = new GameManager();
+        GM.initializeAsNormal(3);
 
-        String[] mainArgs= {"This Game SUCKS!!!"};
-    }
-
-    @Test
-    public void testPlayer() throws Exception {
-
-        assertEquals(false, ((Player) player).isBaseEmpty());
-        assertEquals(0, ((Player) player).getId());
-
-        ((Player) player).addTerritories("TEXAS");
-        assertEquals(true, ((Player) player).ifPlayerHasTerritory("TEXAS"));
-        assertEquals(false,((Player) player).isPlayerTheWinner(((BoardManager) bm)));
-
-        ((Player) player).addTerritories("OKLAHOMA");
-        assertEquals(true, ((Player) player).ifPlayerHasTerritory("OKLAHOMA"));
-
-
-        ((BoardManager) bm).addOccupantsTo("TEXAS", 2, "INFANTRY");
-        ((Player) player).shipArmy();
-
-        ((Player) player).fortifyTerritory(((BoardManager) bm), "TEXAS", "OKLAHOMA", 2);
-
-        ((Player) player).loseTerritories("TEXAS");
-        assertEquals(false, ((Player) player).ifPlayerHasTerritory("TEXAS"));
-
-        assertEquals(false, ((Player) player).isBaseEmpty());
-
-        ((Player) player).shipArmy(); //armies = 39
-        assertNotSame(20, ((Player) player).getRemainingArmies());
-
-        List<String> test = new ArrayList<String>();
-        test.add("OKLAHOMA");
-
-        //assertEquals(((Player) player).territoriesCopy(), test);
-
-        assertEquals(1, ((Player) player).numOfTerritories());
-    }
-
-    @Test(expected = FileNotFoundException.class)
-    public void testBoardFail() {
-        BoardManager fail = new BoardManager("failpath1", "failpath2");
+        TestPlayerList1 = GM.setPlayerList(2);
+        assertEquals(40, TestPlayerList1[0].getNumberOfArmies());
+        TestPlayerList2 = GM.setPlayerList(4);
+        assertEquals(30, TestPlayerList2[0].getNumberOfArmies());
+        TestPlayerList3 = GM.setPlayerList(5);
+        assertEquals(25, TestPlayerList3[0].getNumberOfArmies());
+        TestPlayerList4 = GM.setPlayerList(6);
+        assertEquals(20, TestPlayerList4[0].getNumberOfArmies());
     }
 
     @Test
-    public void testDeck() {
-        Deck deck = new Deck(base + "/src/main/java/deck.json");
-        Deck fail = new Deck(base + "thisaintnodeck.json");
-        assertNotNull(deck.drawCard());
-        assertNotNull(deck.drawCard());
-        assertNotNull(deck.drawCard());
-        assertNotNull(deck.drawCard());
-        assertNotNull(deck.drawCard());
-        assertNotSame(deck.drawCard(), Deck.drawCard());
+    public void testGameOver() {
+        GM = new GameManager();
+        GM.initializeAsNormal(3);
+
+        GM.getPlayer(2).addTerritories("ALASKA");
+        assertFalse(GM.isGameOver());
+        GM.getPlayer(2).addTerritories("NORTH WEST TERRITORY");
+        GM.getPlayer(2).addTerritories("GREENLAND");
+        GM.getPlayer(2).addTerritories("ALBERTA");
+        GM.getPlayer(2).addTerritories("ONTARIO");
+        GM.getPlayer(2).addTerritories("QUEBEC");
+        GM.getPlayer(2).addTerritories("WESTERN UNITED STATES");
+        GM.getPlayer(2).addTerritories("EASTERN UNITED STATES");
+        GM.getPlayer(2).addTerritories("CENTRAL AMERICA");
+        GM.getPlayer(2).addTerritories("VENEZUELA");
+        GM.getPlayer(2).addTerritories("PERU");
+        GM.getPlayer(2).addTerritories("BRAZIL");
+        GM.getPlayer(2).addTerritories("ARGENTINA");
+        GM.getPlayer(2).addTerritories("NORTH AFRICA");
+        GM.getPlayer(2).addTerritories("CONGO");
+        GM.getPlayer(2).addTerritories("EGYPT");
+        GM.getPlayer(2).addTerritories("EAST AFRICA");
+        GM.getPlayer(2).addTerritories("SOUTH AFRICA");
+        GM.getPlayer(2).addTerritories("MADAGASCAR");
+        GM.getPlayer(2).addTerritories("MIDDLE EAST");
+        GM.getPlayer(2).addTerritories("INDIA");
+        GM.getPlayer(2).addTerritories("SIAM");
+        GM.getPlayer(2).addTerritories("INDONESIA");
+        GM.getPlayer(2).addTerritories("WESTERN AUSTRALIA");
+        GM.getPlayer(2).addTerritories("EASTERN AUSTRALIA");
+        GM.getPlayer(2).addTerritories("NEW GUINEA");
+        GM.getPlayer(2).addTerritories("CHINA");
+        GM.getPlayer(2).addTerritories("AFGHANISTAN");
+        GM.getPlayer(2).addTerritories("URAL");
+        GM.getPlayer(2).addTerritories("SIBERIA");
+        GM.getPlayer(2).addTerritories("YAKUTSK");
+        GM.getPlayer(2).addTerritories("KAMCHATKA");
+        GM.getPlayer(2).addTerritories("IRKUTSK");
+        GM.getPlayer(2).addTerritories("MONGOLIA");
+        GM.getPlayer(2).addTerritories("JAPAN");
+        GM.getPlayer(2).addTerritories("UKRAINE");
+        GM.getPlayer(2).addTerritories("SCANDINAVIA");
+        GM.getPlayer(2).addTerritories("ICELAND");
+        GM.getPlayer(2).addTerritories("GREAT BRITAIN");
+        GM.getPlayer(2).addTerritories("NORTHERN EUROPE");
+        GM.getPlayer(2).addTerritories("SOUTHERN EUROPE");
+        GM.getPlayer(2).addTerritories("WESTERN EUROPE");
+        assertTrue(GM.isGameOver());
     }
+
+
+    //Assumptions:
+    // There are 42 territories as listed below
+    // A 2-player game gives 40 infantry -- yielding 19 infantry left to divide among player territories
 
     @Test
-    public void testDice() throws Exception {
+    public void testRunSetup(){
+        ByteArrayInputStream in = new ByteArrayInputStream(("" +
+                "ALASKA\n" +
+                "NORTH WEST TERRITORY\n" +
+                "GREENLAND\n" +
+                "ALBERTA\n" +
+                "ONTARIO\n" +
+                "QUEBEC\n" +
+                "WESTERN UNITED STATES\n" +
+                "EASTERN UNITED STATES\n" +
+                "CENTRAL AMERICA\n" +
+                "VENEZUELA\n" +
+                "PERU\n" +
+                "BRAZIL\n" +
+                "ARGENTINA\n" +
+                "NORTH AFRICA\n" +
+                "CONGO\n" +
+                "EGYPT\n" +
+                "EAST AFRICA\n" +
+                "SOUTH AFRICA\n" +
+                "MADAGASCAR\n" +
+                "MIDDLE EAST\n" +
+                "INDIA\n" +
+                "SIAM\n" +
+                "INDONESIA\n" +
+                "WESTERN AUSTRALIA\n" +
+                "EASTERN AUSTRALIA\n" +
+                "NEW GUINEA\n" +
+                "CHINA\n" +
+                "AFGHANISTAN\n" +
+                "URAL\n" +
+                "SIBERIA\n" +
+                "YAKUTSK\n" +
+                "KAMCHATKA\n" +
+                "IRKUTSK\n" +
+                "MONGOLIA\n" +
+                "JAPAN\n" +
+                "UKRAINE\n" +
+                "SCANDINAVIA\n" +
+                "ICELAND\n" +
+                "GREAT BRITAIN\n" +
+                "NORTHERN EUROPE\n" +
+                "SOUTHERN EUROPE\n" +
+                "WESTERN EUROPE\n"+
 
-        ((Dice) dice).roll();
-        int roll = ((Dice) dice).getDiceValue();
-        int high = 7;
-        int low = 0;
-        assertTrue("Error, random is too high", high >= roll);
-        assertTrue("Error, random is too low",  low  <= roll);
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+                "ALASKA\n" +
+
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n" +
+                "ALBERTA\n"
+
+                ).getBytes());
+        System.setIn(in);
+
+        Scanner thisScanner = new Scanner(System.in);
+        GM = new GameManager();
+        GM.initializeAsNormal(2);
+        GM.runSetup(GM, thisScanner);
+        // Test Below
+
+        assertTrue(GM.getPlayer(0).getNumberOfArmies() == 0);
+        assertTrue(GM.getPlayer(1).getNumberOfArmies()==0);
+
+        BoardManager BM = GM.getBM();
+        assertEquals(0, BM.getFreeTerritories().size());
+
+        System.setIn(System.in);
     }
-
-    @Test
-    public void testArmy() {
-        Object army = new Army(10);
-        int armies = ((Army) army).getInfantryCount();
-        assertEquals(10, ((Army) army).getInfantryCount());
-
-        ((Army) army).addInfantryCount(20);
-        armies = ((Army) army).getInfantryCount();
-        assertEquals(30, ((Army) army).getInfantryCount());
-
-        ((Army) army).loseInfantry(20);
-        assertEquals(10, ((Army) army).getInfantryCount());
-    }
-
-
 }

@@ -1,148 +1,199 @@
-import com.google.gson.JsonObject;
-
-import java.io.IOException;
 import java.util.*;
 
 
+/*///////////////////////////////////////////////////////////////////////
+GameManager sets up the game by Initializing Players and the Board
+as well as the Deck
+todo: create a more robust way of reading these files that aren't dependent on path naming conventions
+*//////////////////////////////////////////////////////////////////////*/
 public class GameManager {
+    static Player[] playerList;
+    static int[] playerTurnPattern;
+    static TurnManager TM;
+    private static BoardManager BM;
+
+    // Sets up ALL Game Variables, which must be testable upon initialization
+    GameManager() {
+        BM = new BoardManager();
+        TM = new TurnManager();
+    }
+
+    // must be called to start GameManager
+    public void initializeAsNormal(int playerCount)
+    {
+        playerList = setPlayerList(playerCount);
+
+        System.out.println("\n__Order of Turns:__");
+        Dice k = new Dice();
+        ArrayList<Integer> diceArr = new ArrayList<Integer>();
+        for (int i = 0; i < playerCount; i++) {
+            k.roll();
+            diceArr.add(k.getDiceValue());
+        }
+        playerTurnPattern = getTurnPattern(playerCount, getIndexOfHighestRollIn(diceArr, playerCount));
+    }
+
+    // Query for yes/no
+    // for Queries for territories, check BoardManager's queryTerritory
+    public boolean baseQuery(String query, Scanner scanner) {
+        String res;
+        do {
+            System.out.println(query);
+            res = scanner.nextLine();
+        }while(!res.toLowerCase().equals("y") && !res.toLowerCase().equals("yes") && !res.toLowerCase().equals("n") && !res.toLowerCase().equals("no"));
+
+        return (res.toLowerCase().equals("y") || res.toLowerCase().equals("yes"));
+    }
 
 
-    public static void main(String[] args) throws Exception {
-        NewGame ng = new NewGame();
+    public Player getPlayer(int playerID) {
+        return playerList[playerID];
+    }
 
-        // Game Setup
-        System.out.println("Game of Risk");
-        System.out.println("------------------------");
-        System.out.println("PlayerSetup");
-        System.out.println("------------------------");
-        Scanner globalScanner = ng.getScanner();
+    public BoardManager getBM() {return BM;}
 
-        String base = ng.getBase();
-        BoardManager bm = ng.getBoardManager(base);
+    // Initializes PlayerList Array with the right amount of Infantry
+    public Player[] setPlayerList(int size){
+        Player[] playerList = new Player[size];
+        int default_infantry = 0;
 
-        int turnNumber;
-
-        System.out.println("Would you like to load a saved game?");
-        String answer = globalScanner.nextLine();
-        int numPlayers = 0;
-        Player[] playerList;
-        int[] playerTurnPattern;
-
-        if (answer.equalsIgnoreCase("Yes")) {
-
-            System.out.println("Which turn would you like to load from?");
-            System.out.println("Enter -1 to begin from the beginning");
-            turnNumber = Integer.parseInt(globalScanner.nextLine());
-
-            LoadGame LG = new LoadGame();
-            JsonObject loadedTurn = LG.LoadGame(turnNumber, bm);
-            numPlayers = LG.getNumPlayers(loadedTurn);
-
-            playerList = LG.setPlayers(bm, numPlayers, loadedTurn);
-
-            playerTurnPattern = new int[numPlayers];
-
+        switch(size){
+            case 2:
+                default_infantry=40;
+                break;
+            case 3:
+                default_infantry=35;
+                break;
+            case 4:
+                default_infantry=30;
+                break;
+            case 5:
+                default_infantry=25;
+                break;
+            case 6:
+                default_infantry=20;
+                break;
         }
 
-
-        else {
-
-            numPlayers = ng.getNumberPlayers(globalScanner);
-
-            playerList = ng.setupPlayerList(numPlayers);
-
-            playerTurnPattern = new int[numPlayers];
-            Dice die = new Dice();
-
-            System.out.println("-----------------------");
-            System.out.println("BoardSetup");
-            System.out.println("Note: Whoever gets the first of the same highest");
-            System.out.println("number, is considered to have the highest number");
-            System.out.println("------------------------");
-
-            int highestDieValue = ng.rollForSetup(die, numPlayers);
-
-            System.out.println("\nOrder of Turns:");
-            for(int b=0; b<numPlayers; b++)
-            {
-                playerTurnPattern[b] = (highestDieValue+b)% numPlayers;
-                System.out.println((b+1)+ ". Player#" + playerTurnPattern[b]);
-            }
-
-            ng.initializeTerritories(bm, globalScanner, playerTurnPattern, playerList);
-
-            System.out.println("------------------------");
-            System.out.println("Allocate the rest of your armies");
-            System.out.println("------------------------");
-
-            shipArmies(playerTurnPattern, playerList, bm, globalScanner);
-
-            turnNumber = 0;
+        for(int a=0; a<size; a++){
+            playerList[a] = new Player(a, default_infantry);
         }
 
-        runGame(ng, bm, numPlayers, playerList, playerTurnPattern, globalScanner, base, turnNumber);
+        return playerList;
 
     }
 
-    public static void shipArmies(int[] playerTurnPattern, Player[] playerList, BoardManager bm, Scanner globalScanner) {
-        for (int i: playerTurnPattern) {
-            playerList[i].shipArmies(bm, globalScanner);
-        }
-    }
-
-    public static void runGame(NewGame ng, BoardManager bm, int numPlayers, Player[] playerList, int[] playerTurnPattern, Scanner scanner, String base, int turns) throws Exception {
-        MoveManager MM = new MoveManager(base);
-        JSONhandler JH = new JSONhandler(bm, playerList, playerTurnPattern);
-        initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
-
-        // Game Start
-        while(!isGameOver(bm, playerList)){
-            int turnNumber = turns;
-            Player playerCurrent = null;
-            for (int player: playerTurnPattern)
+    // Get Highest Roll
+    public int getIndexOfHighestRollIn(ArrayList<Integer> diceList,int iterations){
+        int indexOfHighestRoll = 0;
+        int valueOfHighestRoll = diceList.get(0);
+        for(int i=1; i<iterations; i++)
+        {
+            if (diceList.get(i) > valueOfHighestRoll)
             {
-                playerCurrent = playerList[player];
-                System.out.println("Player " + player + " turn");
-
-                Turn turn = new Turn(MM, ng, bm, playerCurrent, playerList, scanner);
-                JH.JSONwriter(turnNumber);
-                turnNumber++;
-
-                System.out.println("Save Game?");
-                String ans = scanner.nextLine().toLowerCase();
-                if (ans == "yes") {
-                    JH.upload();
-                }
+                valueOfHighestRoll = diceList.get(i);
+                indexOfHighestRoll = i;
             }
         }
+        return indexOfHighestRoll;
     }
 
-    public static void initialize(JSONhandler JH, NewGame ng, BoardManager bm, MoveManager MM, Player[] playerList, int numPlayers, int playerID) throws IOException {
-        Move initialize = MM.addToMoveManager(bm, MM, playerList, numPlayers, -1);
-        MM.addMove(initialize);
-        JH.JSONinitializer(-1);
+    // Setup UserTurnPattern and display (optional)
+    public int[] getTurnPattern(int size, int highest) {
+        int[] array = new int[size];
+        for (int i = 0; i < size; i++) {
+            array[i] = (highest + i) % size;
+            System.out.println((i+1)+ ". Player#" + array[i]);
+        }
+        return array;
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Method checks if the game is over, by passing the boardmanager
-    returns true if a player has all the territories
+    // Run setup to finish Game setup for all players
+    public static void runSetup(GameManager GM, Scanner scanner) {
+        System.out.println("__CLAIM TERRITORIES__");
+        GM.claimTerritories(scanner);
+        System.out.println("__STRENGTHEN TERRITORIES__");
+        for (int id: playerTurnPattern) {
+            GM.strengthenTerritories(scanner, id);
+        }
+        // JH.JSONinitializer(-1);
+    }
 
-    Also removes player from playerList if player has no territories
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public static boolean isGameOver(BoardManager bm, Player[] playerList){
-        Player[] tempList = playerList.clone();
-        for(Player i: tempList){
-            if (i.isPlayerTheWinner(bm)){
+    public static void runGame(GameManager GM, Scanner scanner){
+        //  JSONhandler JH = new JSONhandler(bm, playerList, playerTurnPattern);
+        //  initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
+
+        int turnID = 1;
+        while(!GM.isGameOver()){
+
+            for (int id: playerTurnPattern) {
+                System.out.println("Player " + id + " turn: ");
+                TM.save(makeTurn(GM, scanner, playerList[id], turnID));
+                turnID++;
+            }
+            //  JH.JSONwriter(turnNumber);
+            //  JH.upload();
+        }
+    }
+
+    // make a turn
+    public static Turn makeTurn(GameManager GM, Scanner scanner, Player p, int id) {
+        Turn k = new Turn(BM, p, id);
+        k.turnFunction(GM, scanner);
+        return k;
+    }
+
+    // Display Free territories -- removed displayPlayerTerritories for simplicity and less console clutter
+    public void claimTerritories(Scanner scanner){
+        String territory;
+        while(BM.getFreeTerritories().size() > 0) {
+            for (int id : playerTurnPattern) {
+
+                System.out.println("__Free Territories__");
+                for(String k : BM.getFreeTerritories())
+                    System.out.println(k);
+
+                do{
+                    territory = BM.queryTerritory(scanner, "Player #" + id + " -- Territory select: ",
+                            "INITIALIZE", playerList[id], "");
+                } while(territory == null);
+
+                BM.initializeTerritory(playerList[id], territory, 1);
+
+            }
+        }
+    }
+
+
+    public void strengthenTerritories(Scanner scanner, int id) {
+        String territory;
+
+            while (playerList[id].getNumberOfArmies() > 0) {
+
+                System.out.println("Infantry Count And Player #"+ id +" Territories");
+
+                for (String country: playerList[id].getTerritories()) {
+                    System.out.println(BM.getOccupantCount(country) + " " + country);}
+
+                System.out.println("Remaining armies: " + playerList[id].getNumberOfArmies());
+                System.out.println("Select a territory to ship your Army to: ");
+
+                do{
+                    territory = BM.queryTerritory(scanner, "Player #" + id + " -- Territory select: ",
+                            "STRENGTHEN", playerList[id], "");
+                } while(territory == null);
+
+                BM.strengthenTerritory(playerList[id], territory, 1);
+            }
+    }
+
+    // Player list only contains Players, and you can freely check if players have all the territories
+    public boolean isGameOver(){
+        for(Player i: playerList){
+            if (i.isPlayerTheWinner(BM)){
                 System.out.println("Someone won!?");
                 return true;
             }
-            //todo: remove player method
-            //if (i.hasPlayerLost(bm)) {
-            //    System.out.println("Player " + i + " is no longer in the game");
-            //    for (Player j = i; j<playerList.length - 1; j++) {
-            //        playerList[j] = playerList[j+1]
-            //    }
-            //}
         }
         return false;
     }

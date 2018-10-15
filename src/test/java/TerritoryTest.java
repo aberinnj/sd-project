@@ -1,55 +1,78 @@
 import junit.framework.TestCase;
 import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.util.ArrayList;
-
-
+/*////////////////////////////////////////////////////////////////////////////////
+_Starter Class starts a _Starter by initializing GameManager and runs a game
+*///////////////////////////////////////////////////////////////////////////////*/
 public class TerritoryTest extends TestCase{
-    Object mainTerritory = new Territory(
-            true,
-            0,
-            new Army(1),
-            new ArrayList<String>() {{
-                add("KAMCHATKA");
-                add("NORTH WEST TERRITORY");
-                add("ALBERTA");
-    }});
+    private Territory mainTerritory;
 
     @Test
-    public void TestSimpleGets() throws Exception {
-        assertEquals(0, ((Territory) mainTerritory).getOccupantID());
-    }
+    public void testSimpleGets() {
+        String[] k = new String[]{"INDIA", "CHINA", "INDONESIA"};
+        mainTerritory = new Territory(k);
+        mainTerritory.setTerritory(true, 0, new Army(1));
+        assertEquals(0, mainTerritory.getOccupantID());
+        assertTrue(mainTerritory.isOccupied());
+        assertEquals(1, mainTerritory.getArmy().getInfantryCount());
 
-    @Test void TestAddOccupants() throws Exception {
-        ((Territory) mainTerritory).addOccupants(5, "INFANTRY");
-        assertEquals(6, ((Territory) mainTerritory).ArmyCount());
-        ((Territory) mainTerritory).addOccupants(4, "INFANTRY");
-        assertEquals(2, ((Territory) mainTerritory).ArmyCount());
+        for(String c: k)
+        {
+            assertTrue(mainTerritory.getNeighbors().contains(c));
+        }
     }
 
     @Test
-    public void testGetArmy() throws Exception {
-        assertEquals(1, ((Territory) mainTerritory).getArmy().getInfantryCount());
-
-        assertEquals("1", ((Territory) mainTerritory).seeArmyCount());
+    public void testInitialization() throws Exception {
+        Territory territoryInitialized;
+        territoryInitialized = new Territory(new String[]{"KAMCHATKA", "NORTH WEST TERRITORY", "ALBERTA"});
+        assertFalse(territoryInitialized.isOccupied());
+        assertEquals(-1, territoryInitialized.getOccupantID());
+        assertNull(territoryInitialized.getArmy());
     }
+
+
+    @Test
+    public void testAddOccupants() throws Exception {
+        mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
+        mainTerritory.setTerritory(true, 2, new Army(1));
+        mainTerritory.addOccupants(5, ArmyType.INFANTRY);
+        assertEquals(6, mainTerritory.getArmy().getInfantryCount());
+    }
+
+    @Test
+    public void testLoseOccupants() throws Exception {
+        mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
+        mainTerritory.setTerritory(true, 2, new Army(6));
+        assertNotNull(mainTerritory.getArmy());
+        mainTerritory.loseOccupants(2, ArmyType.INFANTRY);
+        assertEquals(4, mainTerritory.getArmy().getInfantryCount());
+    }
+
 
     @Test
     public void testOwnership() throws Exception {
-        ((Territory) mainTerritory).transferOwnership(1);
-        assertEquals(1, ((Territory) mainTerritory).getOccupantID());
-        ((Territory) mainTerritory).transferOwnership(0);
-    }
-
-    @Test
-    public void testIsOccupied() throws Exception {
-        assertTrue(((Territory) mainTerritory).isOccupied());
+        mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
+        mainTerritory.setTerritory(true, 2, new Army(1));
+        mainTerritory.transferOwnership(3);
+        assertEquals(3, mainTerritory.getOccupantID());
+        mainTerritory.transferOwnership(4);
+        assertEquals(4, mainTerritory.getOccupantID());
     }
 
     @Test
     public void testArmyCount() throws Exception {
-        assertEquals(1, ((Territory) mainTerritory).ArmyCount());
+        mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
+        mainTerritory.setTerritory(true, 2, new Army(1));
+        assertEquals(1, mainTerritory.getArmy().getInfantryCount());
     }
 
+    @Test
+    public void testSeeArmyCount() throws Exception {
+        mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"});
+        mainTerritory.setTerritory(true, 2, new Army(4));
+        assertEquals("4", mainTerritory.seeArmyCount());
+    }
 
 }

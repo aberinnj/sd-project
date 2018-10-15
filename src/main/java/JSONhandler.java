@@ -1,8 +1,5 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
@@ -41,7 +38,7 @@ class JSONturn {
         turnJSON.add("Deck", (JsonElement) deck);
         JsonArray players = new JsonArray();
 
-        List<JsonObject> Players = new ArrayList<>();
+        List<JsonObject> Players = new ArrayList<JsonObject>();
         for (int jsonPlayer: playerTurnPattern) {
 
             JsonObject tempPlayer = new JsonObject();
@@ -64,24 +61,24 @@ class JSONturn {
     }
 
     public List<JsonObject> createDeck() {
-        ArrayList<Map.Entry<String, String>> deck = Deck.getDeck();
+        ArrayList<Card> deck = new ArrayList<Card>(){{addAll(bm.getGameDeck().GameDeck);}};
         //JsonObject cards = new JsonObject();
-        List<JsonObject> cards = new ArrayList<>();
-        for (Map.Entry<String, String> card: deck) {
+        List<JsonObject> cards = new ArrayList<JsonObject>();
+        for (Card card: deck) {
             JsonObject temp = new JsonObject();
-            temp.addProperty(card.getKey(), card.getValue());
+            temp.addProperty(card.getOrigin(), card.getUnit());
             cards.add(temp);
         }
         return cards;
     }
 
-    public List<JsonObject> createPlayerHand(Player player) {
-        ArrayList<Map.Entry<String, String>> tempdeck = player.getHand();
+    public List<JsonObject> createPlayerHand(final Player player) {
+
         //JsonObject hand = new JsonObject();
-        List<JsonObject> hand = new ArrayList<>();
-        for (Map.Entry<String, String> card: tempdeck) {
+        List<JsonObject> hand = new ArrayList<JsonObject>();
+        for (Card card: player.getHandListing()) {
             JsonObject temp = new JsonObject();
-            temp.addProperty(card.getKey(), card.getValue());
+            temp.addProperty(card.getOrigin(), card.getUnit());
             hand.add(temp);
         }
         return hand;
@@ -90,7 +87,7 @@ class JSONturn {
     public List<JsonObject> createPlayerTerritories(Player player) {
         List<String> t = player.getTerritories();
         //JsonArray ter = new JsonArray();
-        List<JsonObject> ter = new ArrayList<>();
+        List<JsonObject> ter = new ArrayList<JsonObject>();
         for (String terr: t) {
             JsonObject temp = new JsonObject();
             int a = bm.getOccupantCount(terr);
@@ -104,7 +101,7 @@ class JSONturn {
 
 class Turns {
     @Expose
-    List<JsonObject> turns = new ArrayList<>();
+    List<JsonObject> turns = new ArrayList<JsonObject>();
 
     public List<JsonObject> getTurns() {
         return turns;
@@ -185,7 +182,7 @@ public class JSONhandler {
         while (itr.hasNext()) {
             JsonObject jsonObject = (JsonObject) itr.next();
             Object Obj = jsonObject.get("Turn");
-            if (Obj == turnNumber) {
+            if (((JsonElement) Obj).getAsInt() == turnNumber) {
                 return jsonObject;
             }
         }
