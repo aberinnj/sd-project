@@ -13,7 +13,7 @@ todo: create a more robust way of reading these files that aren't dependent on p
 *//////////////////////////////////////////////////////////////////////*/
 public class GameManager {
     static Player[] playerList;
-    static int[] playerTurnPattern;
+    int[] playerTurnPattern;
     static TurnManager TM;
     private static BoardManager BM;
 
@@ -126,7 +126,7 @@ public class GameManager {
         System.out.println("__CLAIM TERRITORIES__");
         GM.claimTerritories(scanner);
         System.out.println("__STRENGTHEN TERRITORIES__");
-        for (int id: playerTurnPattern) {
+        for (int id: GM.playerTurnPattern) {
             GM.strengthenTerritories(scanner, id);
         }
 
@@ -139,7 +139,7 @@ public class GameManager {
         int turnID = 1;
         while(!GM.isGameOver()){
 
-            for (int id: playerTurnPattern) {
+            for (int id: GM.playerTurnPattern) {
                 System.out.println("Player " + id + " turn: ");
                 TM.save(makeTurn(GM, scanner, playerList[id], turnID));
                 JH.JSONwriter(turnID);

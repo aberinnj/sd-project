@@ -1,6 +1,5 @@
-import com.google.gson.JsonObject;
-
 import java.io.IOException;
+
 import java.util.*;
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -52,8 +51,10 @@ public class _Starter {
 
                 GM.loadGame(turnToRetrieve, loader);
 
+
                 // queryForTurn or cancel (if cancel call DefaultStart(GM)) should still be testable) see GameManagerTest for example
                 // if selected, for each important data, get/pull data from TurnManager
+
                 // default setPlayerList(id is -1, hand is empty, etc.) these default values are changed below
                 // then call GameManager.setTurnPattern
                 // then call GameManager.setDeck(DeckData), GameManager.setPlayer(DeckData, TerritoryData, ArmyData) for each player),
@@ -61,11 +62,10 @@ public class _Starter {
                 // run game below
             } else NG.defaultStart(GM);
         }
-        else
-        {
+        else {
             NG.defaultStart(GM);
         }
-        //GM.runGame(GM, NG.scanner);
+        GM.runGame(GM, NG.scanner);
     }
 
     public void defaultStart(GameManager GM) {
