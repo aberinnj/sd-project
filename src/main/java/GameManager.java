@@ -134,7 +134,7 @@ public class GameManager {
     }
 
     public static void runGame(GameManager GM, Scanner scanner) throws IOException {
-        JSONhandler JH = new JSONhandler(BM, playerList, playerTurnPattern);
+        JSONhandler JH = new JSONhandler(BM, playerList, GM.playerTurnPattern);
         //  initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
         JH.JSONinitializer(0);
         int turnID = 1;
