@@ -18,7 +18,7 @@ public class JSONhandler {
     ArrayList<String> linststring;
     BoardManager bm = null;
     Player[] playerList = null;
-    FileWriter file = new FileWriter("/home/austin/IdeaProjects/sd_project_refactored/Risk.json", false);
+    FileWriter file;
     JsonWriter jw = new JsonWriter(file);
     int[] playerTurnPattern;
     private String clientRegion = "us-east-1";
@@ -28,16 +28,17 @@ public class JSONhandler {
     private String fileName;
     private String key = "RiskGSON";
 
-    JSONhandler(BoardManager bm, Player[] playerList, int[] playerTurnPattern) throws IOException {
+    JSONhandler(BoardManager bm, Player[] playerList, int[] playerTurnPattern, String base) throws IOException {
         this.bm = bm;
         this.playerList = playerList;
         this.playerTurnPattern = playerTurnPattern;
-        this.fileName = "/home/austin/IdeaProjects/sd_project_refactored/Risk.json";
+        this.fileName = base + "/Risk.json";
+        this.file = new FileWriter(fileName, false);
     }
 
     public JsonArray JSONreader() throws FileNotFoundException {
         JsonParser parser = new JsonParser();
-        Object obj = parser.parse(new FileReader("/home/austin/IdeaProjects/sd_project_refactored/Risk.json"));
+        Object obj = parser.parse(new FileReader(fileName));
         JsonObject jsonObject = (JsonObject) obj;
 
         JsonArray msg = (JsonArray) jsonObject.get("turns");
@@ -64,7 +65,7 @@ public class JSONhandler {
     public void JSONinitializer(int turnNumber) throws IOException {
         JSONturn newTurn = new JSONturn(bm, playerList, turnNumber, playerTurnPattern);
         JsonObject newTurnJSON = newTurn.createTurnJSON();
-        Writer writer = new FileWriter("/home/austin/IdeaProjects/sd_project_refactored/Risk.json");
+        Writer writer = new FileWriter(fileName);
         Turns Turns = new Turns();
         Turns.addTurn(newTurnJSON);
 

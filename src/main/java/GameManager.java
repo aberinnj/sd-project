@@ -12,6 +12,7 @@ as well as the Deck
 todo: create a more robust way of reading these files that aren't dependent on path naming conventions
 *//////////////////////////////////////////////////////////////////////*/
 public class GameManager {
+    String base;
     static Player[] playerList;
     int[] playerTurnPattern;
     static TurnManager TM;
@@ -21,6 +22,7 @@ public class GameManager {
     GameManager() {
         BM = new BoardManager();
         TM = new TurnManager();
+        this.base = System.getProperty("user.dir");
     }
 
     public void loadGame(int turnToLoad, Loader loader) throws IOException {
@@ -132,8 +134,8 @@ public class GameManager {
 
     }
 
-    public static void runGame(GameManager GM, Scanner scanner) throws IOException {
-        JSONhandler JH = new JSONhandler(BM, playerList, playerTurnPattern);
+    public void runGame(GameManager GM, Scanner scanner) throws IOException {
+        JSONhandler JH = new JSONhandler(BM, playerList, playerTurnPattern, base);
         //  initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
         JH.JSONinitializer(0);
         int turnID = 1;
