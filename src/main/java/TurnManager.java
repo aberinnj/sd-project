@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /*///////////////////////////////////////////////////////////////////////////////
-TurnManager
+TurnManager - takes car of client turns, saves result into object and calls uploads
 
 `The great middleman` - TurnManager
 The class that is in the middle of everything

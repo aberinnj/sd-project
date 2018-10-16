@@ -2,7 +2,9 @@ import java.util.*;
 
 
 /*///////////////////////////////////////////////////////////////////////
-GameManager sets up the game by Initializing Players and the Board
+GameManager sets up game
+
+On a high-level, this class sets up the game by Initializing Players and the Board
 as well as the Deck
 todo: create a more robust way of reading these files that aren't dependent on path naming conventions
 *//////////////////////////////////////////////////////////////////////*/

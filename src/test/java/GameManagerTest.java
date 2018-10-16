@@ -14,6 +14,18 @@ public class GameManagerTest extends TestCase {
     GameManager GM;
 
     @Test
+    public void testGameManagerInit(){
+        GM = new GameManager();
+
+        assertNotNull(GM.getBM());
+        assertNotNull(GM.TM);
+
+        GM.initializeAsNormal(3);
+        assertNotNull(GM.getPlayer(2));
+        assertEquals(35, GM.getPlayer(2).getNumberOfArmies());
+    }
+
+    @Test
     public void testGameManagerPlayerList() throws Exception {
         Player[] TestPlayerList1;
         Player[] TestPlayerList2;
