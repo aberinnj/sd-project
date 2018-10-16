@@ -23,6 +23,7 @@ public class GameManager {
         TM = new TurnManager();
     }
 
+    //
     public void loadGame(int turnToLoad, Loader loader) throws IOException {
         JsonObject turn = loader.LoadGame(turnToLoad, BM);
         int numPlayers = loader.getNumPlayers(turn);

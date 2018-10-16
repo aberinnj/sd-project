@@ -22,6 +22,10 @@ public class _Starter {
     /* Initialize Member Variables
      * Note that playerCount is initialized to 0. Call setNumberOfPlayers to initialize*/
     _Starter(){
+        System.out.println(" __________________");
+        System.out.println("|   Game of Risk   |");
+        System.out.println(" '''''''''''''''''' ");
+
         this.scanner = new Scanner(System.in);
         this.base = System.getProperty("user.dir");
         bucketName = "risk-game-team-one";
@@ -32,9 +36,6 @@ public class _Starter {
     Main function
     //////////////////////////////////////////////////////////////////////////////////*/
     public static void main(String[] args) throws IOException {
-        System.out.println(" __________________");
-        System.out.println("|   Game of Risk   |");
-        System.out.println(" '''''''''''''''''' ");
 
         _Starter NG = new _Starter();
         GameManager GM = new GameManager();

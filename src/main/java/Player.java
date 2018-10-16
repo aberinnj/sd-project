@@ -112,9 +112,7 @@ public class Player {
         return territories.size() == bm.getBoardMap().keySet().size();
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Constructor for making a player
-    *///////////////////////////////////////////////////////////////////////////////*/
+    // new-game constructor
     Player(int id, int infantryCount)
     {
         this.id = id;
@@ -126,5 +124,26 @@ public class Player {
         Hand.put("CAVALRY", new Stack<Card>());
         Hand.put("ARTILLERY", new Stack<Card>());
         Hand.put("WILD", new Stack<Card>());
+    }
+
+    // load-game constructor
+    Player(int id, int infantryCount, ArrayList<Card> cardStack, ArrayList<String> territories)
+    {
+        this.id = id;
+        this.placeholder = new Army(infantryCount);
+        this.Hand = new HashMap<String, Stack<Card>>();
+        Hand.put("INFANTRY", new Stack<Card>());
+        Hand.put("CAVALRY", new Stack<Card>());
+        Hand.put("ARTILLERY", new Stack<Card>());
+        Hand.put("WILD", new Stack<Card>());
+
+        for(Card e: cardStack)
+        {
+            Hand.get(e.getUnit()).push(e);
+        }
+        this.territories = territories;
+
+
+
     }
 }

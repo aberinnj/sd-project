@@ -1,21 +1,65 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /*///////////////////////////////////////////////////////////////////////////////
 TurnManager - takes car of client turns, saves result into object and calls uploads
 
-`The great middleman` - TurnManager
-The class that is in the middle of everything
+TurnManager should be making deep-copying turns for recreating entire games from turns
+
+What is included in a turn?
+Previous game state
  *//////////////////////////////////////////////////////////////////////////////
 public class TurnManager {
     private ArrayList<Turn> turnList;
 
-    public void save(Turn t){
-        turnList.add(t);
+    public void save(final Turn k){
+        BoardManager actualBM = new BoardManager(
+                copy(k.BM.getBoardMap()),
+                copy(k.BM.getGameDeck()), k.BM.completeSets);
+
+        Player player = new Player(
+                k.player.getId(),
+                k.player.getNumberOfArmies(),
+                new ArrayList<Card>(){{addAll(k.player.getHandListing());}},
+                new ArrayList<String>(){{addAll(k.player.getTerritories());}});
+
+        turnList.add(new Turn(actualBM, player, k.turnId));
     }
 
-    // Users can undo their actions
+    public ArrayList<Turn> getTurnList(){
+        return turnList;
+    }
+
+    // testable deep copy of boardMap
+    public HashMap<String, Territory> copy(HashMap<String, Territory> old){
+        HashMap<String, Territory> actualMap = new HashMap<String, Territory>();
+        for(Map.Entry<String, Territory> obj: old.entrySet())
+        {
+            String[] neighbors = obj.getValue().getNeighbors().toArray(new String[0]);
+            boolean isOccupied = obj.getValue().isOccupied();
+            int armyCount = obj.getValue().getArmy().getInfantryCount();
+            int occupantID = obj.getValue().getOccupantID();
+
+
+            actualMap.put(obj.getKey(), new Territory(neighbors));
+            actualMap.get(obj.getKey()).setTerritory(isOccupied, occupantID, new Army(armyCount));
+        }
+        return actualMap;
+    }
+
+    // testable deep copy of game-deck
+    public Deck copy(Deck old){
+        Stack<Card> actualDeckStack = new Stack<Card>();
+        for(int i=0; i<old.GameDeck.size(); i++)
+        {
+            actualDeckStack.add(i, old.GameDeck.get(i));
+        }
+        return new Deck(actualDeckStack);
+    }
+
+    // testable first Turn (that includes board details, player is null)
+    public void init(int playerCount) {}
+
+    // Users can undo their actions with this
     public Turn getLastMove(){
         return turnList.get(turnList.size()-1);
     }
@@ -24,27 +68,6 @@ public class TurnManager {
     public Turn returnToMove(int i)
     {
         return turnList.get(i);
-    }
-
-    public void addToMoveManager(BoardManager bm, TurnManager MM, Player[] list, int size, int playerID){
-        HashMap<String, Territory> moveMap = new HashMap<String, Territory>();
-        HashMap<String, Territory> boardMap = bm.getBoardMap();
-        HashMap<Integer, List<String>> playerTerritories = new HashMap<Integer, List<String>>();
-        for(String key: boardMap.keySet())
-        {
-            //String[] neighbors = Array<String>(boardMap.get(key).getNeighborsOf());
-            int occ = boardMap.get(key).getOccupantID();
-            boolean isOcc = boardMap.get(key).isOccupied();
-            int count = bm.getOccupantCount(key);
-            //moveMap.put(key, new Territory(neighbors));
-
-        }
-        for(int i=0; i<size; i++)
-        {
-            List<String> territoryList = new ArrayList<String>(list[i].getTerritories());
-            playerTerritories.put(i, territoryList);
-        }
-
     }
 
     TurnManager(){

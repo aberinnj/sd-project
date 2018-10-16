@@ -17,9 +17,9 @@ BoardManager class HANDLES TERRITORY, CONTINENT and DECK
 
 *///////////////////////////////////////////////////////////////////////////////*/
 public class BoardManager {
-    private static HashMap<String, Territory> boardMap;
+    HashMap<String, Territory> boardMap;
     private static HashMap<String, Continent> continentsMap;
-    private static Deck gameDeck;
+    Deck gameDeck;
     public int completeSets;
 
     // Initializes the BoardManager variables and should be testable after
@@ -80,6 +80,21 @@ public class BoardManager {
         gameDeck = new Deck();
 
         completeSets = 0;
+    }
+
+    // re-initialize
+    BoardManager(HashMap<String, Territory> k, Deck l, int m){
+        boardMap = k;
+        gameDeck = l;
+        completeSets = m;
+
+        continentsMap = new HashMap<String, Continent>();
+        continentsMap.put("NORTH AMERICA", new Continent(new String[]{"ALASKA", "NORTH WEST TERRITORY", "ALBERTA","ONTARIO","QUEBEC","GREENLAND", "WESTERN UNITED STATES", "EASTERN UNITED STATES", "CENTRAL AMERICA"}));
+        continentsMap.put("SOUTH AMERICA", new Continent(new String[]{"VENEZUELA", "BRAZIL", "PERU", "ARGENTINA"}));
+        continentsMap.put("EUROPE", new Continent(new String[]{"WESTERN EUROPE", "GREAT BRITAIN", "ICELAND", "SCANDINAVIA", "NORTHERN EUROPE", "SOUTHERN EUROPE", "UKRAINE"}));
+        continentsMap.put("AFRICA", new Continent(new String[]{"NORTH AFRICA", "EGYPT", "CONGO", "EAST AFRICA", "SOUTH AFRICA", "MADAGASCAR"}));
+        continentsMap.put("ASIA", new Continent(new String[]{"SIAM", "INDIA", "AFGHANISTAN", "URAL", "SIBERIA", "MONGOLIA", "CHINA", "MIDDLE EAST", "JAPAN", "YAKUTSK", "IRKUTSK", "KAMCHATKA"}));
+        continentsMap.put("AUSTRALIA", new Continent(new String[]{"WESTERN AUSTRALIA", "INDONESIA", "EASTERN AUSTRALIA", "NEW GUINEA"}));
     }
 
     // queryTerritory consults with the boardMap for territories
