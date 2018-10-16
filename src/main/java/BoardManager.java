@@ -296,7 +296,6 @@ public class BoardManager {
 
     public void removeOccupantsFrom(String country, int count) {
         boardMap.get(country).loseOccupants(count, ArmyType.INFANTRY);
-
     }
 
 }

@@ -11,7 +11,7 @@ public class Player {
     private int id;
     private Army placeholder;
     private List<String> territories;
-    private HashMap<String, Stack<Card>> Hand;
+    private List<Card> Hand;
 
     // get player id
     public int getId() {
@@ -55,9 +55,12 @@ public class Player {
     }
 
     // get hand
-    public HashMap<String, Stack<Card>> getHand() {
+    public List<Card> getHand() {
         return Hand;
     }
+
+    // add card to hand
+    public void addCard(Card card) {Hand.add(card);}
 
     // get territories
     public List<String> getTerritories(){ return territories; }
@@ -119,7 +122,7 @@ public class Player {
     {
         this.id = id;
         placeholder = new Army(infantryCount);
-        Hand = new HashMap<String, Stack<Card>>();
+        Hand = new ArrayList<Card>();
         territories = new ArrayList<String>();
 
         Hand.put("INFANTRY", new Stack<Card>());

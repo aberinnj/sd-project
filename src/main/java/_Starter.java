@@ -1,3 +1,6 @@
+import com.google.gson.JsonObject;
+
+import java.io.IOException;
 import java.util.*;
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +32,7 @@ public class _Starter {
     /*//////////////////////////////////////////////////////////////////////////////////
     Main function
     //////////////////////////////////////////////////////////////////////////////////*/
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println(" __________________");
         System.out.println("|   Game of Risk   |");
         System.out.println(" '''''''''''''''''' ");
@@ -44,6 +47,10 @@ public class _Starter {
             // get game
             if(NG.queryGameChecker(loader.listObjects(NG.bucketName))){
                 // download game
+                // Need to choose which turn to retrieve
+                int turnToRetrieve = 0;
+
+                GM.loadGame(turnToRetrieve, loader);
 
                 // queryForTurn or cancel (if cancel call DefaultStart(GM)) should still be testable) see GameManagerTest for example
                 // if selected, for each important data, get/pull data from TurnManager

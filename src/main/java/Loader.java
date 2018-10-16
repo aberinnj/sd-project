@@ -12,10 +12,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -39,6 +36,24 @@ public class Loader {
         return players.size();
     }
 
+    public Stack<Card> setDeck(JsonObject turn)
+    {
+
+        Stack<Card> GameDeck = new Stack<Card>();
+
+        // get the main deck array (undrawn cards) from the json turn
+        JsonArray Deck = (JsonArray) turn.get("Deck");
+        Iterator<JsonElement> itr = Deck.iterator();
+        while (itr.hasNext())
+        {
+            JsonObject tempCard = (JsonObject) itr.next();
+            String territory = String.valueOf(tempCard.keySet());
+            String army = String.valueOf(tempCard.get(territory));
+            GameDeck.push(new Card(territory, army));
+        }
+        return GameDeck;
+    }
+
     public Player[] setPlayers(BoardManager bm, int numPlayers, JsonObject turn) {
 
         Player[] playerList = new Player[numPlayers];
@@ -53,7 +68,7 @@ public class Loader {
 
             int playerID = jsonObject.get("Player").getAsInt();
             Player tempPlayer = new Player(playerID, 0);
-
+            //While loop to add territories to player from JSON
             JsonArray territories = (JsonArray) jsonObject.get("Territories");
             Iterator<JsonElement> teris = territories.iterator();
             while (teris.hasNext()) {
@@ -64,10 +79,17 @@ public class Loader {
                 tempPlayer.addTerritories(territoryName);
                 bm.addOccupantsTo(territoryName, territoryArmy);
             }
-
-            //JsonArray hand = (JsonArray) jsonObject.get("Hand");
-            //Hand needs to be implemented as well using a similar technique as territories
-            //Did not implement because Norman is reconfiguring the Deck system.
+            // While loop to add cards to hand from JSON
+            JsonArray hand = (JsonArray) jsonObject.get("Hand");
+            Iterator<JsonElement> cads = hand.iterator();
+            while (teris.hasNext())
+            {
+                JsonObject tempCard = (JsonObject) cads.next();
+                String territory = String.valueOf(tempCard.keySet());
+                String army = String.valueOf(tempCard.get(territory));
+                Card nextCard = new Card(territory, army);
+                tempPlayer.addCard(nextCard);
+            }
             playerList[i] = tempPlayer;
         }
 

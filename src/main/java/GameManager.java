@@ -1,3 +1,6 @@
+import com.google.gson.JsonObject;
+
+import java.io.IOException;
 import java.util.*;
 
 
@@ -18,6 +21,14 @@ public class GameManager {
     GameManager() {
         BM = new BoardManager();
         TM = new TurnManager();
+    }
+
+    public void loadGame(int turnToLoad, Loader loader) throws IOException {
+        JsonObject turn = loader.LoadGame(turnToLoad, BM);
+        int numPlayers = loader.getNumPlayers(turn);
+        loader.setPlayers(BM, numPlayers, turn);
+        //BM.gameDeck = loader.setDeck(turn); <- reinstantiates the deck from the JSON, currently Deck is private in and immutable
+
     }
 
     // must be called to start GameManager
