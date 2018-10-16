@@ -20,12 +20,12 @@ Loader class takes car of remote turns, makes use of JSONHandler to get results
 *///////////////////////////////////////////////////////////////////////////////*/
 public class Loader {
 
-    public JsonObject LoadGame(int turnNumber, BoardManager bm) throws IOException {
+    public JsonObject LoadGame(int turnNumber, BoardManager bm, String base) throws IOException {
 
         Player[] emptyPlayer = null;
         int[] emptyTurnPattern = null;
 
-        JSONhandler JH = new JSONhandler(bm, emptyPlayer, emptyTurnPattern);
+        JSONhandler JH = new JSONhandler(bm, emptyPlayer, emptyTurnPattern, base);
         JH.download();
         JsonObject turn = JH.getTurnJSON(turnNumber);
         return turn;

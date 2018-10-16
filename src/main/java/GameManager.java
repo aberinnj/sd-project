@@ -14,7 +14,7 @@ as well as the Deck
 todo: make changes to current_turn, UPDATE JH.JSON_writer
 *//////////////////////////////////////////////////////////////////////*/
 public class GameManager {
-    String base;
+    static String base;
     static Player[] playerList;
     int[] playerTurnPattern;
     static TurnManager TM;
@@ -25,9 +25,7 @@ public class GameManager {
     GameManager() {
         BM = new BoardManager();
         TM = new TurnManager();
-<<<<<<< HEAD
         this.base = System.getProperty("user.dir");
-=======
         current_turn = 0;
     }
 
@@ -50,12 +48,11 @@ public class GameManager {
                 new ArrayList<Card>(){{addAll(lastTurnOfThisPlayer.player.getHandListing());}},
                 new ArrayList<String>(){{addAll(lastTurnOfThisPlayer.player.getTerritories());}});
 
->>>>>>> 4dacf0dedc3e9b6d8df5bbf27c2e5a9913969243
     }
 
     //
     public void loadGame(int turnToLoad, Loader loader) throws IOException {
-        JsonObject turn = loader.LoadGame(turnToLoad, BM);
+        JsonObject turn = loader.LoadGame(turnToLoad, BM, GameManager.base);
         int numPlayers = loader.getNumPlayers(turn);
         loader.setPlayers(BM, numPlayers, turn);
         //BM.gameDeck = loader.setDeck(turn); <- reinstantiates the deck from the JSON, currently Deck is private in and immutable
@@ -164,13 +161,9 @@ public class GameManager {
 
     }
 
-<<<<<<< HEAD
-    public void runGame(GameManager GM, Scanner scanner) throws IOException {
-        JSONhandler JH = new JSONhandler(BM, playerList, playerTurnPattern, base);
-=======
+
     public static void runGame(GameManager GM, Scanner scanner) throws IOException {
-        JSONhandler JH = new JSONhandler(BM, playerList, GM.playerTurnPattern, base);
->>>>>>> 4dacf0dedc3e9b6d8df5bbf27c2e5a9913969243
+        JSONhandler JH = new JSONhandler(BM, playerList, GM.playerTurnPattern, GM.base);
         //  initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
         JH.JSONinitializer(0);
 
