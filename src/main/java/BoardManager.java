@@ -208,6 +208,11 @@ public class BoardManager {
     // simply returns gamedeck
     public Deck getGameDeck() {return gameDeck;}
 
+    // re-implements the deck for when loading a game
+    public void newDeck(List<Card> deck) {
+        gameDeck = (Deck) deck;
+    }
+
     // used for initialization in constructor above
     public List<String> getContinentsMap(String name) {
         return continentsMap.get(name).FullContinent;
@@ -296,7 +301,6 @@ public class BoardManager {
 
     public void removeOccupantsFrom(String country, int count) {
         boardMap.get(country).loseOccupants(count, ArmyType.INFANTRY);
-
     }
 
 }

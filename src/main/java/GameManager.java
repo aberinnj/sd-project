@@ -1,3 +1,6 @@
+import com.google.gson.JsonObject;
+
+import java.io.IOException;
 import java.util.*;
 
 
@@ -10,7 +13,7 @@ todo: create a more robust way of reading these files that aren't dependent on p
 *//////////////////////////////////////////////////////////////////////*/
 public class GameManager {
     static Player[] playerList;
-    static int[] playerTurnPattern;
+    int[] playerTurnPattern;
     static TurnManager TM;
     private static BoardManager BM;
 
@@ -18,6 +21,14 @@ public class GameManager {
     GameManager() {
         BM = new BoardManager();
         TM = new TurnManager();
+    }
+
+    public void loadGame(int turnToLoad, Loader loader) throws IOException {
+        JsonObject turn = loader.LoadGame(turnToLoad, BM);
+        int numPlayers = loader.getNumPlayers(turn);
+        loader.setPlayers(BM, numPlayers, turn);
+        //BM.gameDeck = loader.setDeck(turn); <- reinstantiates the deck from the JSON, currently Deck is private in and immutable
+
     }
 
     // must be called to start GameManager
@@ -115,7 +126,7 @@ public class GameManager {
         System.out.println("__CLAIM TERRITORIES__");
         GM.claimTerritories(scanner);
         System.out.println("__STRENGTHEN TERRITORIES__");
-        for (int id: playerTurnPattern) {
+        for (int id: GM.playerTurnPattern) {
             GM.strengthenTerritories(scanner, id);
         }
         // JH.JSONinitializer(-1);
@@ -128,7 +139,7 @@ public class GameManager {
         int turnID = 1;
         while(!GM.isGameOver()){
 
-            for (int id: playerTurnPattern) {
+            for (int id: GM.playerTurnPattern) {
                 System.out.println("Player " + id + " turn: ");
                 TM.save(makeTurn(GM, scanner, playerList[id], turnID));
                 turnID++;
