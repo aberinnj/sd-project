@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c58bc2a8-2e76-4757-abd0-42d2401dba4c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/sd-project-risk.iml" beforeDir="false" afterPath="$PROJECT_DIR$/sd-project-risk.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sd-project-risk.ipr" beforeDir="false" afterPath="$PROJECT_DIR$/sd-project-risk.ipr" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sd-project-risk.iws" beforeDir="false" afterPath="$PROJECT_DIR$/sd-project-risk.iws" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/GameManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GameManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/JSONhandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/JSONhandler.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -19,8 +18,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/_Starter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="735">
-              <caret line="51" column="52" selection-start-line="51" selection-start-column="52" selection-end-line="51" selection-end-column="52" />
+            <state relative-caret-position="32">
+              <caret line="29" column="8" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -28,21 +27,21 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/Loader.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1065">
+            <state relative-caret-position="330">
               <caret line="85" column="13" selection-start-line="85" selection-start-column="13" selection-end-line="85" selection-end-column="13" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/GameManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2010">
-              <caret line="134" column="11" lean-forward="true" selection-start-line="134" selection-start-column="11" selection-end-line="134" selection-end-column="11" />
+            <state relative-caret-position="405">
+              <caret line="27" column="12" selection-start-line="27" selection-start-column="12" selection-end-line="27" selection-end-column="12" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#2250#2251#0" expanded="true" />
-                <element signature="e#2293#2294#0" expanded="true" />
+                <element signature="e#3718#3719#0" expanded="true" />
+                <element signature="e#3761#3762#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -72,17 +71,35 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/TurnManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
+            <state relative-caret-position="150">
               <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/JSONhandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+            <state relative-caret-position="180">
+              <caret line="246" column="44" lean-forward="true" selection-start-line="246" selection-start-column="44" selection-end-line="246" selection-end-column="44" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="240">
+              <caret line="46" column="47" selection-start-line="46" selection-start-column="47" selection-end-line="46" selection-end-column="47" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/GameManagerTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-150">
+              <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -90,8 +107,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/BoardManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3285">
-              <caret line="226" column="17" selection-start-line="226" selection-start-column="17" selection-end-line="226" selection-end-column="17" />
+            <state relative-caret-position="240">
+              <caret line="17" column="14" selection-start-line="17" selection-start-column="14" selection-end-line="17" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -112,10 +129,18 @@
         <option value="$PROJECT_DIR$/src/main/java/Loader.java" />
         <option value="$PROJECT_DIR$/sd-project-risk.iws" />
         <option value="$PROJECT_DIR$/src/main/java/GameManager.java" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/JSONhandler.java" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="MavenProjectNavigator">
+    <treeState>
+      <expand />
+      <select />
+    </treeState>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="49" />
     <option name="y" value="25" />
     <option name="width" value="659" />
@@ -127,6 +152,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -137,6 +163,11 @@
             <path>
               <item name="sd-project-risk" type="b2602c69:ProjectViewProjectNode" />
               <item name="sd_project" type="462c0819:PsiDirectoryNode" />
+              <item name="manualInputFiles" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="sd-project-risk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sd_project" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -150,30 +181,17 @@
               <item name="sd_project" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="sd-project-risk" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sd_project" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="sd-project-risk" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sd_project" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1539730811044" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunDashboard">
@@ -188,6 +206,51 @@
       </list>
     </option>
   </component>
+  <component name="RunManager" selected="Application._Starter">
+    <configuration name="_Starter" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="_Starter" />
+      <module name="sd-project-risk" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameManagerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="sd-project-risk" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="GameManagerTest" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameManagerTest.testGameManagerInit" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="sd-project-risk" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="GameManagerTest" />
+      <option name="METHOD_NAME" value="testGameManagerInit" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameManagerTest.testRunSetup" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="sd-project-risk" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="GameManagerTest" />
+      <option name="METHOD_NAME" value="testRunSetup" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application._Starter" />
+        <item itemvalue="JUnit.GameManagerTest" />
+        <item itemvalue="JUnit.GameManagerTest.testRunSetup" />
+        <item itemvalue="JUnit.GameManagerTest.testGameManagerInit" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -201,9 +264,52 @@
     </task>
     <servers />
   </component>
+  <component name="TestHistory">
+    <history-entry file="GameManagerTest_testGameManagerInit - 2018.10.16 at 17h 46m 29s.xml">
+      <configuration name="GameManagerTest.testGameManagerInit" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="GameManagerTest_testRunSetup - 2018.10.16 at 17h 48m 08s.xml">
+      <configuration name="GameManagerTest.testRunSetup" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="GameManagerTest - 2018.10.16 at 17h 48m 46s.xml">
+      <configuration name="GameManagerTest" configurationId="JUnit" />
+    </history-entry>
+  </component>
   <component name="ToolWindowManager">
-    <frame x="49" y="25" width="1317" height="743" extended-state="7" />
+    <frame x="49" y="25" width="1317" height="743" extended-state="6" />
     <layout>
+      <window_info id="Project" order="0" visible="true" weight="0.15106216" />
+      <window_info id="Structure" order="1" weight="0.25" />
+      <window_info id="Web" order="2" weight="0.25" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Favorites" order="5" side_tool="true" />
+      <window_info id="Capture Tool" order="6" />
+      <window_info id="Image Layers" order="7" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.39250815" />
+      <window_info anchor="bottom" id="EJB" order="3" weight="0.25" />
+      <window_info anchor="bottom" id="Debug" order="4" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="7" />
+      <window_info anchor="bottom" id="CVS" order="8" />
+      <window_info anchor="bottom" id="Messages" order="9" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.32736155" />
+      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="12" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Aspects" order="3" />
+      <window_info anchor="right" id="Maven" order="4" weight="0.3296617" />
+      <window_info anchor="right" id="Palette" order="5" />
+      <window_info anchor="right" id="Capture Analysis" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info anchor="right" id="Theme Preview" order="8" />
+    </layout>
+    <layout-to-restore>
       <window_info active="true" id="Project" order="0" visible="true" weight="0.25334382" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Web" order="2" weight="0.25" />
@@ -234,23 +340,9 @@
       <window_info anchor="right" id="Capture Analysis" order="6" />
       <window_info anchor="right" id="Palette&#9;" order="7" />
       <window_info anchor="right" id="Theme Preview" order="8" />
-    </layout>
+    </layout-to-restore>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/_Starter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="735">
-          <caret line="51" column="52" selection-start-line="51" selection-start-column="52" selection-end-line="51" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/Loader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1065">
-          <caret line="85" column="13" selection-start-line="85" selection-start-column="13" selection-end-line="85" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/Player.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -270,34 +362,62 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/TurnManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
+        <state relative-caret-position="150">
           <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/JSONhandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/BoardManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3285">
-          <caret line="226" column="17" selection-start-line="226" selection-start-column="17" selection-end-line="226" selection-end-column="17" />
+        <state relative-caret-position="240">
+          <caret line="17" column="14" selection-start-line="17" selection-start-column="14" selection-end-line="17" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/GameManagerTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-150">
+          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/GameManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2010">
-          <caret line="134" column="11" lean-forward="true" selection-start-line="134" selection-start-column="11" selection-end-line="134" selection-end-column="11" />
+        <state relative-caret-position="405">
+          <caret line="27" column="12" selection-start-line="27" selection-start-column="12" selection-end-line="27" selection-end-column="12" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#2250#2251#0" expanded="true" />
-            <element signature="e#2293#2294#0" expanded="true" />
+            <element signature="e#3718#3719#0" expanded="true" />
+            <element signature="e#3761#3762#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/Loader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="85" column="13" selection-start-line="85" selection-start-column="13" selection-end-line="85" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/_Starter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="32">
+          <caret line="29" column="8" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="46" column="47" selection-start-line="46" selection-start-column="47" selection-end-line="46" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/JSONhandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="246" column="44" lean-forward="true" selection-start-line="246" selection-start-column="44" selection-end-line="246" selection-end-column="44" />
         </state>
       </provider>
     </entry>

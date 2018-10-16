@@ -44,7 +44,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                         <manifest>
-                            <mainClass>GameManager</mainClass>
+                            <mainClass>_Starter</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
