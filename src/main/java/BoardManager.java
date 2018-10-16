@@ -18,9 +18,9 @@ BoardManager class HANDLES TERRITORY, CONTINENT and DECK
 *///////////////////////////////////////////////////////////////////////////////*/
 public class BoardManager {
     HashMap<String, Territory> boardMap;
-    private static HashMap<String, Continent> continentsMap;
+    HashMap<String, Continent> continentsMap;
     Deck gameDeck;
-    public int completeSets;
+    int completeSets;
 
     // Initializes the BoardManager variables and should be testable after
     BoardManager(){
@@ -311,7 +311,6 @@ public class BoardManager {
     *///////////////////////////////////////////////////////////////////////////////*/
     public void addOccupantsTo(String country, int count) {
         boardMap.get(country).addOccupants(count, ArmyType.INFANTRY);
-
     }
 
     public void removeOccupantsFrom(String country, int count) {

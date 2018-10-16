@@ -16,18 +16,11 @@ public class PlayerTest extends TestCase{
         cooper.addTerritories("ONTARIO");
         cooper.addTerritories("BRAZIL");
         cooper.addTerritories("CONGO");
-        cooper.resetTerritories(new ArrayList<String>(){{add("KAMCHATKA"); add("MONGOLIA");}});
 
-        String[] m =  new String[]{"KAMCHATKA", "MONGOLIA"};
-
-        for(String m_member: m)
-        {
-            assertTrue(cooper.getTerritories().contains(m_member));
-        }
-        assertFalse(cooper.getTerritories().contains("ONTARIO"));
-        assertFalse(cooper.getTerritories().contains("ALBERTA"));
-        assertFalse(cooper.getTerritories().contains("BRAZIL"));
-        assertFalse(cooper.getTerritories().contains("CONGO"));
+        assertTrue(cooper.getTerritories().contains("ONTARIO"));
+        assertTrue(cooper.getTerritories().contains("ALBERTA"));
+        assertTrue(cooper.getTerritories().contains("BRAZIL"));
+        assertTrue(cooper.getTerritories().contains("CONGO"));
     }
 
 

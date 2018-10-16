@@ -9,18 +9,43 @@ GameManager sets up game
 
 On a high-level, this class sets up the game by Initializing Players and the Board
 as well as the Deck
-todo: create a more robust way of reading these files that aren't dependent on path naming conventions
+
+
+todo: make changes to current_turn, UPDATE JH.JSON_writer
 *//////////////////////////////////////////////////////////////////////*/
 public class GameManager {
     static Player[] playerList;
     int[] playerTurnPattern;
     static TurnManager TM;
     private static BoardManager BM;
+    int current_turn;
 
     // Sets up ALL Game Variables, which must be testable upon initialization
     GameManager() {
         BM = new BoardManager();
         TM = new TurnManager();
+        current_turn = 0;
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////
+    setGame is used to re-set all game variables from a turn, after initialization (like undo)
+    setGame can an also be used for loading a game IF loader is using init TurnManager instead to store an entire game's turn listing
+    in short, Loader gives all data to TurnManager and leaves everything to TurnManager and setGame
+    then in _Starter, after loading all game, call this function to setGame from a turn
+    *///////////////////////////////////////////////////////////////////////////////*/
+    public void setGame(final Turn lastTurnOfPlayerBefore, final Turn lastTurnOfThisPlayer)
+    {
+        // playerTurnPattern = Loader.getPlayerTurnPattern -- unused by undo
+        BM = new BoardManager(
+                TM.copy(lastTurnOfPlayerBefore.BM.getBoardMap()),
+                TM.copy(lastTurnOfPlayerBefore.BM.getGameDeck()),
+                lastTurnOfPlayerBefore.BM.completeSets);
+
+        playerList[lastTurnOfThisPlayer.player.getId()] = new Player(lastTurnOfThisPlayer.player.getId(),
+                lastTurnOfThisPlayer.player.getNumberOfArmies(),
+                new ArrayList<Card>(){{addAll(lastTurnOfThisPlayer.player.getHandListing());}},
+                new ArrayList<String>(){{addAll(lastTurnOfThisPlayer.player.getTerritories());}});
+
     }
 
     //
@@ -29,6 +54,7 @@ public class GameManager {
         int numPlayers = loader.getNumPlayers(turn);
         loader.setPlayers(BM, numPlayers, turn);
         //BM.gameDeck = loader.setDeck(turn); <- reinstantiates the deck from the JSON, currently Deck is private in and immutable
+
 
     }
 
@@ -137,14 +163,16 @@ public class GameManager {
         JSONhandler JH = new JSONhandler(BM, playerList, GM.playerTurnPattern);
         //  initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
         JH.JSONinitializer(0);
-        int turnID = 1;
+
+        TM.init(playerList.length, GM.current_turn);
+
         while(!GM.isGameOver()){
 
             for (int id: GM.playerTurnPattern) {
-                System.out.println("Player " + id + " turn: ");
-                TM.save(makeTurn(GM, scanner, playerList[id], turnID));
-                JH.JSONwriter(turnID);
-                turnID++;
+                System.out.println("Player " + id + " turn: " + GM.current_turn);
+                TM.save(makeTurn(GM, scanner, playerList[id], GM.current_turn));
+                JH.JSONwriter(GM.current_turn);
+                GM.current_turn++;
                 //System.out.println("would you like to save?")
                 //if yes JH.upload();
             }
@@ -153,8 +181,19 @@ public class GameManager {
 
     // make a turn
     public static Turn makeTurn(GameManager GM, Scanner scanner, Player p, int id) {
-        Turn k = new Turn(BM, p, id);
-        k.turnFunction(GM, scanner);
+        Turn k;
+        do {
+            k = new Turn(BM, p, id);
+            k.turnFunction(GM, scanner);
+            // find a way to display turn changes
+            if(GM.baseQuery("Would you like to undo all actions for this turn? ", scanner))
+            {
+                GM.setGame(
+                        TM.getTurnList().get(id-1),
+                        TM.getTurnList().get(id-GM.playerTurnPattern.length)
+                );
+            } else break;
+        } while(true);
         return k;
     }
 

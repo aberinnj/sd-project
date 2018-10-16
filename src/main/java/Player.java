@@ -77,13 +77,6 @@ public class Player {
             territories.remove(country);
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public void resetTerritories(List<String> k) {
-        territories.clear();
-        territories.addAll(k);
-    }
-
     // add to armies
     public void addArmies(int armies) { placeholder.addInfantryCount(armies); }
 

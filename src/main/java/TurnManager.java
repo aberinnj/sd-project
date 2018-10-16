@@ -57,7 +57,7 @@ public class TurnManager {
     }
 
     // testable first Turn (that includes board details, player is null)
-    public void init(int playerCount) {}
+    public void init(int playerCount, int pid) {}
 
     // Users can undo their actions with this
     public Turn getLastMove(){
