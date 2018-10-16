@@ -88,7 +88,7 @@ public class Loader {
                 String territory = String.valueOf(tempCard.keySet());
                 String army = String.valueOf(tempCard.get(territory));
                 Card nextCard = new Card(territory, army);
-                tempPlayer.addCard(nextCard);
+                tempPlayer.getHand().get(nextCard.getUnit()).push(nextCard);
             }
             playerList[i] = tempPlayer;
         }
