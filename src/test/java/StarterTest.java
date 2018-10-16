@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 /*////////////////////////////////////////////////////////////////////////////////
 _Starter Class starts a _Starter by initializing GameManager and runs a game
-todo: Write test case for main method by providing File
 *///////////////////////////////////////////////////////////////////////////////*/
 public class StarterTest extends TestCase{
 

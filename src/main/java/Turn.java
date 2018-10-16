@@ -4,7 +4,6 @@ import java.util.*;
 Turn class only serves as a PROXY to GameManager. It DOES NOT copy game status.
 TurnManager deeply COPIES Turns
 
-todo: test manually if successful attack transfers work(eg. amount of armies transferred out of an attacking territory)
 todo: find a way to test functions where there are dice rolls (battle func)
  *//////////////////////////////////////////////////////////////////////////////
 public class Turn {
