@@ -130,23 +130,24 @@ public class GameManager {
         for (int id: GM.playerTurnPattern) {
             GM.strengthenTerritories(scanner, id);
         }
-        // JH.JSONinitializer(-1);
+
     }
 
-    public static void runGame(GameManager GM, Scanner scanner){
-        //  JSONhandler JH = new JSONhandler(bm, playerList, playerTurnPattern);
+    public static void runGame(GameManager GM, Scanner scanner) throws IOException {
+        JSONhandler JH = new JSONhandler(BM, playerList, playerTurnPattern);
         //  initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
-
+        JH.JSONinitializer(0);
         int turnID = 1;
         while(!GM.isGameOver()){
 
             for (int id: GM.playerTurnPattern) {
                 System.out.println("Player " + id + " turn: ");
                 TM.save(makeTurn(GM, scanner, playerList[id], turnID));
+                JH.JSONwriter(turnID);
                 turnID++;
+                //System.out.println("would you like to save?")
+                //if yes JH.upload();
             }
-            //  JH.JSONwriter(turnNumber);
-            //  JH.upload();
         }
     }
 
