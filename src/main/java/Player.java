@@ -14,7 +14,6 @@ public class Player implements Observer{
     private Double wallet = 0.0;
     private int Undos = 0;
 
-
     @Override
     public void update(Observable territory, Object arg)
     {
@@ -33,7 +32,6 @@ public class Player implements Observer{
         }
 
     }
-
     // add undos
     public void addUndos(int undos) { Undos = Undos + undos; }
 

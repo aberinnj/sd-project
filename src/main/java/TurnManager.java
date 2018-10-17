@@ -36,7 +36,6 @@ public class TurnManager {
             int armyCount = obj.getValue().getArmy().getInfantryCount();
             int occupantID = obj.getValue().getOccupantID();
 
-
             actualMap.put(obj.getKey(), new Territory(neighbors, obj.getKey()));
             actualMap.get(obj.getKey()).setTerritory(isOccupied, occupantID, new Army(armyCount));
         }
@@ -52,6 +51,7 @@ public class TurnManager {
         }
         return new Deck(actualDeckStack);
     }
+  
 
     // Now sets up the first (playerCount)-turns as initial player states
     public void init(GameManager GM, int playerCount) {

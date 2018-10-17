@@ -167,7 +167,9 @@ public class GameManager {
         //  initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
         JH.JSONinitializer(0);
 
+
         TM.init(GM, playerList.length);
+
 
         while(!GM.isGameOver()){
 
@@ -177,8 +179,9 @@ public class GameManager {
                 TM.save(makeTurn(GM, scanner, playerList[id], GM.current_turn));
                 JH.JSONwriter(GM.current_turn);
 
-                if (GM.baseQuery("Would you like to save this game?", scanner)) { JH.upload();}
+              if (GM.baseQuery("Would you like to save this game?", scanner)) { JH.upload();}
                 GM.incrementTurn();
+
             }
         }
     }
@@ -203,6 +206,7 @@ public class GameManager {
                 break;
         } while(true);
         // post status to Twitter, differentiate newTurn.player.territories and newTurn.previousTerritories
+
         return newTurn;
     }
 
