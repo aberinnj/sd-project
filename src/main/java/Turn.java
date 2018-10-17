@@ -28,6 +28,49 @@ public class Turn {
         attack(GM, scanner);
         fortifyTerritories(GM, scanner);
         earnCards();
+        addCredit(GM, scanner);
+        purchaseUndo(GM, scanner);
+        purchaseCard(GM, scanner);
+    }
+
+    // Purchase Credit
+    public void addCredit(GameManager GM, Scanner scanner)
+    {
+        if (GM.baseQuery("Would you like to purchase credit?", scanner)) {
+            System.out.println("How much credit would you like to purchase?");
+            player.addMoney(Float.parseFloat(scanner.nextLine()));
+        }
+    }
+
+    // use credit to buy cards or undo opportunities
+    public void purchaseUndo(GameManager GM, Scanner scanner)
+    {
+        if (GM.baseQuery("Would you like to purchase Undo?", scanner)) {
+            float cash = player.getWallet();
+            System.out.println("Undos cost 1000 each, you have " + cash + ", how many would you like to purchase?");
+            int undos = Integer.parseInt(scanner.nextLine());
+            if (undos * 1000 < cash) {
+                player.addUndos(undos);
+                player.addMoney( undos * 1000 * -1);
+            }
+        }
+    }
+
+    // use credit to buy cards or undo opportunities
+    public void purchaseCard(GameManager GM, Scanner scanner)
+    {
+        if (GM.baseQuery("Would you like to purchase more Cards?", scanner)) {
+            float cash = player.getWallet();
+            System.out.println("Cards cost 100 each, you have " + cash + ", how many would you like to purchase?");
+            int cards = Integer.parseInt(scanner.nextLine());
+            if (cards * 100 < cash) {
+                for (int i = 0; i < cards; i++) {
+                    Card c = BM.getGameDeck().draw();
+                    if(c != null) player.getHand().get(c.getUnit()).push(c);
+                }
+                player.addMoney( cards * 100 * -1);
+            }
+        }
     }
 
     // Passes if a new territory is added to player's territories

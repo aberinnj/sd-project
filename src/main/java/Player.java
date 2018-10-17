@@ -12,6 +12,20 @@ public class Player {
     private Army placeholder;
     private List<String> territories;
     private HashMap<String, Stack<Card>> Hand;
+    private float wallet = 0;
+    private int Undos = 0;
+
+    // add undos
+    public void addUndos(int undos) { Undos = Undos + undos; }
+
+    // get undos
+    public int getUndos() { return Undos; }
+
+    // add to the wallet
+    public void addMoney(float add) { wallet = wallet + add; }
+
+    // get wallet contents
+    public float getWallet() { return wallet; }
 
     // get player id
     public int getId() {

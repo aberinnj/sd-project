@@ -25,7 +25,7 @@ public class GameManager {
     GameManager() {
         BM = new BoardManager();
         TM = new TurnManager();
-        this.base = System.getProperty("user.dir");
+        base = System.getProperty("user.dir");
         current_turn = 0;
     }
 
@@ -176,28 +176,31 @@ public class GameManager {
                 TM.save(makeTurn(GM, scanner, playerList[id], GM.current_turn));
                 JH.JSONwriter(GM.current_turn);
                 GM.current_turn++;
-                //System.out.println("would you like to save?")
-                //if yes JH.upload();
+                if (GM.baseQuery("Would you like to save this game?", scanner)) { JH.upload();}
+                if (GM.baseQuery("Would you like to purchase credit?", scanner)) {}
             }
         }
     }
 
     // make a turn
     public static Turn makeTurn(GameManager GM, Scanner scanner, Player p, int id) {
-        Turn k;
+        Turn newTurn;
         do {
-            k = new Turn(BM, p, id);
-            k.turnFunction(GM, scanner);
+            newTurn = new Turn(BM, p, id);
+            newTurn.turnFunction(GM, scanner);
+
             // find a way to display turn changes
-            if(GM.baseQuery("Would you like to undo all actions for this turn? ", scanner))
+            if(GM.baseQuery("Would you like to undo all actions for this turn? This will deduct one undo action.", scanner))
             {
+                if (p.getUndos() < 1) { System.out.println("You can not perform an undo action now"); break;}
+                p.addUndos(-1);
                 GM.setGame(
                         TM.getTurnList().get(id-1),
                         TM.getTurnList().get(id-GM.playerTurnPattern.length)
                 );
             } else break;
         } while(true);
-        return k;
+        return newTurn;
     }
 
     // Display Free territories -- removed displayPlayerTerritories for simplicity and less console clutter
