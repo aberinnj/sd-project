@@ -7,7 +7,7 @@ TurnManager deeply COPIES Turns
 todo: find a way to test functions where there are dice rolls (battle func)
  *//////////////////////////////////////////////////////////////////////////////
 public class Turn {
-    private List<String> previousTerritories;
+    List<String> previousTerritories;
     BoardManager BM;
     Player player;
     int turnId;

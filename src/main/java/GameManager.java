@@ -1,7 +1,23 @@
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+
+
+class apiKey{
+    String apiKey;
+    String apiSecretKey;
+    String accessToken;
+    String accessTokenSecret;
+}
 
 
 /*///////////////////////////////////////////////////////////////////////
@@ -20,6 +36,8 @@ public class GameManager {
     static TurnManager TM;
     private static BoardManager BM;
     int current_turn;
+    TwitterFactory tf;
+    Twitter twitter;
 
     // Sets up ALL Game Variables, which must be testable upon initialization
     GameManager() {
@@ -27,6 +45,26 @@ public class GameManager {
         TM = new TurnManager();
         base = System.getProperty("user.dir");
         current_turn = 0;
+
+
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        try {
+            Gson gson = new Gson();
+            JsonReader reader = new JsonReader(new FileReader(base + "/src/keys/twitter_api.json"));
+            apiKey keys = gson.fromJson(reader, apiKey.class);
+
+            cb.setDebugEnabled(true)
+                    .setOAuthConsumerKey(keys.apiKey)
+                    .setOAuthConsumerSecret(keys.apiSecretKey)
+                    .setOAuthAccessToken(keys.accessToken)
+                    .setOAuthAccessTokenSecret(keys.accessTokenSecret);
+        } catch (IOException e){
+            System.out.println("Error: No witter api-keys found inside src/keys");
+        }
+
+        // twitter setup
+        tf = new TwitterFactory(cb.build());
+        twitter = tf.getInstance();
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
@@ -206,9 +244,31 @@ public class GameManager {
                 break;
         } while(true);
         // post status to Twitter, differentiate newTurn.player.territories and newTurn.previousTerritories
-
+        try {
+            GM.broadcastToTwitter(newTurn, p);
+        } catch (TwitterException e)
+        {
+            System.out.println(e.getMessage());
+        }
         return newTurn;
     }
+
+    public void broadcastToTwitter(Turn k, Player p) throws TwitterException
+    {
+        Status status;
+        String resultIntro = "Player " + p.getId() + " captured ";
+
+        System.out.println("Turn Summary: ");
+        for(String terr: p.getTerritories())
+        {
+            if (!k.previousTerritories.contains(terr))
+            {
+                status = twitter.updateStatus(resultIntro + terr + "!");
+                System.out.println(status.getText());
+            }
+        }
+    }
+
 
     // Display Free territories -- removed displayPlayerTerritories for simplicity and less console clutter
     public void claimTerritories(Scanner scanner){

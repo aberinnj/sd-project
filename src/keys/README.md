@@ -9,7 +9,10 @@ src/keys/<source>_api.json
 
 {
     "api-key": "",
-    "api-secret-key": ""
+    "api-secret-key": "",
+    "access-token": "",
+    "access-token-secret": ""
 }
 
 4. _Starter should have a function to extract these values
+* Note that the apiKey.class has the same keys in the json file

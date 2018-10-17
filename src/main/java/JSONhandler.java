@@ -22,7 +22,7 @@ public class JSONhandler {
     JsonWriter jw;
     int[] playerTurnPattern;
     private String clientRegion = "us-east-1";
-    private String bucketName = "risk-games-team-one";
+    private String bucketName = "motherfuckinrisk";
     private String stringObjKeyName = "test_json";
     private String fileObjKeyName = "RiskGSON";
     private String fileName;

@@ -1,3 +1,7 @@
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
 import java.io.IOException;
 
 import java.util.*;
@@ -18,6 +22,8 @@ public class _Starter {
     String bucketName;
     String objectOfGameInstance;
     static int playerCount;
+    TwitterFactory tf;
+    Twitter twitter;
 
     /* Initialize Member Variables
      * Note that playerCount is initialized to 0. Call setNumberOfPlayers to initialize*/
@@ -133,21 +139,6 @@ public class _Starter {
             return null;
         }
     }
-
-    /*
-    *
-            // LOAD
-            System.out.println("Which turn would you like to load from?");
-            System.out.println("Enter -1 to begin from the beginning");
-            turnNumber = Integer.parseInt(globalScanner.nextLine());
-
-            Loader LG = new Loader();
-            JsonObject loadedTurn = LG.Loader(turnNumber, bm);
-            numPlayers = LG.getNumPlayers(loadedTurn);
-
-            playerList = LG.setPlayers(bm, numPlayers, loadedTurn);
-    *
-    * */
 
 }
 
