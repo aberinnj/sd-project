@@ -212,13 +212,15 @@ public class GameManager {
         while(!GM.isGameOver()){
 
             for (int id: GM.playerTurnPattern) {
-                GM.current_turn++;
                 System.out.println("Player " + id + " turn: " + GM.current_turn);
                 TM.save(makeTurn(GM, scanner, playerList[id], GM.current_turn));
+                
+                GM.incrementTurn();
                 JH.JSONwriter(GM.current_turn);
 
-              if (GM.baseQuery("Would you like to save this game?", scanner)) { JH.upload();}
-                GM.incrementTurn();
+                if (GM.baseQuery("Would you like to save this game?", scanner)) {
+                    JH.upload();
+                }
 
             }
         }
