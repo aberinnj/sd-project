@@ -6,16 +6,22 @@ GameManager sets up the game by Initializing Players and the Board
 as well as the Deck
 todo: create a more robust way of reading these files that aren't dependent on path naming conventions
 *//////////////////////////////////////////////////////////////////////*/
-public class GameManager {
+public class GameManager implements Subject {
     static Player[] playerList;
     static int[] playerTurnPattern;
     static TurnManager TM;
     private static BoardManager BM;
+    //Keeps track of players to see if their territories are under attack
+    private List<Observer> observers;
+    private int DefendingPlayer;
+
+
 
     // Sets up ALL Game Variables, which must be testable upon initialization
     GameManager() {
         BM = new BoardManager();
         TM = new TurnManager();
+        this.observers=new ArrayList<>();
     }
 
     // must be called to start GameManager
@@ -186,6 +192,38 @@ public class GameManager {
                 BM.strengthenTerritory(playerList[id], territory, 1);
             }
     }
+
+
+    //Adds removes and notifies observers
+    @Override
+    public void attach(Observer obj) {
+        if(obj == null) throw new NullPointerException("Null Observer");
+        if(!observers.contains(obj)) observers.add(obj);
+    }
+
+    @Override
+    public void detach(Observer obj) {
+        observers.remove(obj);
+    }
+
+    @Override
+    public void notifyAllPlayers() {
+        for (Observer obj : observers) {
+            obj.update();
+        }
+    }
+
+    @Override
+    public void setDefendingPlayer(int state) {
+        this.DefendingPlayer = state;
+        notifyAllPlayers();
+    }
+
+    @Override
+    public int getDefendingPlayer() {
+        return DefendingPlayer;
+    }
+
 
     // Player list only contains Players, and you can freely check if players have all the territories
     public boolean isGameOver(){

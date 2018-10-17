@@ -527,6 +527,7 @@ public class TurnTest extends TestCase {
         Turn t1 = new Turn(GM.getBM(), p1, 22);
         t1.attack(GM, sp);
 
+
         System.out.println(GM.getBM().getOccupantCount("INDONESIA"));
         assertEquals(1, GM.getBM().getOccupantCount("INDONESIA"));
         System.setIn(in);

@@ -217,6 +217,7 @@ public class Turn {
                 territory = BM.queryTerritory(scanner, "Attack: ", "ATTACK", player, origin);
             } while(territory == null);
             do{
+                GM.setDefendingPlayer(BM.getBoardMap().get(territory).getOccupantID());
                 attackerDice = BM.queryCount(scanner, "Attacker (Player "+ player.getId()+") rolls: ", "ATTACK", player, origin);
             } while(attackerDice == 0);
             do{
