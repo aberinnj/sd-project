@@ -16,7 +16,7 @@ Further instructions can be found in src/keys/
 __V.0.4__
 - [X] Notify players if their territories are under attack. (Remember the Observer Pattern)
 - [X] Players can purchase in-game credit. They can use the credit to buy cards, buy undo actions, or transfer the credits to another player.
-- [ ] Post the number of territories conquered by each player on Twitter after each turn and at the end of the game. (https://developer.twitter.com/en/docs/developer-utilities/twitter-libraries.html or http://twitter4j.org/en/index.html )
+- [X] Post the number of territories conquered by each player on Twitter after each turn and at the end of the game. (https://developer.twitter.com/en/docs/developer-utilities/twitter-libraries.html or http://twitter4j.org/en/index.html )
 - [X] Modify pom.xml to generate JavaDocs and class diagrams. Reference: https://maven.apache.org/plugins/maven-javadoc-plugin/examples/alternate-doclet.html
 
 __V.0.3__
