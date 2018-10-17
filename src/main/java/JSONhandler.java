@@ -32,7 +32,7 @@ public class JSONhandler {
         this.bm = bm;
         this.playerList = playerList;
         this.playerTurnPattern = playerTurnPattern;
-        this.fileName = base + "/Risk.json";
+        this.fileName = base + "/src/files//Risk.json";
         this.file = new FileWriter(fileName, false);
         this.jw = new JsonWriter(file);
         this.gson = new GsonBuilder().setPrettyPrinting().create();
