@@ -38,7 +38,7 @@ public class Turn {
     {
         if (GM.baseQuery("Would you like to purchase credit?", scanner)) {
             System.out.println("How much credit would you like to purchase?");
-            player.addMoney(Float.parseFloat(scanner.nextLine()));
+            player.addMoney(Double.parseDouble(scanner.nextLine()));
         }
     }
 
@@ -46,7 +46,7 @@ public class Turn {
     public void purchaseUndo(GameManager GM, Scanner scanner)
     {
         if (GM.baseQuery("Would you like to purchase Undo?", scanner)) {
-            float cash = player.getWallet();
+            Double cash = player.getWallet();
             System.out.println("Undos cost 1000 each, you have " + cash + ", how many would you like to purchase?");
             int undos = Integer.parseInt(scanner.nextLine());
             if (undos * 1000 < cash) {
@@ -60,7 +60,7 @@ public class Turn {
     public void purchaseCard(GameManager GM, Scanner scanner)
     {
         if (GM.baseQuery("Would you like to purchase more Cards?", scanner)) {
-            float cash = player.getWallet();
+            Double cash = player.getWallet();
             System.out.println("Cards cost 100 each, you have " + cash + ", how many would you like to purchase?");
             int cards = Integer.parseInt(scanner.nextLine());
             if (cards * 100 < cash) {

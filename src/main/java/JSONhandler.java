@@ -14,11 +14,11 @@ import com.google.gson.stream.JsonWriter;
 
 public class JSONhandler {
 
-    Gson gson = new Gson();
+    Gson gson;
     ArrayList<String> linststring;
     BoardManager bm = null;
     Player[] playerList = null;
-    FileWriter file;
+    Writer file;
     JsonWriter jw;
     int[] playerTurnPattern;
     private String clientRegion = "us-east-1";
@@ -35,14 +35,22 @@ public class JSONhandler {
         this.fileName = base + "/Risk.json";
         this.file = new FileWriter(fileName, false);
         this.jw = new JsonWriter(file);
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
+    }
+
+    public void write(Turns turns) throws IOException {
+        Writer writer = new FileWriter(fileName);
+        gson.toJson(turns, Turns.class, writer);
+        writer.flush();
+        writer.close();
     }
 
     public JsonArray JSONreader() throws FileNotFoundException {
         JsonParser parser = new JsonParser();
-        Object obj = parser.parse(new FileReader(fileName));
-        JsonObject jsonObject = (JsonObject) obj;
+        JsonElement obj = parser.parse(new FileReader(fileName));
+        JsonObject jsonObject = obj.getAsJsonObject();
 
-        JsonArray msg = (JsonArray) jsonObject.get("turns");
+        JsonArray msg = jsonObject.getAsJsonArray("turns");
 
         return msg;
     }
@@ -51,31 +59,25 @@ public class JSONhandler {
 
         JSONturn newTurn = new JSONturn(bm, playerList, turnNumber, playerTurnPattern);
         JsonObject newTurnJSON = newTurn.createTurnJSON();
-
         JsonArray msg = JSONreader();
-        msg.add(newTurnJSON);
 
-        JsonObject n = new JsonObject();
-        n.add("turns", msg);
-        gson.toJson(n, jw);
+        Turns turns = new Turns();
+        Iterator< JsonElement > itr = msg.iterator();
+        while (itr.hasNext()) {
+            JsonObject jsonObject = (JsonObject) itr.next();
+            turns.addTurn(jsonObject);
+        }
 
-        file.flush();
-        file.close();
+        turns.addTurn(newTurnJSON);
+        write(turns);
     }
 
     public void JSONinitializer(int turnNumber) throws IOException {
         JSONturn newTurn = new JSONturn(bm, playerList, turnNumber, playerTurnPattern);
         JsonObject newTurnJSON = newTurn.createTurnJSON();
-        Writer writer = new FileWriter(fileName);
         Turns Turns = new Turns();
         Turns.addTurn(newTurnJSON);
-
-        Gson gson = new GsonBuilder().create();
-
-        gson.toJson(Turns, Turns.class, writer);
-
-        writer.flush(); //flush data to file   <---
-        writer.close(); //close write*/
+        write(Turns);
     }
 
     public JsonObject getTurnJSON(int turnNumber) throws FileNotFoundException {
