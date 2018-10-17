@@ -255,18 +255,27 @@ public class GameManager {
 
     public void broadcastToTwitter(Turn k, Player p) throws TwitterException
     {
-        Status status;
-        String resultIntro = "Player " + p.getId() + " captured ";
-
-        System.out.println("Turn Summary: ");
+        int gains = 0;
+        String result = "Turn("+ k.turnId + "):Player " + p.getId() + " captured ";
         for(String terr: p.getTerritories())
         {
-            if (!k.previousTerritories.contains(terr))
-            {
-                status = twitter.updateStatus(resultIntro + terr + "!");
-                System.out.println(status.getText());
+            if (!k.previousTerritories.contains(terr)) {
+                gains++;
             }
         }
+        result += gains;
+        if(gains == 1)
+            result += " territory.";
+        else
+            result += " territories.";
+
+        System.out.println("\nTurn Summary: ");
+        if (gains > 0) {
+            Status status = twitter.updateStatus(result);
+            System.out.println(status.getText());
+        } else
+            System.out.println(result + "no territories this turn.");
+        System.out.println();
     }
 
 
