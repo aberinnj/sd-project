@@ -10,8 +10,8 @@ __V.0.4__
 - [ ] Modify pom.xml to generate JavaDocs and class diagrams. Reference: https://maven.apache.org/plugins/maven-javadoc-plugin/examples/alternate-doclet.html
 
 __V.0.3__
-- Users can undo their actions
-- Your Program uses Amazon S3 to replay games (You get some Amazon credits through your GitHub student pack)
-- Test cases to cover at least 50% of the code. 
-- Show test coverage on the repository page:
+- [X] Users can undo their actions
+- [ ] Your Program uses Amazon S3 to replay games (You get some Amazon credits through your GitHub student pack)
+- [X] Test cases to cover at least 50% of the code. 
+- [X] Show test coverage on the repository page:
 https://blog.frankel.ch/travis-ci-tutorial-for-java-projects/
