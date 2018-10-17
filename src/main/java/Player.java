@@ -6,12 +6,14 @@ Player Class
 
 todo: resetTerritories renders null throwing nullpointerexception in testing
 *///////////////////////////////////////////////////////////////////////////////*/
-public class Player {
+public class Player implements Observer {
 
     private int id;
     private Army placeholder;
     private List<String> territories;
     private HashMap<String, Stack<Card>> Hand;
+
+    private Subject topic;
 
     // get player id
     public int getId() {
@@ -104,6 +106,17 @@ public class Player {
 
         return k;
     }
+
+    @Override
+    public void update() {
+        System.out.println( "Player #"+  topic.getDefendingPlayer() + ": YOU ARE UNDER ATTACK!");
+    }
+
+    @Override
+    public void setSubject(Subject sub) {
+        this.topic=sub;
+    }
+
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method returns the total number of remaining infantry
