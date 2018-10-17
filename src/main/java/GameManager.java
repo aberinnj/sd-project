@@ -167,7 +167,9 @@ public class GameManager {
         //  initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
         JH.JSONinitializer(0);
 
-        TM.init(playerList.length, GM.current_turn);
+
+        TM.init(GM, playerList.length);
+
 
         while(!GM.isGameOver()){
 
@@ -176,8 +178,10 @@ public class GameManager {
                 System.out.println("Player " + id + " turn: " + GM.current_turn);
                 TM.save(makeTurn(GM, scanner, playerList[id], GM.current_turn));
                 JH.JSONwriter(GM.current_turn);
-                if (GM.baseQuery("Would you like to save this game?", scanner)) { JH.upload();}
-                if (GM.baseQuery("Would you like to purchase credit?", scanner)) {}
+
+              if (GM.baseQuery("Would you like to save this game?", scanner)) { JH.upload();}
+                GM.incrementTurn();
+
             }
         }
     }
@@ -198,8 +202,11 @@ public class GameManager {
                         TM.getTurnList().get(id-1),
                         TM.getTurnList().get(id-GM.playerTurnPattern.length)
                 );
-            } else break;
+            } else
+                break;
         } while(true);
+        // post status to Twitter, differentiate newTurn.player.territories and newTurn.previousTerritories
+
         return newTurn;
     }
 
@@ -245,6 +252,10 @@ public class GameManager {
 
                 BM.strengthenTerritory(playerList[id], territory, 1);
             }
+    }
+
+    public void incrementTurn(){
+        current_turn++;
     }
 
     // Player list only contains Players, and you can freely check if players have all the territories

@@ -1,23 +1,47 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Observable;
 
-public class Territory {
+
+enum Status{
+    UNDER_ATTACK, NORMAL, FALLEN
+}
+public class Territory extends Observable {
+    String name;
     private boolean occupied;                                                                                           //
     private int occupiedByID;
     private Army occupants;
     private List<String> neighbors;
+    Status status;
 
     /*////////////////////////////////////////////////////////////////////////////////
     Constructor for a territory. occupants member is initially set to null
     *///////////////////////////////////////////////////////////////////////////////*/
-    Territory(String[] neighborList)
+    Territory(String[] neighborList, String name)
     {
-        occupied = false;
-        occupiedByID = -1;
-        occupants = null;
-        neighbors = new ArrayList<String>();
-        neighbors.addAll(Arrays.asList(neighborList));
+        this.name = name;
+        this.occupied = false;
+        this.occupiedByID = -1;
+        this.occupants = null;
+        this.neighbors = new ArrayList<String>();
+        this.neighbors.addAll(Arrays.asList(neighborList));
+        setStatusToNormal();
+    }
+
+    public void setStatusToNormal(){
+        status = Status.NORMAL;
+    }
+    public void setStatusToUnderAttack(){
+        status = Status.UNDER_ATTACK;
+        setChanged();
+        notifyObservers();
+    }
+
+    public void setStatusToFallen(){
+        status = Status.FALLEN;
+        setChanged();
+        notifyObservers();
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
@@ -27,6 +51,7 @@ public class Territory {
         occupied = i;
         occupiedByID = j;
         occupants = k;
+        setStatusToNormal();
     }
 
     /*////////////////////////////////////////////////////////////////////////////////

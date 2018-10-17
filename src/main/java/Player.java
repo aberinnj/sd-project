@@ -5,7 +5,7 @@ Player Class
 
 todo: resetTerritories renders null throwing nullpointerexception in testing
 *///////////////////////////////////////////////////////////////////////////////*/
-public class Player {
+public class Player implements Observer{
 
     private int id;
     private Army placeholder;
@@ -14,6 +14,24 @@ public class Player {
     private Double wallet = 0.0;
     private int Undos = 0;
 
+    @Override
+    public void update(Observable territory, Object arg)
+    {
+        Territory territoryUnderAttack = (Territory) territory;
+        if(territoryUnderAttack.status == Status.UNDER_ATTACK) {
+            System.out.println("///////////////////////////////////////////////////////////////////////////////////////////////////////");
+            System.out.println("NOTIFICATION: Player "+ id + ", your territory " + territoryUnderAttack.name + " is under attack!");
+            System.out.println("///////////////////////////////////////////////////////////////////////////////////////////////////////");
+
+        }
+        else if(territoryUnderAttack.status == Status.FALLEN) {
+            System.out.println("///////////////////////////////////////////////////////////////////////////////////////////////////////");
+            System.out.println("NOTIFICATION: Player " + id + ", you just lost " + territoryUnderAttack.name + ". You have lost contact with the territory. ");
+            System.out.println("///////////////////////////////////////////////////////////////////////////////////////////////////////");
+
+        }
+
+    }
     // add undos
     public void addUndos(int undos) { Undos = Undos + undos; }
 

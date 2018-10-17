@@ -236,17 +236,19 @@ public class Turn {
     *///////////////////////////////////////////////////////////////////////////////*/
     public void attack(GameManager GM, Scanner scanner) {
         System.out.println("__LAUNCH AN ATTACK__");
-        System.out.println("List of your territories and enemy territories you can attack:");
-        for(String country: BM.getAbleTerritories(player, true))
-        {
-            System.out.println(country + ": " + BM.getOccupantCount(country) + " armies, CAN ATTACK");
-            for(String enemy: BM.getAllAdjacentEnemyTerritories(player.getId(), country))
-            {
-                System.out.println("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies");
-            }
-        }
 
         while (GM.baseQuery("Would you like to attack? {Yes/No) ", scanner)) {
+
+            System.out.println("List of your territories and enemy territories you can attack:");
+            for(String country: BM.getAbleTerritories(player, true))
+            {
+                System.out.println(country + ": " + BM.getOccupantCount(country) + " armies, CAN ATTACK");
+                for(String enemy: BM.getAllAdjacentEnemyTerritories(player.getId(), country))
+                {
+                    System.out.println("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies");
+                }
+            }
+
             String origin;
             String territory;
             int attackerDice;
@@ -258,6 +260,7 @@ public class Turn {
             do{
                 territory = BM.queryTerritory(scanner, "Attack: ", "ATTACK", player, origin);
             } while(territory == null);
+            BM.getBoardMap().get(territory).setStatusToUnderAttack();
             do{
                 attackerDice = BM.queryCount(scanner, "Attacker (Player "+ player.getId()+") rolls: ", "ATTACK", player, origin);
             } while(attackerDice == 0);
@@ -304,6 +307,7 @@ public class Turn {
                 BM.removeOccupantsFrom(defending, 1);
 
                 if(BM.getOccupantCount(defending) == 0) {
+                    BM.getBoardMap().get(defending).setStatusToFallen();
                     System.out.println("The ATTACK is a success! " + defending + " is captured.");
                     GM.getPlayer(BM.getBoardMap().get(defending).getOccupantID()).loseTerritories(defending);
                     BM.getBoardMap().get(attacking).loseOccupants(potentialTransfer, ArmyType.INFANTRY);
@@ -342,6 +346,7 @@ public class Turn {
             if(attacker_dice.size() == 0 || defender_dice.size() == 0) break;
 
         } while(true);
+        BM.getBoardMap().get(defending).setStatusToNormal();
 
     }
 

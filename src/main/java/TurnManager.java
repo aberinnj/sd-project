@@ -4,9 +4,6 @@ import java.util.*;
 TurnManager - takes car of client turns, saves result into object and calls uploads
 
 TurnManager should be making deep-copying turns for recreating entire games from turns
-
-What is included in a turn?
-Previous game state
  *//////////////////////////////////////////////////////////////////////////////
 public class TurnManager {
     private ArrayList<Turn> turnList;
@@ -39,8 +36,7 @@ public class TurnManager {
             int armyCount = obj.getValue().getArmy().getInfantryCount();
             int occupantID = obj.getValue().getOccupantID();
 
-
-            actualMap.put(obj.getKey(), new Territory(neighbors));
+            actualMap.put(obj.getKey(), new Territory(neighbors, obj.getKey()));
             actualMap.get(obj.getKey()).setTerritory(isOccupied, occupantID, new Army(armyCount));
         }
         return actualMap;
@@ -55,9 +51,18 @@ public class TurnManager {
         }
         return new Deck(actualDeckStack);
     }
+  
 
-    // testable first Turn (that includes board details, player is null)
-    public void init(int playerCount, int pid) {}
+    // Now sets up the first (playerCount)-turns as initial player states
+    public void init(GameManager GM, int playerCount) {
+        Turn t;
+        for(int i=0; i<playerCount; i++)
+        {
+            t = new Turn(GM.getBM(), GM.getPlayer(i), GM.current_turn);
+            save(t);
+            GM.incrementTurn();
+        }
+    }
 
     // Users can undo their actions with this
     public Turn getLastMove(){
