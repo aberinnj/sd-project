@@ -87,4 +87,6 @@ public class Deck {
 
         Collections.shuffle(GameDeck);
     }
+
+    Deck(Stack<Card> stack) {GameDeck = stack;}
 }

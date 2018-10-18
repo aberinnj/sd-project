@@ -1,7 +1,9 @@
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Setup new Game and claiming Territories. NOTE: INCLUDE LAST LINE BELOW
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+No
 2
-MONGOLIA
-INDIA
-ICELAND
 EASTERN UNITED STATES
 WESTERN AUSTRALIA
 ALBERTA
@@ -19,6 +21,9 @@ SCANDINAVIA
 IRKUTSK
 SIAM
 NORTH AFRICA
+MONGOLIA
+INDIA
+ICELAND
 CONGO
 PERU
 MIDDLE EAST
@@ -41,6 +46,20 @@ ONTARIO
 KAMCHATKA
 SOUTH AFRICA
 YAKUTSK
+INDIA
+INDIA
+INDIA
+INDIA
+INDIA
+INDIA
+INDIA
+INDIA
+INDIA
+INDIA
+INDIA
+INDIA
+INDIA
+INDIA
 MONGOLIA
 MONGOLIA
 MONGOLIA
@@ -67,31 +86,19 @@ INDIA
 INDIA
 INDIA
 INDIA
-INDIA
-INDIA
-INDIA
-INDIA
-INDIA
-INDIA
-INDIA
-INDIA
-INDIA
-INDIA
-INDIA
-INDIA
-INDIA
-INDIA
+NO
+NO
+NO
+NO
+NO
 MONGOLIA
 MONGOLIA
 MONGOLIA
 MONGOLIA
 MONGOLIA
 MONGOLIA
-Yes
-MONGOLIA
-JAPAN
-4
-1
-No
-No
-No
+NO
+NO
+NO
+NO
+NO
