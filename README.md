@@ -4,7 +4,7 @@ Software Design class team project implementing a clone of the boardgame Risk.
 
 
 ## Twitter DEMO - currently being showed [here](https://twitter.com/AberinNorman)
-![broadcast-to-twitter-demo](https://github.com/aberinnj/sd_project/blob/FullIntegration/demo.PNG)
+![broadcast-to-twitter-demo](https://github.com/aberinnj/sd_project/blob/master/demo.PNG)
 
 
 
