@@ -50,6 +50,39 @@ public class TurnTest extends TestCase {
         System.setIn(System.in);
     }
 
+    @Test
+    public void testAdd() {
+        GameManager GM = new GameManager();
+        Player testPlayer = new Player(0, 20);
+
+        Turn turn = new Turn(GM.getBM(), testPlayer, 1);
+
+        ByteArrayInputStream in = new ByteArrayInputStream((
+                "Yes\n"         + // Would like to purchase credit
+                "10000.0\n"     + // amount of credit
+
+                "Yes\n"         + // Purchase Undo
+                "2\n"           + // Number of Undos to Purchase
+
+                "Yes\n"         + // Purchase Card
+                "2\n"             // Purchase Two cards
+        ).getBytes());
+
+        Scanner scanner = new Scanner(in);
+
+
+        Double test = 10000.0;
+        turn.addCredit(GM, scanner);
+        assertEquals(testPlayer.getWallet(), test);
+
+        turn.purchaseUndo(GM, scanner);
+        assertEquals(testPlayer.getUndos(), 2);
+
+        turn.purchaseCard(GM, scanner);
+        assertEquals(testPlayer.getTotalCards(), 2);
+
+    }
+
 
     @Test
     public void testFreeTerritories(){
@@ -526,6 +559,7 @@ public class TurnTest extends TestCase {
 
         Turn t1 = new Turn(GM.getBM(), p1, 22);
         t1.attack(GM, sp);
+
 
         System.out.println(GM.getBM().getOccupantCount("INDONESIA"));
         assertEquals(1, GM.getBM().getOccupantCount("INDONESIA"));

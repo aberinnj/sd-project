@@ -8,10 +8,23 @@ import java.util.*;
 
 /*///////////////////////////////////////////////////////////////////////////////
 GameManagerTest
+todo: complete test below, should test MakeTurn AND setgame. Undo once. Check if game is setup as expected
  *//////////////////////////////////////////////////////////////////////////////
 public class GameManagerTest extends TestCase {
 
     GameManager GM;
+
+    @Test
+    public void testGameManagerInit(){
+        GM = new GameManager();
+
+        assertNotNull(GM.getBM());
+        assertNotNull(GM.TM);
+
+        GM.initializeAsNormal(3);
+        assertNotNull(GM.getPlayer(2));
+        assertEquals(35, GM.getPlayer(2).getNumberOfArmies());
+    }
 
     @Test
     public void testGameManagerPlayerList() throws Exception {
@@ -196,5 +209,64 @@ public class GameManagerTest extends TestCase {
         assertEquals(0, BM.getFreeTerritories().size());
 
         System.setIn(System.in);
+    }
+
+
+    // TEST INCOMPLETE
+    @Test
+    public void testSetGame(){
+        GameManager GM = new GameManager();
+        // total of 42 infantry to init board
+        GM.initializeAsNormal(2);
+        Player p1 = GM.getPlayer(0);
+        Player p2 = GM.getPlayer(1);
+
+        GM.getBM().initializeTerritory(p1, "ALASKA", 1);
+        GM.getBM().initializeTerritory(p1, "NORTH WEST TERRITORY", 1);
+        GM.getBM().initializeTerritory(p1, "GREENLAND", 1);
+        GM.getBM().initializeTerritory(p1, "ALBERTA", 1);
+        GM.getBM().initializeTerritory(p1, "ONTARIO", 1);
+        GM.getBM().initializeTerritory(p1, "QUEBEC", 1);
+        GM.getBM().initializeTerritory(p1, "WESTERN UNITED STATES", 1);
+        GM.getBM().initializeTerritory(p1, "EASTERN UNITED STATES", 1);
+        GM.getBM().initializeTerritory(p1, "CENTRAL AMERICA", 1);
+        GM.getBM().initializeTerritory(p1, "VENEZUELA", 1);
+        GM.getBM().initializeTerritory(p1, "PERU", 1);
+        GM.getBM().initializeTerritory(p1, "BRAZIL", 1);
+        GM.getBM().initializeTerritory(p1, "ARGENTINA", 1);
+        GM.getBM().initializeTerritory(p1, "NORTH AFRICA", 1);
+        GM.getBM().initializeTerritory(p1, "CONGO", 1);
+
+        GM.getBM().initializeTerritory(p2, "EGYPT", 1);
+        GM.getBM().initializeTerritory(p2, "EAST AFRICA", 1);
+        GM.getBM().initializeTerritory(p2, "SOUTH AFRICA", 1);
+        GM.getBM().initializeTerritory(p2, "MADAGASCAR", 1);
+        GM.getBM().initializeTerritory(p2, "MIDDLE EAST", 1);
+        GM.getBM().initializeTerritory(p2, "INDIA", 1);
+        GM.getBM().initializeTerritory(p2, "SIAM", 1);
+        GM.getBM().initializeTerritory(p2, "INDONESIA", 1);
+        GM.getBM().initializeTerritory(p2, "WESTERN AUSTRALIA", 1);
+        GM.getBM().initializeTerritory(p2, "EASTERN AUSTRALIA", 1);
+        GM.getBM().initializeTerritory(p2, "NEW GUINEA", 1);
+        GM.getBM().initializeTerritory(p2, "CHINA", 1);
+        GM.getBM().initializeTerritory(p2, "AFGHANISTAN", 1);
+        GM.getBM().initializeTerritory(p2, "URAL", 1);
+        GM.getBM().initializeTerritory(p2, "SIBERIA", 1);
+
+
+        GM.getBM().initializeTerritory(p1, "YAKUTSK", 1);
+        GM.getBM().initializeTerritory(p1, "KAMCHATKA", 1);
+        GM.getBM().initializeTerritory(p1, "IRKUTSK", 1);
+        GM.getBM().initializeTerritory(p1, "MONGOLIA", 1);
+        GM.getBM().initializeTerritory(p1, "JAPAN", 1);
+        GM.getBM().initializeTerritory(p1, "UKRAINE", 1);
+        GM.getBM().initializeTerritory(p2, "SCANDINAVIA", 1);
+        GM.getBM().initializeTerritory(p2, "ICELAND", 1);
+        GM.getBM().initializeTerritory(p2, "GREAT BRITAIN", 1);
+        GM.getBM().initializeTerritory(p2, "NORTHERN EUROPE", 1);
+        GM.getBM().initializeTerritory(p2, "SOUTHERN EUROPE", 1);
+        GM.getBM().initializeTerritory(p2, "WESTERN EUROPE", 1);
+
+
     }
 }

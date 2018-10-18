@@ -4,11 +4,10 @@ import java.util.*;
 Turn class only serves as a PROXY to GameManager. It DOES NOT copy game status.
 TurnManager deeply COPIES Turns
 
-todo: test manually if successful attack transfers work(eg. amount of armies transferred out of an attacking territory)
 todo: find a way to test functions where there are dice rolls (battle func)
  *//////////////////////////////////////////////////////////////////////////////
 public class Turn {
-    private List<String> previousTerritories;
+    List<String> previousTerritories;
     BoardManager BM;
     Player player;
     int turnId;
@@ -29,6 +28,49 @@ public class Turn {
         attack(GM, scanner);
         fortifyTerritories(GM, scanner);
         earnCards();
+        addCredit(GM, scanner);
+        purchaseUndo(GM, scanner);
+        purchaseCard(GM, scanner);
+    }
+
+    // Purchase Credit
+    public void addCredit(GameManager GM, Scanner scanner)
+    {
+        if (GM.baseQuery("Would you like to purchase credit?", scanner)) {
+            System.out.println("How much credit would you like to purchase?");
+            player.addMoney(Double.parseDouble(scanner.nextLine()));
+        }
+    }
+
+    // use credit to buy cards or undo opportunities
+    public void purchaseUndo(GameManager GM, Scanner scanner)
+    {
+        if (GM.baseQuery("Would you like to purchase Undo?", scanner)) {
+            Double cash = player.getWallet();
+            System.out.println("Undos cost 1000 each, you have " + cash + ", how many would you like to purchase?");
+            int undos = Integer.parseInt(scanner.nextLine());
+            if (undos * 1000 < cash) {
+                player.addUndos(undos);
+                player.addMoney( undos * 1000 * -1);
+            }
+        }
+    }
+
+    // use credit to buy cards or undo opportunities
+    public void purchaseCard(GameManager GM, Scanner scanner)
+    {
+        if (GM.baseQuery("Would you like to purchase more Cards?", scanner)) {
+            Double cash = player.getWallet();
+            System.out.println("Cards cost 100 each, you have " + cash + ", how many would you like to purchase?");
+            int cards = Integer.parseInt(scanner.nextLine());
+            if (cards * 100 < cash) {
+                for (int i = 0; i < cards; i++) {
+                    Card c = BM.getGameDeck().draw();
+                    if(c != null) player.getHand().get(c.getUnit()).push(c);
+                }
+                player.addMoney( cards * 100 * -1);
+            }
+        }
     }
 
     // Passes if a new territory is added to player's territories
@@ -194,17 +236,19 @@ public class Turn {
     *///////////////////////////////////////////////////////////////////////////////*/
     public void attack(GameManager GM, Scanner scanner) {
         System.out.println("__LAUNCH AN ATTACK__");
-        System.out.println("List of your territories and enemy territories you can attack:");
-        for(String country: BM.getAbleTerritories(player, true))
-        {
-            System.out.println(country + ": " + BM.getOccupantCount(country) + " armies, CAN ATTACK");
-            for(String enemy: BM.getAllAdjacentEnemyTerritories(player.getId(), country))
-            {
-                System.out.println("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies");
-            }
-        }
 
         while (GM.baseQuery("Would you like to attack? {Yes/No) ", scanner)) {
+
+            System.out.println("List of your territories and enemy territories you can attack:");
+            for(String country: BM.getAbleTerritories(player, true))
+            {
+                System.out.println(country + ": " + BM.getOccupantCount(country) + " armies, CAN ATTACK");
+                for(String enemy: BM.getAllAdjacentEnemyTerritories(player.getId(), country))
+                {
+                    System.out.println("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies");
+                }
+            }
+
             String origin;
             String territory;
             int attackerDice;
@@ -216,6 +260,7 @@ public class Turn {
             do{
                 territory = BM.queryTerritory(scanner, "Attack: ", "ATTACK", player, origin);
             } while(territory == null);
+            BM.getBoardMap().get(territory).setStatusToUnderAttack();
             do{
                 attackerDice = BM.queryCount(scanner, "Attacker (Player "+ player.getId()+") rolls: ", "ATTACK", player, origin);
             } while(attackerDice == 0);
@@ -262,12 +307,12 @@ public class Turn {
                 BM.removeOccupantsFrom(defending, 1);
 
                 if(BM.getOccupantCount(defending) == 0) {
+                    BM.getBoardMap().get(defending).setStatusToFallen();
                     System.out.println("The ATTACK is a success! " + defending + " is captured.");
                     GM.getPlayer(BM.getBoardMap().get(defending).getOccupantID()).loseTerritories(defending);
                     BM.getBoardMap().get(attacking).loseOccupants(potentialTransfer, ArmyType.INFANTRY);
                     GM.getPlayer(player.getId()).addArmies(potentialTransfer);
                     BM.initializeTerritory(player, defending, potentialTransfer);
-
                     break;
                 }
             }
@@ -300,6 +345,7 @@ public class Turn {
             if(attacker_dice.size() == 0 || defender_dice.size() == 0) break;
 
         } while(true);
+        BM.getBoardMap().get(defending).setStatusToNormal();
 
     }
 
