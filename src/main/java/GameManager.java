@@ -214,7 +214,7 @@ public class GameManager {
             for (int id: GM.playerTurnPattern) {
                 System.out.println("Player " + id + " turn: " + GM.current_turn);
                 TM.save(makeTurn(GM, scanner, playerList[id], GM.current_turn));
-                
+
                 GM.incrementTurn();
                 JH.JSONwriter(GM.current_turn);
 

@@ -313,7 +313,6 @@ public class Turn {
                     BM.getBoardMap().get(attacking).loseOccupants(potentialTransfer, ArmyType.INFANTRY);
                     GM.getPlayer(player.getId()).addArmies(potentialTransfer);
                     BM.initializeTerritory(player, defending, potentialTransfer);
-
                     break;
                 }
             }

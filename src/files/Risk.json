@@ -4,141 +4,141 @@
       "Turn": 0,
       "Deck": [
         {
-          "INDONESIA": "CAVALRY"
-        },
-        {
-          "EGYPT": "INFANTRY"
-        },
-        {
-          "YAKUTSK": "INFANTRY"
-        },
-        {
-          "JAPAN": "CAVALRY"
-        },
-        {
-          "EAST AFRICA": "CAVALRY"
-        },
-        {
-          "WESTERN AUSTRALIA": "ARTILLERY"
-        },
-        {
-          "PERU": "CAVALRY"
-        },
-        {
-          "ALBERTA": "INFANTRY"
-        },
-        {
-          "NEW GUINEA": "CAVALRY"
-        },
-        {
-          "URAL": "CAVALRY"
-        },
-        {
-          "NORTHERN EUROPE": "INFANTRY"
-        },
-        {
-          "ICELAND": "CAVALRY"
-        },
-        {
-          "NORTH WEST TERRITORY": "CAVALRY"
+          "CENTRAL AMERICA": "ARTILLERY"
         },
         {
           "ONTARIO": "CAVALRY"
         },
         {
-          "AFGHANISTAN": "INFANTRY"
-        },
-        {
-          "SCANDINAVIA": "INFANTRY"
-        },
-        {
-          "EASTERN UNITED STATES": "CAVALRY"
-        },
-        {
-          "EASTERN AUSTRALIA": "INFANTRY"
-        },
-        {
-          "SOUTHERN EUROPE": "CAVALRY"
-        },
-        {
-          "UKRAINE": "ARTILLERY"
-        },
-        {
-          "WESTERN EUROPE": "ARTILLERY"
-        },
-        {
-          "KAMCHATKA": "CAVALRY"
-        },
-        {
-          "CONGO": "ARTILLERY"
-        },
-        {
-          "IRKUTSK": "ARTILLERY"
-        },
-        {
-          "MIDDLE EAST": "CAVALRY"
-        },
-        {
-          "QUEBEC": "ARTILLERY"
-        },
-        {
-          "CENTRAL AMERICA": "ARTILLERY"
-        },
-        {
-          "INDIA": "ARTILLERY"
-        },
-        {
-          "ALASKA": "INFANTRY"
-        },
-        {
-          "SIAM": "INFANTRY"
-        },
-        {
-          "VENEZUELA": "INFANTRY"
-        },
-        {
           "WILD": "WILD"
-        },
-        {
-          "MADAGASCAR": "INFANTRY"
-        },
-        {
-          "GREAT BRITAIN": "ARTILLERY"
-        },
-        {
-          "WILD": "WILD"
-        },
-        {
-          "CHINA": "ARTILLERY"
-        },
-        {
-          "MONGOLIA": "INFANTRY"
-        },
-        {
-          "NORTH AFRICA": "CAVALRY"
-        },
-        {
-          "BRAZIL": "ARTILLERY"
         },
         {
           "ARGENTINA": "INFANTRY"
         },
         {
-          "SIBERIA": "ARTILLERY"
+          "IRKUTSK": "ARTILLERY"
+        },
+        {
+          "NEW GUINEA": "CAVALRY"
+        },
+        {
+          "SCANDINAVIA": "INFANTRY"
+        },
+        {
+          "INDONESIA": "CAVALRY"
+        },
+        {
+          "CHINA": "ARTILLERY"
         },
         {
           "GREENLAND": "ARTILLERY"
         },
         {
-          "SOUTH AFRICA": "ARTILLERY"
+          "URAL": "CAVALRY"
+        },
+        {
+          "ALASKA": "INFANTRY"
+        },
+        {
+          "QUEBEC": "ARTILLERY"
+        },
+        {
+          "PERU": "CAVALRY"
+        },
+        {
+          "NORTHERN EUROPE": "INFANTRY"
+        },
+        {
+          "VENEZUELA": "INFANTRY"
+        },
+        {
+          "YAKUTSK": "INFANTRY"
+        },
+        {
+          "UKRAINE": "ARTILLERY"
+        },
+        {
+          "WESTERN AUSTRALIA": "ARTILLERY"
+        },
+        {
+          "EASTERN UNITED STATES": "CAVALRY"
+        },
+        {
+          "CONGO": "ARTILLERY"
+        },
+        {
+          "JAPAN": "CAVALRY"
+        },
+        {
+          "MADAGASCAR": "INFANTRY"
+        },
+        {
+          "WESTERN EUROPE": "ARTILLERY"
+        },
+        {
+          "EASTERN AUSTRALIA": "INFANTRY"
+        },
+        {
+          "WILD": "WILD"
+        },
+        {
+          "SOUTHERN EUROPE": "CAVALRY"
+        },
+        {
+          "NORTH AFRICA": "CAVALRY"
+        },
+        {
+          "EAST AFRICA": "CAVALRY"
         },
         {
           "WESTERN UNITED STATES": "INFANTRY"
+        },
+        {
+          "GREAT BRITAIN": "ARTILLERY"
+        },
+        {
+          "ALBERTA": "INFANTRY"
+        },
+        {
+          "KAMCHATKA": "CAVALRY"
+        },
+        {
+          "ICELAND": "CAVALRY"
+        },
+        {
+          "AFGHANISTAN": "INFANTRY"
+        },
+        {
+          "MONGOLIA": "INFANTRY"
+        },
+        {
+          "SOUTH AFRICA": "ARTILLERY"
+        },
+        {
+          "INDIA": "ARTILLERY"
+        },
+        {
+          "BRAZIL": "ARTILLERY"
+        },
+        {
+          "NORTH WEST TERRITORY": "CAVALRY"
+        },
+        {
+          "SIAM": "INFANTRY"
+        },
+        {
+          "EGYPT": "INFANTRY"
+        },
+        {
+          "MIDDLE EAST": "CAVALRY"
+        },
+        {
+          "SIBERIA": "ARTILLERY"
         }
       ],
       "Players": [
         {
-          "Player": 0,
+          "Player": 1,
           "Hand": [],
           "Territories": [
             {
@@ -186,7 +186,7 @@
           ]
         },
         {
-          "Player": 1,
+          "Player": 2,
           "Hand": [],
           "Territories": [
             {
@@ -234,7 +234,7 @@
           ]
         },
         {
-          "Player": 2,
+          "Player": 0,
           "Hand": [],
           "Territories": [
             {
@@ -287,146 +287,146 @@
       "Turn": 4,
       "Deck": [
         {
-          "INDONESIA": "CAVALRY"
-        },
-        {
-          "EGYPT": "INFANTRY"
-        },
-        {
-          "YAKUTSK": "INFANTRY"
-        },
-        {
-          "JAPAN": "CAVALRY"
-        },
-        {
-          "EAST AFRICA": "CAVALRY"
-        },
-        {
-          "WESTERN AUSTRALIA": "ARTILLERY"
-        },
-        {
-          "PERU": "CAVALRY"
-        },
-        {
-          "ALBERTA": "INFANTRY"
-        },
-        {
-          "NEW GUINEA": "CAVALRY"
-        },
-        {
-          "URAL": "CAVALRY"
-        },
-        {
-          "NORTHERN EUROPE": "INFANTRY"
-        },
-        {
-          "ICELAND": "CAVALRY"
-        },
-        {
-          "NORTH WEST TERRITORY": "CAVALRY"
+          "CENTRAL AMERICA": "ARTILLERY"
         },
         {
           "ONTARIO": "CAVALRY"
         },
         {
-          "AFGHANISTAN": "INFANTRY"
-        },
-        {
-          "SCANDINAVIA": "INFANTRY"
-        },
-        {
-          "EASTERN UNITED STATES": "CAVALRY"
-        },
-        {
-          "EASTERN AUSTRALIA": "INFANTRY"
-        },
-        {
-          "SOUTHERN EUROPE": "CAVALRY"
-        },
-        {
-          "UKRAINE": "ARTILLERY"
-        },
-        {
-          "WESTERN EUROPE": "ARTILLERY"
-        },
-        {
-          "KAMCHATKA": "CAVALRY"
-        },
-        {
-          "CONGO": "ARTILLERY"
-        },
-        {
-          "IRKUTSK": "ARTILLERY"
-        },
-        {
-          "MIDDLE EAST": "CAVALRY"
-        },
-        {
-          "QUEBEC": "ARTILLERY"
-        },
-        {
-          "CENTRAL AMERICA": "ARTILLERY"
-        },
-        {
-          "INDIA": "ARTILLERY"
-        },
-        {
-          "ALASKA": "INFANTRY"
-        },
-        {
-          "SIAM": "INFANTRY"
-        },
-        {
-          "VENEZUELA": "INFANTRY"
-        },
-        {
           "WILD": "WILD"
-        },
-        {
-          "MADAGASCAR": "INFANTRY"
-        },
-        {
-          "GREAT BRITAIN": "ARTILLERY"
-        },
-        {
-          "WILD": "WILD"
-        },
-        {
-          "CHINA": "ARTILLERY"
-        },
-        {
-          "MONGOLIA": "INFANTRY"
-        },
-        {
-          "NORTH AFRICA": "CAVALRY"
-        },
-        {
-          "BRAZIL": "ARTILLERY"
         },
         {
           "ARGENTINA": "INFANTRY"
         },
         {
-          "SIBERIA": "ARTILLERY"
+          "IRKUTSK": "ARTILLERY"
+        },
+        {
+          "NEW GUINEA": "CAVALRY"
+        },
+        {
+          "SCANDINAVIA": "INFANTRY"
+        },
+        {
+          "INDONESIA": "CAVALRY"
+        },
+        {
+          "CHINA": "ARTILLERY"
         },
         {
           "GREENLAND": "ARTILLERY"
         },
         {
+          "URAL": "CAVALRY"
+        },
+        {
+          "ALASKA": "INFANTRY"
+        },
+        {
+          "QUEBEC": "ARTILLERY"
+        },
+        {
+          "PERU": "CAVALRY"
+        },
+        {
+          "NORTHERN EUROPE": "INFANTRY"
+        },
+        {
+          "VENEZUELA": "INFANTRY"
+        },
+        {
+          "YAKUTSK": "INFANTRY"
+        },
+        {
+          "UKRAINE": "ARTILLERY"
+        },
+        {
+          "WESTERN AUSTRALIA": "ARTILLERY"
+        },
+        {
+          "EASTERN UNITED STATES": "CAVALRY"
+        },
+        {
+          "CONGO": "ARTILLERY"
+        },
+        {
+          "JAPAN": "CAVALRY"
+        },
+        {
+          "MADAGASCAR": "INFANTRY"
+        },
+        {
+          "WESTERN EUROPE": "ARTILLERY"
+        },
+        {
+          "EASTERN AUSTRALIA": "INFANTRY"
+        },
+        {
+          "WILD": "WILD"
+        },
+        {
+          "SOUTHERN EUROPE": "CAVALRY"
+        },
+        {
+          "NORTH AFRICA": "CAVALRY"
+        },
+        {
+          "EAST AFRICA": "CAVALRY"
+        },
+        {
+          "WESTERN UNITED STATES": "INFANTRY"
+        },
+        {
+          "GREAT BRITAIN": "ARTILLERY"
+        },
+        {
+          "ALBERTA": "INFANTRY"
+        },
+        {
+          "KAMCHATKA": "CAVALRY"
+        },
+        {
+          "ICELAND": "CAVALRY"
+        },
+        {
+          "AFGHANISTAN": "INFANTRY"
+        },
+        {
+          "MONGOLIA": "INFANTRY"
+        },
+        {
           "SOUTH AFRICA": "ARTILLERY"
+        },
+        {
+          "INDIA": "ARTILLERY"
+        },
+        {
+          "BRAZIL": "ARTILLERY"
+        },
+        {
+          "NORTH WEST TERRITORY": "CAVALRY"
+        },
+        {
+          "SIAM": "INFANTRY"
+        },
+        {
+          "EGYPT": "INFANTRY"
+        },
+        {
+          "MIDDLE EAST": "CAVALRY"
         }
       ],
       "Players": [
         {
-          "Player": 0,
+          "Player": 1,
           "Hand": [
             {
-              "WESTERN UNITED STATES": "INFANTRY"
+              "SIBERIA": "ARTILLERY"
             }
           ],
           "Territories": [
             {
-              "EASTERN UNITED STATES": 3
+              "EASTERN UNITED STATES": 6
             },
             {
               "CENTRAL AMERICA": 6
@@ -435,13 +435,13 @@
               "MADAGASCAR": 6
             },
             {
-              "BRAZIL": 2
+              "BRAZIL": 6
             },
             {
               "INDONESIA": 1
             },
             {
-              "SIAM": 6
+              "SIAM": 3
             },
             {
               "INDIA": 1
@@ -468,15 +468,12 @@
               "KAMCHATKA": 1
             },
             {
-              "QUEBEC": 3
-            },
-            {
-              "ARGENTINA": 3
+              "CHINA": 3
             }
           ]
         },
         {
-          "Player": 1,
+          "Player": 2,
           "Hand": [],
           "Territories": [
             {
@@ -513,6 +510,9 @@
               "SOUTHERN EUROPE": 1
             },
             {
+              "ARGENTINA": 1
+            },
+            {
               "SIBERIA": 1
             },
             {
@@ -521,7 +521,7 @@
           ]
         },
         {
-          "Player": 2,
+          "Player": 0,
           "Hand": [],
           "Territories": [
             {
@@ -532,9 +532,6 @@
             },
             {
               "URAL": 1
-            },
-            {
-              "CHINA": 1
             },
             {
               "IRKUTSK": 1
@@ -546,289 +543,7 @@
               "CONGO": 1
             },
             {
-              "NEW GUINEA": 1
-            },
-            {
-              "WESTERN UNITED STATES": 7
-            },
-            {
-              "WESTERN EUROPE": 6
-            },
-            {
-              "NORTHERN EUROPE": 6
-            },
-            {
-              "ONTARIO": 6
-            },
-            {
-              "YAKUTSK": 1
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Turn": 6,
-      "Deck": [
-        {
-          "INDONESIA": "CAVALRY"
-        },
-        {
-          "EGYPT": "INFANTRY"
-        },
-        {
-          "YAKUTSK": "INFANTRY"
-        },
-        {
-          "JAPAN": "CAVALRY"
-        },
-        {
-          "EAST AFRICA": "CAVALRY"
-        },
-        {
-          "WESTERN AUSTRALIA": "ARTILLERY"
-        },
-        {
-          "PERU": "CAVALRY"
-        },
-        {
-          "ALBERTA": "INFANTRY"
-        },
-        {
-          "NEW GUINEA": "CAVALRY"
-        },
-        {
-          "URAL": "CAVALRY"
-        },
-        {
-          "NORTHERN EUROPE": "INFANTRY"
-        },
-        {
-          "ICELAND": "CAVALRY"
-        },
-        {
-          "NORTH WEST TERRITORY": "CAVALRY"
-        },
-        {
-          "ONTARIO": "CAVALRY"
-        },
-        {
-          "AFGHANISTAN": "INFANTRY"
-        },
-        {
-          "SCANDINAVIA": "INFANTRY"
-        },
-        {
-          "EASTERN UNITED STATES": "CAVALRY"
-        },
-        {
-          "EASTERN AUSTRALIA": "INFANTRY"
-        },
-        {
-          "SOUTHERN EUROPE": "CAVALRY"
-        },
-        {
-          "UKRAINE": "ARTILLERY"
-        },
-        {
-          "WESTERN EUROPE": "ARTILLERY"
-        },
-        {
-          "KAMCHATKA": "CAVALRY"
-        },
-        {
-          "CONGO": "ARTILLERY"
-        },
-        {
-          "IRKUTSK": "ARTILLERY"
-        },
-        {
-          "MIDDLE EAST": "CAVALRY"
-        },
-        {
-          "QUEBEC": "ARTILLERY"
-        },
-        {
-          "CENTRAL AMERICA": "ARTILLERY"
-        },
-        {
-          "INDIA": "ARTILLERY"
-        },
-        {
-          "ALASKA": "INFANTRY"
-        },
-        {
-          "SIAM": "INFANTRY"
-        },
-        {
-          "VENEZUELA": "INFANTRY"
-        },
-        {
-          "WILD": "WILD"
-        },
-        {
-          "MADAGASCAR": "INFANTRY"
-        },
-        {
-          "GREAT BRITAIN": "ARTILLERY"
-        },
-        {
-          "WILD": "WILD"
-        },
-        {
-          "CHINA": "ARTILLERY"
-        },
-        {
-          "MONGOLIA": "INFANTRY"
-        },
-        {
-          "NORTH AFRICA": "CAVALRY"
-        },
-        {
-          "BRAZIL": "ARTILLERY"
-        },
-        {
-          "ARGENTINA": "INFANTRY"
-        },
-        {
-          "SIBERIA": "ARTILLERY"
-        },
-        {
-          "GREENLAND": "ARTILLERY"
-        }
-      ],
-      "Players": [
-        {
-          "Player": 0,
-          "Hand": [
-            {
-              "WESTERN UNITED STATES": "INFANTRY"
-            }
-          ],
-          "Territories": [
-            {
-              "EASTERN UNITED STATES": 3
-            },
-            {
-              "CENTRAL AMERICA": 6
-            },
-            {
-              "MADAGASCAR": 6
-            },
-            {
-              "BRAZIL": 2
-            },
-            {
-              "INDONESIA": 1
-            },
-            {
-              "SIAM": 6
-            },
-            {
-              "INDIA": 1
-            },
-            {
-              "PERU": 1
-            },
-            {
-              "GREENLAND": 1
-            },
-            {
-              "VENEZUELA": 1
-            },
-            {
-              "UKRAINE": 1
-            },
-            {
-              "GREAT BRITAIN": 1
-            },
-            {
-              "ALASKA": 1
-            },
-            {
-              "KAMCHATKA": 1
-            },
-            {
-              "QUEBEC": 3
-            },
-            {
-              "ARGENTINA": 3
-            }
-          ]
-        },
-        {
-          "Player": 1,
-          "Hand": [
-            {
-              "SOUTH AFRICA": "ARTILLERY"
-            }
-          ],
-          "Territories": [
-            {
-              "WESTERN AUSTRALIA": 1
-            },
-            {
-              "EASTERN AUSTRALIA": 1
-            },
-            {
-              "EAST AFRICA": 6
-            },
-            {
-              "NORTH WEST TERRITORY": 1
-            },
-            {
-              "SCANDINAVIA": 1
-            },
-            {
-              "NORTH AFRICA": 6
-            },
-            {
-              "ICELAND": 1
-            },
-            {
-              "MIDDLE EAST": 6
-            },
-            {
-              "JAPAN": 1
-            },
-            {
-              "EGYPT": 6
-            },
-            {
-              "SOUTHERN EUROPE": 1
-            },
-            {
-              "SIBERIA": 1
-            },
-            {
-              "SOUTH AFRICA": 3
-            },
-            {
-              "CONGO": 3
-            }
-          ]
-        },
-        {
-          "Player": 2,
-          "Hand": [],
-          "Territories": [
-            {
-              "ALBERTA": 1
-            },
-            {
-              "AFGHANISTAN": 1
-            },
-            {
-              "URAL": 1
-            },
-            {
-              "CHINA": 1
-            },
-            {
-              "IRKUTSK": 1
-            },
-            {
-              "MONGOLIA": 1
+              "QUEBEC": 1
             },
             {
               "NEW GUINEA": 1

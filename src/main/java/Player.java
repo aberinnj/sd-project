@@ -32,6 +32,9 @@ public class Player implements Observer{
         }
 
     }
+
+
+
     // add undos
     public void addUndos(int undos) { Undos = Undos + undos; }
 

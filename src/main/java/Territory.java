@@ -42,6 +42,8 @@ public class Territory extends Observable {
         status = Status.FALLEN;
         setChanged();
         notifyObservers();
+
+        deleteObservers();
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
