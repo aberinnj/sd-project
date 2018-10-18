@@ -4,7 +4,12 @@
 .recommenders
 
 # MAVEN
-
+target/*
+!target/site/
+target/site/*
+!target/site/apidocs/
+target/site/apidocs/*
+!target/site/apidocs/class-use
 
 # API - windows
 src/keys/twitter_api.json
