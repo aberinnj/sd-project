@@ -29,12 +29,15 @@ as well as the Deck
 
 todo: make changes to current_turn, UPDATE JH.JSON_writer
 *//////////////////////////////////////////////////////////////////////*/
+
 public class GameManager {
     static String base;
+
     static Player[] playerList;
     int[] playerTurnPattern;
     static TurnManager TM;
     private static BoardManager BM;
+
     int current_turn;
     TwitterFactory tf;
     Twitter twitter;
@@ -43,6 +46,7 @@ public class GameManager {
     GameManager() {
         BM = new BoardManager();
         TM = new TurnManager();
+
         base = System.getProperty("user.dir");
         current_turn = 0;
 
@@ -94,7 +98,6 @@ public class GameManager {
         int numPlayers = loader.getNumPlayers(turn);
         loader.setPlayers(BM, numPlayers, turn);
         //BM.gameDeck = loader.setDeck(turn); <- reinstantiates the deck from the JSON, currently Deck is private in and immutable
-
 
     }
 
@@ -328,7 +331,6 @@ public class GameManager {
     public void incrementTurn(){
         current_turn++;
     }
-
     // Player list only contains Players, and you can freely check if players have all the territories
     public boolean isGameOver(){
         for(Player i: playerList){
