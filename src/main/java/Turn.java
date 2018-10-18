@@ -262,7 +262,6 @@ public class Turn {
             } while(territory == null);
             BM.getBoardMap().get(territory).setStatusToUnderAttack();
             do{
-                GM.setDefendingPlayer(BM.getBoardMap().get(territory).getOccupantID());
                 attackerDice = BM.queryCount(scanner, "Attacker (Player "+ player.getId()+") rolls: ", "ATTACK", player, origin);
             } while(attackerDice == 0);
             do{

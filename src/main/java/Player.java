@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.Observer;
 
 /*////////////////////////////////////////////////////////////////////////////////
 Player Class
@@ -34,8 +35,6 @@ public class Player implements Observer {
 
     }
 
-
-
     // add undos
     public void addUndos(int undos) { Undos = Undos + undos; }
 
@@ -47,8 +46,6 @@ public class Player implements Observer {
 
     // get wallet contents
     public Double getWallet() { return wallet; }
-
-    private Subject topic;
 
     // get player id
     public int getId() {
@@ -134,17 +131,6 @@ public class Player implements Observer {
 
         return k;
     }
-
-    @Override
-    public void update() {
-        System.out.println( "Player #"+  topic.getDefendingPlayer() + ": YOU ARE UNDER ATTACK!");
-    }
-
-    @Override
-    public void setSubject(Subject sub) {
-        this.topic=sub;
-    }
-
 
     /*////////////////////////////////////////////////////////////////////////////////
     Method returns the total number of remaining infantry
