@@ -1,0 +1,7 @@
+* text=auto
+*.java text
+*.html text
+*.js text
+
+*.png binary
+*.jpg binary
