@@ -2,8 +2,12 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Properties;
 
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -205,6 +209,35 @@ public class StarterTest extends TestCase{
         System.setIn(System.in);
 
 
+    }
+    /*
+    @Test
+    public void testProperties() throws IOException {
+        String base = System.getProperty("user.dir");
+        String configPath = base + "/Risk.prop";
+        Properties props = new Properties();
+        props.load(new FileInputStream(configPath));
+
+        String appVersion = props.getProperty("twitter_apiKey");
+        String appName = props.getProperty("twitter_apiSecretKey");
+        String appGroup = props.getProperty("twitter_accessToken");
+        String appDownloadAddr = props.getProperty("twitter_accessTokenSecret");
+
+
+        System.out.println(appDownloadAddr);
+    }*/
+
+
+    @Test
+    public void testUpload() {
+        GameManager GM = new GameManager();
+        GM.upload();
+    }
+
+    @Test
+    public void testDownload() throws IOException {
+        GameManager GM = new GameManager();
+        GM.download();
     }
 
 }

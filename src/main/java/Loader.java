@@ -26,7 +26,6 @@ public class Loader {
         int[] emptyTurnPattern = null;
 
         JSONhandler JH = new JSONhandler(bm, emptyPlayer, emptyTurnPattern, base);
-        JH.download();
         JsonObject turn = JH.getTurnJSON(turnNumber);
         return turn;
     }
