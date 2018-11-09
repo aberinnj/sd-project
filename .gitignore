@@ -8,6 +8,7 @@ target
 
 # API - windows
 src/keys/twitter_api.json
+*.prop
 
 # API - linux
 ./src/keys/twitter_api.json

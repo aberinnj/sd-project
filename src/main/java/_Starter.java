@@ -22,8 +22,6 @@ public class _Starter {
     String bucketName;
     String objectOfGameInstance;
     static int playerCount;
-    TwitterFactory tf;
-    Twitter twitter;
 
     /* Initialize Member Variables
      * Note that playerCount is initialized to 0. Call setNumberOfPlayers to initialize*/
@@ -79,6 +77,7 @@ public class _Starter {
         while (setNumberOfPlayers()) {}
         GM.initializeAsNormal(playerCount);
         GM.runSetup(GM, scanner);
+        GameManager.fileObjKeyName = "risk-game-" + UUID.randomUUID().toString();
     }
 
     // Query for number of players for this new game
@@ -120,7 +119,7 @@ public class _Starter {
             if(name.toLowerCase().equals("cancel")) return false;
         }
         // set Object for AWS S3
-        objectOfGameInstance = name;
+        GameManager.fileObjKeyName = name;
         return true;
     }
 

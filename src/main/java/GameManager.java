@@ -63,9 +63,8 @@ public class GameManager {
     int[] playerTurnPattern;
     static TurnManager TM;
     private static BoardManager BM;
-    private String bucketName = "therisk";
-    private String fileObjKeyName = "RiskGSON";
-    private String key = "RiskGSON";
+    private String bucketName = "risk-game-team-one";
+    protected static String fileObjKeyName;
     int current_turn;
     TwitterFactory tf;
     Twitter twitter;
@@ -74,6 +73,7 @@ public class GameManager {
 
     // Sets up ALL Game Variables, which must be testable upon initialization
     GameManager() {
+        BM = new BoardManager();
         BM = new BoardManager();
         TM = new TurnManager();
         base = System.getProperty("user.dir");
@@ -204,19 +204,19 @@ public class GameManager {
         try {
 
             s3Client.getObject(
-                    new GetObjectRequest(bucketName, key),
+                    new GetObjectRequest(bucketName, fileObjKeyName),
                     new File(fileName)
             );
 
             // Get an object and print its contents.
             System.out.println("Downloading an object");
-            fullObject = s3Client.getObject(new GetObjectRequest(bucketName, key));
+            fullObject = s3Client.getObject(new GetObjectRequest(bucketName, fileObjKeyName));
             System.out.println("Content-Type: " + fullObject.getObjectMetadata().getContentType());
             System.out.println("Content: ");
             displayTextInputStream(fullObject.getObjectContent());
 
             // Get a range of bytes from an object and print the bytes.
-            GetObjectRequest rangeObjectRequest = new GetObjectRequest(bucketName, key)
+            GetObjectRequest rangeObjectRequest = new GetObjectRequest(bucketName, fileObjKeyName)
                     .withRange(0,9);
             objectPortion = s3Client.getObject(rangeObjectRequest);
             System.out.println("Printing bytes retrieved.");
@@ -226,7 +226,7 @@ public class GameManager {
             ResponseHeaderOverrides headerOverrides = new ResponseHeaderOverrides()
                     .withCacheControl("No-cache")
                     .withContentDisposition("attachment; filename=example.txt");
-            GetObjectRequest getObjectRequestHeaderOverride = new GetObjectRequest(bucketName, key)
+            GetObjectRequest getObjectRequestHeaderOverride = new GetObjectRequest(bucketName, fileObjKeyName)
                     .withResponseHeaders(headerOverrides);
             headerOverrideObject = s3Client.getObject(getObjectRequestHeaderOverride);
             displayTextInputStream(headerOverrideObject.getObjectContent());
