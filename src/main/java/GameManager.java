@@ -116,6 +116,24 @@ public class GameManager {
         twitter = tf.getInstance();
     }
 
+    //Allows bufferreader to return  the readline() after a few seconds  instead of enter being pressed
+    public String readLineTimeout(BufferedReader reader, long timeout) throws IOException {
+        long start = System.currentTimeMillis();
+
+        while (!reader.ready()) {
+            if (System.currentTimeMillis() - start >= timeout)
+                return null;
+
+            // optional delay between polling
+            try {
+                Thread.sleep(50);
+            } catch (Exception ignore) {
+            }
+        }
+
+        return reader.readLine();
+    }
+    
     public void runGame(GameManager GM, Scanner scanner) throws IOException {
         JSONhandler JH = new JSONhandler(BM, playerList, GM.playerTurnPattern, GM.base);
         //  initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
