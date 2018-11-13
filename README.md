@@ -1,18 +1,21 @@
-# sdprojectrisk [![Build Status](https://travis-ci.com/aberinnj/sd_project.svg?branch=master)](https://travis-ci.com/aberinnj/sd_project) [![codecov](https://codecov.io/gh/aberinnj/sd_project/branch/master/graph/badge.svg)](https://codecov.io/gh/aberinnj/sd_project)
+# Project sdprojectrisk [![Build Status](https://travis-ci.com/aberinnj/sd_project.svg?branch=master)](https://travis-ci.com/aberinnj/sd_project) [![codecov](https://codecov.io/gh/aberinnj/sd_project/branch/master/graph/badge.svg)](https://codecov.io/gh/aberinnj/sd_project)
 
 Software Design class team project implementing a clone of the boardgame Risk.
 
+# Running the game
+Only one instance must be run at all times for v5's chatbot. Multiple games can then be run.
+To properly set this up, please provide your token and botname inside a props file. Do __not__ share your props file.
 
-## Twitter DEMO - currently being showed [here](https://twitter.com/AberinNorman)
-![broadcast-to-twitter-demo](https://github.com/aberinnj/sd_project/blob/master/demo.PNG)
+## Design
+* [Chatbot]()
+* [Twitter]()
 
-
-
-## API keys instructions
-You need to supply your own twitter-api key. Store them inside src/keys/  
-Further instructions can be found in src/keys/
 
 # Update Log
+__V.0.5__
+- [ ] Timeout: A player has only 30 seconds to take an action, otherwise the game moves on to the next player
+- [ ] Telegram Chatbot: Players can play using a Chatbot. At first, player identifies the game session that it wants to play by entering a gameId. A game starts when all players have joined the game. Assume that the number of players in this case is always 3. (Resources: https://core.telegram.org/bots/samples, https://monsterdeveloper.gitbooks.io/writing-telegram-bots-on-java/chapter1.html)
+
 __V.0.4__
 - [X] Notify players if their territories are under attack. (Remember the Observer Pattern)
 - [X] Players can purchase in-game credit. They can use the credit to buy cards, buy undo actions, or transfer the credits to another player.
