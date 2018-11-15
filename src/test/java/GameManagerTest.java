@@ -27,6 +27,15 @@ public class GameManagerTest extends TestCase {
     }
 
     @Test
+    public void testGameTimeout() {
+        GM = new GameManager();
+
+        String input;
+        input = GM.gameTimeout(1);
+        assertNull(input);
+    }
+
+    @Test
     public void testGameManagerPlayerList() throws Exception {
         Player[] TestPlayerList1;
         Player[] TestPlayerList2;
