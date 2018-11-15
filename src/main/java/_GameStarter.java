@@ -23,35 +23,37 @@ public class _GameStarter {
         this.base = System.getProperty("user.dir");
         bucketName = "risk-game-team-one";
         playerCount = 0;
+
+        GM = new GameManager();
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////
     Main function
-    //////////////////////////////////////////////////////////////////////////////////*/
-    public void initGame() throws IOException {
-
 
         if(GM.baseQuery("Would you like to load a game? (Yes/No) ", scanner))
         {
-            Loader loader = new Loader(bucketName);
-
             if(queryGameChecker(loader.listObjects(bucketName))){
 
-                GM.loadGame(0, loader);
-
-            } else defaultStart(GM);
+            } else defaultStart(id);
         }
         else {
-            defaultStart(GM);
-        }
+    //////////////////////////////////////////////////////////////////////////////////*/
+    public void initGame(String id) throws IOException {
+        defaultStart(id);
         GM.runGame(GM, scanner);
     }
 
-    public void defaultStart(GameManager GM) {
+    public void loadGame(String id) throws IOException {
+        Loader loader = new Loader(bucketName);
+        GM.loadGame(0, loader);
+        GM.runGame(GM, scanner);
+    }
+
+    public void defaultStart(String id) {
         while (setNumberOfPlayers()) {}
         GM.initializeAsNormal(playerCount);
-        GM.runSetup(GM, scanner);
-        GameManager.fileObjKeyName = "risk-game-" + UUID.randomUUID().toString();
+        GameManager.fileObjKeyName = id;
+        GameManager.runSetup(GM, scanner);
     }
 
     // Query for number of players for this new game

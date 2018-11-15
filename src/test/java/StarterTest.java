@@ -117,7 +117,7 @@ public class StarterTest extends TestCase{
         GameManager GM = new GameManager();
         ng = new _GameStarter();
 
-        ng.defaultStart(GM);
+        ng.defaultStart("anything");
 
 
         assertNotNull(GM.getPlayer(0));
