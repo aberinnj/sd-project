@@ -33,6 +33,11 @@
             <artifactId>twitter4j-core</artifactId>
             <version>[4.0,)</version>
         </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>4.1</version>
+        </dependency>
 
     </dependencies>
     <build>
@@ -68,7 +73,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                         <manifest>
-                            <mainClass>_Starter</mainClass>
+                            <mainClass>_GameStarter</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -90,22 +90,8 @@ public class GameManager {
                     .setOAuthAccessToken(props.getTwitter_accessToken())
                     .setOAuthAccessTokenSecret(props.getTwitter_accessTokenSecret());
 
-            BasicSessionCredentials sessionCredentials = new BasicSessionCredentials(
-                    props.getAws_access_key_id(),
-                    props.getAws_secret_access_key(),
-                    props.getAws_session_token());
+            s3Client = AmazonS3ClientBuilder.defaultClient();
 
-            s3Client = AmazonS3ClientBuilder.standard()
-                    .withRegion("us-east-1")
-                    .withCredentials(new AWSStaticCredentialsProvider(sessionCredentials))
-                    .build();
-
-            /*
-            s3Client = AmazonS3ClientBuilder.standard()
-                    .withRegion(clientRegion)
-                    .withCredentials(new ProfileCredentialsProvider())
-                    .build();
-                    */
 
         } catch (IOException e){
             System.out.println("Error: No api-keys found");
@@ -269,7 +255,7 @@ public class GameManager {
     setGame is used to re-set all game variables from a turn, after initialization (like undo)
     setGame can an also be used for loading a game IF loader is using init TurnManager instead to store an entire game's turn listing
     in short, Loader gives all data to TurnManager and leaves everything to TurnManager and setGame
-    then in _Starter, after loading all game, call this function to setGame from a turn
+    then in _GameStarter, after loading all game, call this function to setGame from a turn
     *///////////////////////////////////////////////////////////////////////////////*/
     public void setGame(final Turn lastTurnOfPlayerBefore, final Turn lastTurnOfThisPlayer)
     {

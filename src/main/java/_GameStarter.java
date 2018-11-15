@@ -1,35 +1,24 @@
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-import twitter4j.Twitter;
-import twitter4j.TwitterFactory;
 import java.io.IOException;
 
 import java.util.*;
 
 /*////////////////////////////////////////////////////////////////////////////////
-_Starter Class starts _Starter by calling Loader methods to get game-data and
+_GameStarter Class starts _GameStarter by calling Loader methods to get game-data and
 calls GameManager methods to store them.
 
 or by initializing GameManager and runs a game
-
-
-todo: Broadcast to Twitter
-todo: Do not import all of java.util
 *///////////////////////////////////////////////////////////////////////////////*/
-public class _Starter {
+public class _GameStarter {
     Scanner scanner;
     String base;
     String bucketName;
     String objectOfGameInstance;
     static int playerCount;
+    static GameManager GM;
 
     /* Initialize Member Variables
      * Note that playerCount is initialized to 0. Call setNumberOfPlayers to initialize*/
-    _Starter(){
-        System.out.println(" __________________");
-        System.out.println("|   Game of Risk   |");
-        System.out.println(" '''''''''''''''''' ");
-
+    _GameStarter(){
         this.scanner = new Scanner(System.in);
         this.base = System.getProperty("user.dir");
         bucketName = "risk-game-team-one";
@@ -39,38 +28,23 @@ public class _Starter {
     /*//////////////////////////////////////////////////////////////////////////////////
     Main function
     //////////////////////////////////////////////////////////////////////////////////*/
-    public static void main(String[] args) throws IOException {
+    public void initGame() throws IOException {
 
-        _Starter NG = new _Starter();
-        GameManager GM = new GameManager();
 
-        if(GM.baseQuery("Would you like to load a game? (Yes/No) ", NG.scanner))
+        if(GM.baseQuery("Would you like to load a game? (Yes/No) ", scanner))
         {
-            // init
-            Loader loader = new Loader(NG.bucketName);
-            // get game
-            if(NG.queryGameChecker(loader.listObjects(NG.bucketName))){
-                // download game
-                // Need to choose which turn to retrieve
-                int turnToRetrieve = 0;
+            Loader loader = new Loader(bucketName);
 
-                GM.loadGame(turnToRetrieve, loader);
+            if(queryGameChecker(loader.listObjects(bucketName))){
 
+                GM.loadGame(0, loader);
 
-                // queryForTurn or cancel (if cancel call DefaultStart(GM)) should still be testable) see GameManagerTest for example
-                // if selected, for each important data, get/pull data from TurnManager
-
-                // default setPlayerList(id is -1, hand is empty, etc.) these default values are changed below
-                // then call GameManager.setTurnPattern
-                // then call GameManager.setDeck(DeckData), GameManager.setPlayer(DeckData, TerritoryData, ArmyData) for each player),
-                // then call GameManager.setBoard(BoardHashMap) to set Territories
-                // run game below
-            } else NG.defaultStart(GM);
+            } else defaultStart(GM);
         }
         else {
-            NG.defaultStart(GM);
+            defaultStart(GM);
         }
-        GM.runGame(GM, NG.scanner);
+        GM.runGame(GM, scanner);
     }
 
     public void defaultStart(GameManager GM) {

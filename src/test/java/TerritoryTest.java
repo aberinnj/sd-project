@@ -3,7 +3,7 @@ import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /*////////////////////////////////////////////////////////////////////////////////
-_Starter Class starts a _Starter by initializing GameManager and runs a game
+_GameStarter Class starts a _GameStarter by initializing GameManager and runs a game
 *///////////////////////////////////////////////////////////////////////////////*/
 public class TerritoryTest extends TestCase{
     private Territory mainTerritory;

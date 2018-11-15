@@ -2,24 +2,20 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Properties;
 
 
 /*////////////////////////////////////////////////////////////////////////////////
-_Starter Class starts a _Starter by initializing GameManager and runs a game
+_GameStarter Class starts a _GameStarter by initializing GameManager and runs a game
 *///////////////////////////////////////////////////////////////////////////////*/
 public class StarterTest extends TestCase{
 
-    private _Starter ng;
+    private _GameStarter ng;
 
     @Test
     public void testNewGame() throws Exception {
-        ng = new _Starter();
+        ng = new _GameStarter();
         assertNotNull(ng.scanner);
         assertNotNull(ng.base);
         assertEquals(0, ng.getPlayerCount());
@@ -119,7 +115,7 @@ public class StarterTest extends TestCase{
                 "ALBERTA\n").getBytes());
         System.setIn(in);
         GameManager GM = new GameManager();
-        ng = new _Starter();
+        ng = new _GameStarter();
 
         ng.defaultStart(GM);
 
@@ -136,7 +132,7 @@ public class StarterTest extends TestCase{
     // This test requires a complete stream of inputs for a complete game
     @Test
     public void testMain() throws Exception {
-        ng = new _Starter();
+        ng = new _GameStarter();
         final InputStream old = System.in;
         final FileInputStream fis = new FileInputStream(new File(ng.base + "/src/main/java/input.txt"));
         System.setIn(fis);
@@ -154,7 +150,7 @@ public class StarterTest extends TestCase{
     {
         ByteArrayInputStream in = new ByteArrayInputStream("2".getBytes());
         System.setIn(in);
-        ng = new _Starter();
+        ng = new _GameStarter();
         ng.setNumberOfPlayers();
         assertEquals(2, ng.getPlayerCount());
         System.setIn(System.in);
@@ -166,13 +162,13 @@ public class StarterTest extends TestCase{
     {
         ByteArrayInputStream in = new ByteArrayInputStream("9".getBytes());
         System.setIn(in);
-        ng = new _Starter();
+        ng = new _GameStarter();
         ng.setNumberOfPlayers();
         assertEquals(0, ng.getPlayerCount());
 
         ByteArrayInputStream in2 = new ByteArrayInputStream("1".getBytes());
         System.setIn(in2);
-        ng = new _Starter();
+        ng = new _GameStarter();
         ng.setNumberOfPlayers();
         assertEquals(0, ng.getPlayerCount());
 
@@ -185,7 +181,7 @@ public class StarterTest extends TestCase{
     {
         ByteArrayInputStream in = new ByteArrayInputStream("INVALID ".getBytes());
         System.setIn(in);
-        ng = new _Starter();
+        ng = new _GameStarter();
         assertFalse(ng.setNumberOfPlayers());
         assertEquals(0, ng.getPlayerCount());
         System.setIn(System.in);
@@ -198,7 +194,7 @@ public class StarterTest extends TestCase{
         System.setIn(in);
         ArrayList<String> games1 = new ArrayList<>();
 
-        _Starter st = new _Starter();
+        _GameStarter st = new _GameStarter();
         assertFalse(st.queryGameChecker(games1));
 
         games1.add("game-1");
