@@ -29,14 +29,6 @@ public class _GameStarter {
 
     /*//////////////////////////////////////////////////////////////////////////////////
     Main function
-
-        if(GM.baseQuery("Would you like to load a game? (Yes/No) ", scanner))
-        {
-            if(queryGameChecker(loader.listObjects(bucketName))){
-
-            } else defaultStart(id);
-        }
-        else {
     //////////////////////////////////////////////////////////////////////////////////*/
     public void initGame(String id) throws IOException {
         defaultStart(id);

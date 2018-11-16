@@ -1,111 +1,117 @@
+import org.telegram.telegrambots.meta.api.objects.Chat;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+
+/*////////////////////////////////////////////////////////////////////////////////
+
+*///////////////////////////////////////////////////////////////////////////////*/
 
 public class Responses {
 
     public static String onStart(){
-        return "Hi! You called /start. To play risk, please select an action below: \n\n" +
-                "/create to create a new instance of the game\n" +
-                "/listAllGames to list all available game sessions\n" +
-                "/listMyGames to list all your game sessions\n" +
-                "/join <id> to select an available session\n" +
-                "/load to replay a game.";
+        return "Welcome! To play risk, you can either do the following:" +
+                "\n/create your own session for this chat, if the chat is not playing" +
+                "\n/join if the chat is playing and there's enough players." +
+                "\n/help to view all the available commands.";
+
     }
-    public static String onListAllGames(ArrayList<Game> listing){
-        if(listing.size() == 0){
-            return "There are currently no sessions being played. To create a game session, type /create";
-        } else {
-            String res = (listing.size() + " live game sessions have been found. Select one to join: ");
-            for (Game k : listing) {
-                res += ("\n" + k.gameID);
+
+    public static String onListAllGames(){
+        if (_GameMaster.gamesListing.isEmpty()){
+            return "There are no current sessions. /create to create your own session.";
+        }
+        else {
+            String res = "The following game sessions have been found.\n";
+            for(String game_id: _GameMaster.gamesListing.keySet()){
+
+                res += _GameMaster.gamesListing.get(game_id).playerList.size();
+                res += " player(s) \t";
+                res += game_id;
+
+                res += "\n";
             }
             return res;
         }
     }
 
-    public static String onListMyGames(int id){
-        String games = "";
-        boolean taken = false;
-
-        String res = "Your games: \n";
-        for( Game each: _GameMaster.gamesListing) {
-            if(each.playerList.contains(id)){
-                taken = true;
-                games += each.gameID + "\n";
-            }
+    public static String onListMyGames(int user_id){
+        if (_GameMaster.gamesListing.isEmpty()){
+            return "There are no current sessions. /create to create your own session.";
         }
-        if(!taken){
-            games = "You currently do not have any games.";
-        }
-        return res + games;
-    }
-
-    public static String onJoin(ChatInput in, int id) {
-        String res = "";
-        for(Game each: _GameMaster.gamesListing){
-            if(each.gameID.equals(in.getArgs().get(0)) && !each.playerList.contains(id) && each.playerList.size() < _GameMaster.MAX_PLAYERS_PER_GAME && each.state == GameState.QUEUE)
-            {
-                res = "You successfully joined a game.";
-                each.playerList.add(id);
-
-
-                break;
-            } else if(each.playerList.contains(id)) {
-                res = "You're already playing this game.";
-                break;
-            }
-            else {
-                res = "Uh Oh! You cannot the join this game. This game is either full or it has already commenced";
-                break;
-            }
-        }
-        return res;
-
-    }
-
-    public static String onGetStatus(int id){
-        String res = "";
-        boolean taken = false;
-        for(Game each: _GameMaster.gamesListing){
-            if(!each.playerList.contains(id))
-            {
-                taken = true;
-                res += "ID=" + each.gameID + "\n";
-
-                switch(each.state)
-                {
-                    case QUEUE:{
-                        res += "STATE=In Queue\n";
-                        break;
-                    }
-                    case WAIT:{
-                        res += "STATE=Waiting on a turn\n";
-                        break;
-                    }
-                    case INIT:{
-                        res += "STATE=Game has started.\n";
-                        break;
-                    }
-                    case END:{
-                        res += "STATE=Game ended.\n";
-                        break;
-                    }
-                    default:
-                        res += "STATE=unknown\n";
+        else {
+            String res = "";
+            boolean gamesFound = false;
+            for(String id: _GameMaster.gamesListing.keySet()){
+                if (_GameMaster.gamesListing.get(id).playerList.containsKey(user_id)) {
+                    res += _GameMaster.gamesListing.get(id).playerList.size();
+                    res += " players(s) \t";
+                    res += id;
+                    res += "\n";
+                    gamesFound = true;
                 }
-                res += "PLAYERS="+each.playerList.size();
+            }
+            if(gamesFound)
+                return "The following are your games: \n" + res;
+            else {
+                return "No games are found.";
             }
         }
-
-        if(!taken)
-            res += "Your games: \nYou currently do not have any games.";
-        return res;
     }
 
-    public static String onCreate(String id){
-        return "Creating a new game session. The game's ID is " + id;
+    public static String onJoin(ChatInput in, int user_id, String username, Long chat_id ) {
+        String context;
+        if(in.getArgs().size() > 0) {
+            context = in.getArgs().get(0);
+
+            if (!_GameMaster.gamesListing.containsKey(context)) {
+                return "The game does not exist.";
+            } else if (_GameMaster.gamesListing.get(context).playerList.containsKey(user_id)) {
+                return "You are already in this game.";
+            } else if (_GameMaster.gamesListing.get(context).state != GameState.QUEUE) {
+                return "This game is no longer accepting players.";
+            } else {
+                _GameMaster.gamesListing.get(context).addUser(user_id, username, chat_id);
+                return "You have successfully joined.";
+            }
+        }
+        else {
+            return "You did not provide a gameID";
+        }
+    }
+
+    public static String onGetStatus(String game){
+        if (!_GameMaster.gamesListing.containsKey(game)){
+            return "Game not found.";
+        }
+        else {
+            String res = "Status for " + game + ":\n";
+            res += _GameMaster.gamesListing.get(game).playerList.size();
+            res += " player(s) \t";
+            res += game;
+            res += "\n";
+            res += "Status: ";
+            res += _GameMaster.gamesListing.get(game).state;
+            res += "\n\n";
+            return res;
+        }
+    }
+
+    public static String onCreate(int user_id, String gameID, String username, long chat_id){
+            _GameMaster.gamesListing.put(gameID, new Game(gameID));
+            _GameMaster.gamesListing.get(gameID).addUser(user_id, username, chat_id);
+
+            _GameMaster.gamesListing.get(gameID).addObserver(_GameMaster.kineticEntity);
+            return "Creating a new game session. \nGameID: " + gameID;
     }
 
     public static String onHelp(){
-        return "Risk has the following commands available: \n";
+        return "Risk has the following commands available: \n" +
+                "/create to create a new instance of the game\n" +
+                "/join <gameID> to select an available session\n" +
+                "/listAllGames to list all available game sessions\n" +
+                "/listMyGames to list all your game sessions\n" +
+                "/getStatus to get the status on the chat's current game\n" +
+                "/load to replay a game.";
     }
 }
