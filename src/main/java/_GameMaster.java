@@ -245,7 +245,7 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                     for (Long dest: chat_reply_list)
                     {
-                        message.setChatId(dest);
+                        announcement.setChatId(dest);
                         announcement.setText("Your game " + _GameMaster.gamesListing.get(context).gameID + "is now starting. \n\nPlayers:\n" + res);
                         try {
                             execute(announcement);
