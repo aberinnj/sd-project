@@ -19,13 +19,23 @@ import twitter4j.conf.ConfigurationBuilder;
 import java.io.*;
 import java.util.*;
 
+/*///////////////////////////////////////////////////////////////////////
+GameManager sets up game
+
+On a high-level, this class sets up the game by Initializing Players and the Board
+as well as the Deck
+
+
+todo: make changes to current_turn, UPDATE JH.JSON_writer
+*//////////////////////////////////////////////////////////////////////*/
 
 class Props{
     String configPath;
     Properties props = new Properties();
 
-    Props(String base) throws IOException {
-        this.configPath = base + "/secrets_TeamOne.prop";
+    Props() throws IOException
+    {
+        this.configPath = System.getProperty("user.dir") +  "/secrets_TeamOne.prop";
         this.props.load(new FileInputStream(configPath));
     }
 
@@ -37,24 +47,11 @@ class Props{
 
     public String getTwitter_accessTokenSecret() { return props.getProperty("twitter_accessTokenSecret"); }
 
-    public String getAws_access_key_id() { return props.getProperty("aws_access_key_id"); }
+    public String getBot_name() { return props.getProperty("bot_name");}
 
-    public String getAws_secret_access_key() { return props.getProperty("aws_secret_access_key"); }
-
-    public String getAws_session_token() { return props.getProperty("aws_session_token"); }
+    public String getBot_apiToken() { return props.getProperty("bot_token");}
 
 }
-
-
-/*///////////////////////////////////////////////////////////////////////
-GameManager sets up game
-
-On a high-level, this class sets up the game by Initializing Players and the Board
-as well as the Deck
-
-
-todo: make changes to current_turn, UPDATE JH.JSON_writer
-*//////////////////////////////////////////////////////////////////////*/
 
 public class GameManager {
     static String base;
@@ -82,7 +79,7 @@ public class GameManager {
 
         ConfigurationBuilder cb = new ConfigurationBuilder();
         try {
-            Props props = new Props(base);
+            Props props = new Props();
 
             cb.setDebugEnabled(true)
                     .setOAuthConsumerKey(props.getTwitter_apiKey())

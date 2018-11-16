@@ -1,3 +1,4 @@
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
@@ -263,12 +264,26 @@ class CommandsHandler extends TelegramLongPollingBot{
 
     @Override
     public String getBotUsername(){
-        return "EbipasBot";
+        try {
+            Props k = new Props();
+            return k.getBot_name();
+        } catch(IOException e)
+        {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     @Override
     public String getBotToken(){
-        return "679281200:AAFFg-4DJ0R-aKFyLEpNqbOSiDPiaQ47fiA";
+        try {
+            Props k = new Props();
+            return k.getBot_apiToken();
+        } catch(IOException e)
+        {
+            e.printStackTrace();
+            return "";
+        }
     }
 
 }
