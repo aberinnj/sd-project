@@ -1,4 +1,3 @@
-import java.text.ParseException;
 import java.util.*;
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -21,6 +20,7 @@ public class BoardManager {
     HashMap<String, Continent> continentsMap;
     Deck gameDeck;
     int completeSets;
+    Messenger messenger;
 
     // Initializes the BoardManager variables and should be testable after
     BoardManager(){
@@ -98,50 +98,59 @@ public class BoardManager {
     }
 
     // queryTerritory consults with the boardMap for territories
-    public String queryTerritory(Scanner scanner, String query, String type, Player p, String origin) {
-        System.out.println(query);
-        String country = scanner.nextLine();
+    public String queryTerritory(String query, String type, Player p, String origin) throws InterruptedException {
+        //System.out.println(query);
+        messenger.putMessage(query);
+        String country = messenger.getMessage();
 
         // ALL queries for a territory requires a country to exist
         if (!boardMap.containsKey(country)) {
-            System.out.println("Error: Territory not found. ");
+            //System.out.println("Error: Territory not found. ");
+            messenger.putMessage("Error: Territory not found. ");
             return null;
         }
 
         // strengthening requires a country to be owned by the player
         if (type.equals("STRENGTHEN")) {
             if(boardMap.get(country).getOccupantID() != p.getId()) {
-                System.out.println("Error: Territory not owned. ");
+                // System.out.println("Error: Territory not owned. ");
+                messenger.putMessage("Error: Territory not owned. ");
                 return null;
             }
 
         // initialization requires a country selected to be free
         } else if (type.equals("INITIALIZE")) {
             if(boardMap.get(country).isOccupied()){
-                System.out.println("Error: Territory already occupied. ");
+                //System.out.println("Error: Territory already occupied. ");
+                messenger.putMessage("Error: Territory already occupied. ");
                 return null;
             }
 
         // attacking from a country requires the country to be a player's territory, the army count be > 1 and the enemy neighbors to be > 1
         } else if (type.equals("ATTACK_FROM")) {
             if(boardMap.get(country).getOccupantID() != p.getId()) {
-                System.out.println("Error: Territory not owned. ");
+                //System.out.println("Error: Territory not owned. ");
+                messenger.putMessage("Error: Territory not owned. ");
                 return null;
             } else if ( getOccupantCount(country) <= 1) {
-                System.out.println("Error: Territory not valid to attack from. ");
+                //System.out.println("Error: Territory not valid to attack from. ");
+                messenger.putMessage("Error: Territory not valid to attack from. ");
                 return null;
             } else if ( getAllAdjacentEnemyTerritories(p.getId(), country).size() == 0) {
-                System.out.println("Error: Territory seems to have no neighbors that can be attacked. ");
+                //System.out.println("Error: Territory seems to have no neighbors that can be attacked. ");
+                messenger.putMessage("Error: Territory seems to have no neighbors that can be attacked. ");
                 return null;
             }
 
         // selecting an enemy country requires the country to be an enemy's territory and adjacent to an origin
         } else if (type.equals("ATTACK")) {
             if(boardMap.get(country).getOccupantID() == p.getId()) {
-                System.out.println("Error: Territory is not an enemy territory. ");
+                //System.out.println("Error: Territory is not an enemy territory. ");
+                messenger.putMessage("Error: Territory is not an enemy territory. ");
                 return null;
             } else if (!getAllAdjacentEnemyTerritories(p.getId(), origin).contains(country)) {
-                System.out.println("Error: Territory is not adjacent to origin. ");
+                //System.out.println("Error: Territory is not adjacent to origin. ");
+                messenger.putMessage("Error: Territory is not adjacent to origin. ");
                 return null;
             }
 
@@ -149,23 +158,28 @@ public class BoardManager {
         // fortifying from a country requires the country to be player's territory, the army count to be more than one and the friendly neighbors to be > 0
         } else if (type.equals("FORTIFY_FROM")) {
             if(boardMap.get(country).getOccupantID() != p.getId()) {
-                System.out.println("Error: Territory not owned. ");
+                //System.out.println("Error: Territory not owned. ");
+                messenger.putMessage("Error: Territory not owned. ");
                 return null;
             } else if ( boardMap.get(country).getArmy().getInfantryCount() <= 1) {
-                System.out.println("Error: Territory not valid to fortify from. ");
+                //System.out.println("Error: Territory not valid to fortify from. ");
+                messenger.putMessage("Error: Territory not valid to fortify from. ");
                 return null;
             } else if ( getAllAdjacentTerritories(p.getId(), country).size() == 0) {
-                System.out.println("Error: Territory seems to have no neighbors to fortify. ");
+                //System.out.println("Error: Territory seems to have no neighbors to fortify. ");
+                messenger.putMessage("Error: Territory seems to have no neighbors to fortify. ");
                 return null;
             }
 
         // selecting a country to fortify requires the country to be the player's territory and adjacent to an origin
         } else if (type.equals("FORTIFY")) {
             if(boardMap.get(country).getOccupantID() != p.getId()) {
-                System.out.println("Error: Territory is not an territory. ");
+                //System.out.println("Error: Territory is not an territory. ");
+                messenger.putMessage("Error: Territory is not an territory. ");
                 return null;
             } else if (!getNeighborsOf(origin).contains(country)) {
-                System.out.println("Error: Territory is not adjacent to origin. ");
+                //System.out.println("Error: Territory is not adjacent to origin. ");
+                messenger.putMessage("Error: Territory is not adjacent to origin. ");
                 return null;
             }
         } else {
@@ -175,37 +189,45 @@ public class BoardManager {
     }
 
     // queryCount consults with territory-occupantCount
-    public int queryCount(Scanner scanner, String query, String type, Player p, String origin) {
-        System.out.println(query);
+    public int queryCount(String query, String type, Player p, String origin) throws InterruptedException {
+        //System.out.println(query);
+        messenger.putMessage(query);
         int count;
         try{
-            count = Integer.parseInt(scanner.nextLine());
+            //count = Integer.parseInt(scanner.nextLine());
+            count = Integer.parseInt(messenger.getMessage());
         } catch (NumberFormatException e){
-            System.out.println("Error: input is not a number. ");
+            // System.out.println("Error: input is not a number. ");
+            messenger.putMessage("Error: input is not a number. ");
             return 0;
         }
 
         // for attacks, the number of dice that can be rolled is 1, 2 or 3, the count of occupants must also be more than 1
         if(type.equals("ATTACK")) {
             if(getOccupantCount(origin) <= (count)) {
-                System.out.println("Error: " + origin + " does not have enough armies to roll " + count + " dice. ");
+                //System.out.println("Error: " + origin + " does not have enough armies to roll " + count + " dice. ");
+                messenger.putMessage("Error: " + origin + " does not have enough armies to roll " + count + " dice. ");
                 return 0;
             } else if (count > 3) {
-                System.out.println("Warning: The maximum is 3 dice. Defaulting dice roll to 3." );
+                //System.out.println("Warning: The maximum is 3 dice. Defaulting dice roll to 3." );
+                messenger.putMessage("Warning: The maximum is 3 dice. Defaulting dice roll to 3.");
                 return 3;
             }
 
         } else if (type.equals("DEFEND")) {
             if(getOccupantCount(origin) < count) {
-                System.out.println("Error: " + origin + " does not have enough armies to roll " + count + " dice. ");
+                //System.out.println("Error: " + origin + " does not have enough armies to roll " + count + " dice. ");
+                messenger.putMessage("Error: " + origin + " does not have enough armies to roll " + count + " dice. ");
                 return 0;
             } else if (count > 2) {
-                System.out.println("Warning: The maximum is 2 dice. Defaulting dice roll to 2." );
+                //System.out.println("Warning: The maximum is 2 dice. Defaulting dice roll to 2." );
+                messenger.putMessage("Warning: The maximum is 2 dice. Defaulting dice roll to 2.");
                 return 2;
             }
         } else if (type.equals("FORTIFY")) {
             if(getOccupantCount(origin) <= count) {
-                System.out.println("Error: There are not enough occupants in " + origin + " to transfer " + count + " armies. ");
+                //System.out.println("Error: There are not enough occupants in " + origin + " to transfer " + count + " armies. ");
+                messenger.putMessage("Error: There are not enough occupants in " + origin + " to transfer " + count + " armies. ");
                 return 0;
             }
 
@@ -318,4 +340,7 @@ public class BoardManager {
         boardMap.get(country).loseOccupants(count, ArmyType.INFANTRY);
     }
 
+    public void setMessenger(Messenger messenger) {
+        this.messenger = messenger;
+    }
 }

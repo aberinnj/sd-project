@@ -15,7 +15,7 @@ public class StarterTest extends TestCase{
 
     @Test
     public void testNewGame() throws Exception {
-        ng = new _GameStarter();
+        ng = new _GameStarter(messenger);
         assertNotNull(ng.scanner);
         assertNotNull(ng.base);
         assertEquals(0, ng.getPlayerCount());
@@ -115,7 +115,7 @@ public class StarterTest extends TestCase{
                 "ALBERTA\n").getBytes());
         System.setIn(in);
         GameManager GM = new GameManager();
-        ng = new _GameStarter();
+        ng = new _GameStarter(messenger);
 
         ng.defaultStart("anything");
 
@@ -150,7 +150,7 @@ public class StarterTest extends TestCase{
     {
         ByteArrayInputStream in = new ByteArrayInputStream("2".getBytes());
         System.setIn(in);
-        ng = new _GameStarter();
+        ng = new _GameStarter(messenger);
         ng.setNumberOfPlayers();
         assertEquals(2, ng.getPlayerCount());
         System.setIn(System.in);
@@ -162,13 +162,13 @@ public class StarterTest extends TestCase{
     {
         ByteArrayInputStream in = new ByteArrayInputStream("9".getBytes());
         System.setIn(in);
-        ng = new _GameStarter();
+        ng = new _GameStarter(messenger);
         ng.setNumberOfPlayers();
         assertEquals(0, ng.getPlayerCount());
 
         ByteArrayInputStream in2 = new ByteArrayInputStream("1".getBytes());
         System.setIn(in2);
-        ng = new _GameStarter();
+        ng = new _GameStarter(messenger);
         ng.setNumberOfPlayers();
         assertEquals(0, ng.getPlayerCount());
 
@@ -181,7 +181,7 @@ public class StarterTest extends TestCase{
     {
         ByteArrayInputStream in = new ByteArrayInputStream("INVALID ".getBytes());
         System.setIn(in);
-        ng = new _GameStarter();
+        ng = new _GameStarter(messenger);
         assertFalse(ng.setNumberOfPlayers());
         assertEquals(0, ng.getPlayerCount());
         System.setIn(System.in);
@@ -194,7 +194,7 @@ public class StarterTest extends TestCase{
         System.setIn(in);
         ArrayList<String> games1 = new ArrayList<>();
 
-        _GameStarter st = new _GameStarter();
+        _GameStarter st = new _GameStarter(messenger);
         assertFalse(st.queryGameChecker(games1));
 
         games1.add("game-1");

@@ -1,6 +1,5 @@
-import java.io.FileInputStream;
+
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.Observer;
 
@@ -52,9 +51,9 @@ class Fetcher implements Observer {
         else if(thisGame.state == GameState.INIT)
         {
             try{
-                thisGame.game.initGame(thisGame.gameID);
+                thisGame.game.initGame(thisGame.gameID, thisGame.messenger);
             }
-            catch(IOException e) {
+            catch(IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -71,7 +70,11 @@ class Game extends Observable {
     String gameID;
     GameState state;
 
+    // I think I am putting a messenger with this game?
+    Messenger messenger;
+
     Game(String id) {
+        messenger = new Messenger();
         game = new _GameStarter();
         playerList = new HashMap<>();
         gameID = id;
@@ -145,9 +148,10 @@ This is when the player is playing multiple games in the same chat.
 *///////////////////////////////////////////////////////////////////////////////*/
 class CommandsHandler extends TelegramLongPollingBot{
 
+    Messenger messenger;
+
     @Override
     public void onUpdateReceived (Update update){
-
 
         if (update.hasMessage() && update.getMessage().hasText()){
 
@@ -209,6 +213,20 @@ class CommandsHandler extends TelegramLongPollingBot{
                     message.setText(Responses.onHelp());
                     break;
                 }
+
+                // put message from the reply into the buffer to be read by the consumer (AKA the scanner replacement
+                // probably should be hooked up to an observer of some kind
+                case "/reply": {
+                    try {
+                        messenger.putMessage(String.valueOf(in));
+                        wait(100); // wait for messages to finish entering buffer
+                        message.setText(messenger.getMessage());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+
                 default:
                     message.setText("Command " + in.getCommand() + " not found.\n\n" + Responses.onHelp());
                     break;
@@ -254,7 +272,22 @@ class CommandsHandler extends TelegramLongPollingBot{
                             e.printStackTrace();
                         }
                     }
+
+                    // Attach same messenger to game and telegram bot
+                    this.messenger = _GameMaster.gamesListing.get(context).messenger; // only one messenger/game allowed at one time until Austin learns how java works
+
                     _GameMaster.gamesListing.get(context).begin();
+                    SendMessage initMessage = new SendMessage();
+                    initMessage.setChatId(update.getMessage().getChatId());
+                    try {
+                        wait(1000);
+                        initMessage.setText(messenger.getMessage() + "message sent");
+                        execute(initMessage);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 

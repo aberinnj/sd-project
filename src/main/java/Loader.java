@@ -109,30 +109,4 @@ public class Loader {
         return k;
     }
 
-    Loader(String bucket){
-        final AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                .withRegion("us-east-1")
-                .withCredentials(new ProfileCredentialsProvider())
-                .build();
-
-        try {
-
-            if (!s3Client.doesBucketExistV2(bucket)) {
-                // Because the CreateBucketRequest object doesn't specify a region, the
-                // bucket is created in the region specified in the client.
-                s3Client.createBucket(new CreateBucketRequest(bucket));
-
-                // Verify that the bucket was created by retrieving it and checking its location.
-                String bucketLocation = s3Client.getBucketLocation(new GetBucketLocationRequest(bucket));
-                System.out.println("Bucket location: " + bucketLocation);
-            }
-        }
-        catch(AmazonServiceException e) {
-            // The call was transmitted successfully, but Amazon S3 couldn't process
-            // it and returned an error response.
-            System.out.println("If you're getting an access denied error. Make sure you have your AWS configured.");
-            e.printStackTrace();
-        }
-    }
-
 }

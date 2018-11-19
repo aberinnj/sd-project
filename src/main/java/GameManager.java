@@ -1,15 +1,12 @@
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicSessionCredentials;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
+import org.apache.commons.io.FileUtils;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -47,6 +44,10 @@ class Props{
 
     public String getTwitter_accessTokenSecret() { return props.getProperty("twitter_accessTokenSecret"); }
 
+    public String getAws_access_key_id() { return props.getProperty("aws_access_key_id"); }
+
+    public String getAws_secret_access_key() { return props.getProperty("aws_secret_access_key"); }
+
     public String getBot_name() { return props.getProperty("bot_name");}
 
     public String getBot_apiToken() { return props.getProperty("bot_token");}
@@ -67,10 +68,10 @@ public class GameManager {
     Twitter twitter;
     AmazonS3 s3Client;
     private String fileName;
+    Messenger messenger;
 
     // Sets up ALL Game Variables, which must be testable upon initialization
     GameManager() {
-        BM = new BoardManager();
         BM = new BoardManager();
         TM = new TurnManager();
         base = System.getProperty("user.dir");
@@ -87,7 +88,14 @@ public class GameManager {
                     .setOAuthAccessToken(props.getTwitter_accessToken())
                     .setOAuthAccessTokenSecret(props.getTwitter_accessTokenSecret());
 
-            s3Client = AmazonS3ClientBuilder.defaultClient();
+            // s3Client = AmazonS3ClientBuilder.defaultClient();
+            BasicAWSCredentials awsCreds = new BasicAWSCredentials(props.getAws_access_key_id(), props.getAws_secret_access_key());
+
+            s3Client = AmazonS3ClientBuilder.standard()
+                    .withRegion("us-east-1")
+                    //.withCredentials(new AWSStaticCredentialsProvider(sessionCredentials))
+                    .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+                    .build();
 
 
         } catch (IOException e){
@@ -99,7 +107,10 @@ public class GameManager {
         twitter = tf.getInstance();
     }
 
-    public void runGame(GameManager GM, Scanner scanner) throws IOException {
+    public void runGame(GameManager GM, Messenger messenger) throws IOException, InterruptedException {
+
+        this.messenger = messenger;
+        BM.setMessenger(messenger);
         JSONhandler JH = new JSONhandler(BM, playerList, GM.playerTurnPattern, GM.base);
         //  initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
         JH.JSONinitializer(0);
@@ -111,13 +122,14 @@ public class GameManager {
         while(!GM.isGameOver()){
 
             for (int id: GM.playerTurnPattern) {
-                System.out.println("Player " + id + " turn: " + GM.current_turn);
-                TM.save(makeTurn(GM, scanner, playerList[id], GM.current_turn));
+                //System.out.println("Player " + id + " turn: " + GM.current_turn);
+                messenger.putMessage("Player " + id + " turn: " + GM.current_turn);
+                TM.save(makeTurn(GM, messenger, playerList[id], GM.current_turn));
 
                 GM.incrementTurn();
                 JH.JSONwriter(GM.current_turn);
 
-                if (GM.baseQuery("Would you like to save this game?", scanner)) {
+                if (GM.baseQuery("Would you like to save this game?")) {
                     upload();
                 }
 
@@ -126,7 +138,7 @@ public class GameManager {
     }
 
     //Function to upload saved game file to S3 bucket
-    public void upload() {
+    public void upload() throws InterruptedException {
 
         try {
 
@@ -136,19 +148,21 @@ public class GameManager {
                 s3Client.createBucket(new CreateBucketRequest(bucketName));
 
                 // Verify that the bucket was created by retrieving it and checking its location.
-                String bucketLocation = s3Client.getBucketLocation(new GetBucketLocationRequest(bucketName));
-                System.out.println("Bucket location: " + bucketLocation);
+                //String bucketLocation = s3Client.getBucketLocation(new GetBucketLocationRequest(bucketName));
+                //System.out.println("Bucket location: " + bucketLocation);
             }
         }
         catch(AmazonServiceException e) {
             // The call was transmitted successfully, but Amazon S3 couldn't process
             // it and returned an error response.
-            e.printStackTrace();
+            // e.printStackTrace();
+            messenger.putMessage(String.valueOf(e));
         }
         catch(SdkClientException e) {
             // Amazon S3 couldn't be contacted for a response, or the client
             // couldn't parse the response from Amazon S3.
-            e.printStackTrace();
+            // e.printStackTrace();
+            messenger.putMessage(String.valueOf(e));
         }
 
         //ObjectMapper objectMapper = new ObjectMapper();
@@ -170,59 +184,44 @@ public class GameManager {
         catch(AmazonServiceException e) {
             // The call was transmitted successfully, but Amazon S3 couldn't process
             // it, so it returned an error response.
-            e.printStackTrace();
+            // e.printStackTrace();
+            messenger.putMessage(String.valueOf(e));
         }
         catch(SdkClientException e) {
             // Amazon S3 couldn't be contacted for a response, or the client
             // couldn't parse the response from Amazon S3.
-            e.printStackTrace();
+            // e.printStackTrace();
+            messenger.putMessage(String.valueOf(e));
         }
     }
 
     //Function to download saved game file to S3 bucket
-    public void download() throws IOException {
-
+    public void download() throws IOException, InterruptedException {
 
         S3Object fullObject = null, objectPortion = null, headerOverrideObject = null;
         try {
-
             s3Client.getObject(
                     new GetObjectRequest(bucketName, fileObjKeyName),
                     new File(fileName)
             );
 
-            // Get an object and print its contents.
-            System.out.println("Downloading an object");
+            // Get an object
             fullObject = s3Client.getObject(new GetObjectRequest(bucketName, fileObjKeyName));
-            System.out.println("Content-Type: " + fullObject.getObjectMetadata().getContentType());
-            System.out.println("Content: ");
-            displayTextInputStream(fullObject.getObjectContent());
-
-            // Get a range of bytes from an object and print the bytes.
-            GetObjectRequest rangeObjectRequest = new GetObjectRequest(bucketName, fileObjKeyName)
-                    .withRange(0,9);
-            objectPortion = s3Client.getObject(rangeObjectRequest);
-            System.out.println("Printing bytes retrieved.");
-            displayTextInputStream(objectPortion.getObjectContent());
-
-            // Get an entire object, overriding the specified response headers, and print the object's content.
-            ResponseHeaderOverrides headerOverrides = new ResponseHeaderOverrides()
-                    .withCacheControl("No-cache")
-                    .withContentDisposition("attachment; filename=example.txt");
-            GetObjectRequest getObjectRequestHeaderOverride = new GetObjectRequest(bucketName, fileObjKeyName)
-                    .withResponseHeaders(headerOverrides);
-            headerOverrideObject = s3Client.getObject(getObjectRequestHeaderOverride);
-            displayTextInputStream(headerOverrideObject.getObjectContent());
+            S3ObjectInputStream stream = fullObject.getObjectContent();
+            File targetFile = new File(fileName);
+            FileUtils.copyInputStreamToFile(stream, targetFile);
         }
         catch(AmazonServiceException e) {
             // The call was transmitted successfully, but Amazon S3 couldn't process
             // it, so it returned an error response.
-            e.printStackTrace();
+            // e.printStackTrace();
+            messenger.putMessage(String.valueOf(e));
         }
         catch(SdkClientException e) {
             // Amazon S3 couldn't be contacted for a response, or the client
             // couldn't parse the response from Amazon S3.
-            e.printStackTrace();
+            // e.printStackTrace();
+            messenger.putMessage(String.valueOf(e));
         }
         finally {
             // To ensure that the network connection doesn't remain open, close any open input streams.
@@ -236,16 +235,6 @@ public class GameManager {
                 headerOverrideObject.close();
             }
         }
-    }
-
-    private void displayTextInputStream(InputStream input) throws IOException {
-        // Read the text input stream one line at a time and display each line.
-        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            System.out.println(line);
-        }
-        System.out.println();
     }
 
     /*////////////////////////////////////////////////////////////////////////////////
@@ -270,7 +259,7 @@ public class GameManager {
     }
 
     //
-    public void loadGame(int turnToLoad, Loader loader) throws IOException {
+    public void loadGame(int turnToLoad, Loader loader) throws IOException, InterruptedException {
         download();
         JsonObject turn = loader.LoadGame(turnToLoad, BM, GameManager.base);
         int numPlayers = loader.getNumPlayers(turn);
@@ -280,11 +269,11 @@ public class GameManager {
     }
 
     // must be called to start GameManager
-    public void initializeAsNormal(int playerCount)
-    {
+    public void initializeAsNormal(int playerCount) throws InterruptedException {
         playerList = setPlayerList(playerCount);
 
-        System.out.println("\n__Order of Turns:__");
+        // System.out.println("\n__Order of Turns:__");
+        messenger.putMessage("\n__Order of Turns:__");
         Dice k = new Dice();
         ArrayList<Integer> diceArr = new ArrayList<Integer>();
         for (int i = 0; i < playerCount; i++) {
@@ -296,11 +285,12 @@ public class GameManager {
 
     // Query for yes/no
     // for Queries for territories, check BoardManager's queryTerritory
-    public boolean baseQuery(String query, Scanner scanner) {
+    public boolean baseQuery(String query) throws InterruptedException {
         String res;
         do {
-            System.out.println(query);
-            res = scanner.nextLine();
+            //System.out.println(query);
+            messenger.putMessage(query);
+            res = messenger.getMessage();
         }while(!res.toLowerCase().equals("y") && !res.toLowerCase().equals("yes") && !res.toLowerCase().equals("n") && !res.toLowerCase().equals("no"));
 
         return (res.toLowerCase().equals("y") || res.toLowerCase().equals("yes"));
@@ -360,37 +350,43 @@ public class GameManager {
     }
 
     // Setup UserTurnPattern and display (optional)
-    public int[] getTurnPattern(int size, int highest) {
+    public int[] getTurnPattern(int size, int highest) throws InterruptedException {
         int[] array = new int[size];
         for (int i = 0; i < size; i++) {
             array[i] = (highest + i) % size;
-            System.out.println((i+1)+ ". Player#" + array[i]);
+            //System.out.println((i+1)+ ". Player#" + array[i]);
+            messenger.putMessage((i+1)+ ". Player#" + array[i]);
         }
         return array;
     }
 
     // Run setup to finish Game setup for all players
-    public static void runSetup(GameManager GM, Scanner scanner) {
-        System.out.println("__CLAIM TERRITORIES__");
-        GM.claimTerritories(scanner);
-        System.out.println("__STRENGTHEN TERRITORIES__");
+    public static void runSetup(GameManager GM, Messenger scanner) throws InterruptedException {
+
+        //System.out.println("__CLAIM TERRITORIES__");
+        scanner.putMessage("__CLAIM TERRITORIES__");
+        GM.claimTerritories();
+
+        //System.out.println("__STRENGTHEN TERRITORIES__");
+        scanner.putMessage("__STRENGTHEN TERRITORIES__");
         for (int id: GM.playerTurnPattern) {
-            GM.strengthenTerritories(scanner, id);
+            GM.strengthenTerritories(id);
         }
 
     }
 
     // make a turn
-    public static Turn makeTurn(GameManager GM, Scanner scanner, Player p, int id) {
+    public static Turn makeTurn(GameManager GM, Messenger scanner, Player p, int id) throws InterruptedException {
         Turn newTurn;
         do {
             newTurn = new Turn(BM, p, id);
             newTurn.turnFunction(GM, scanner);
 
             // find a way to display turn changes
-            if(GM.baseQuery("Would you like to undo all actions for this turn? This will deduct one undo action.", scanner))
+            if(GM.baseQuery("Would you like to undo all actions for this turn? This will deduct one undo action."))
             {
-                if (p.getUndos() < 1) { System.out.println("You can not perform an undo action now"); break;}
+                // if (p.getUndos() < 1) { System.out.println("You can not perform an undo action now"); break;}
+                if (p.getUndos() < 1) { scanner.putMessage("You can not perform an undo action now"); break;}
                 p.addUndos(-1);
                 GM.setGame(
                         TM.getTurnList().get(id-1),
@@ -404,7 +400,8 @@ public class GameManager {
             GM.broadcastToTwitter(newTurn, p);
         } catch (TwitterException e)
         {
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
+            scanner.putMessage(e.getMessage());
         }
         return newTurn;
     }
@@ -431,22 +428,22 @@ public class GameManager {
             System.out.println(status.getText());
         } else
             System.out.println(result + "no territories this turn.");
-        System.out.println();
     }
 
 
     // Display Free territories -- removed displayPlayerTerritories for simplicity and less console clutter
-    public void claimTerritories(Scanner scanner){
+    public void claimTerritories() throws InterruptedException {
         String territory;
         while(BM.getFreeTerritories().size() > 0) {
             for (int id : playerTurnPattern) {
 
-                System.out.println("__Free Territories__");
+                //System.out.println("__Free Territories__");
+                messenger.putMessage("__Free Territories__");
                 for(String k : BM.getFreeTerritories())
-                    System.out.println(k);
-
+                    //System.out.println(k);
+                    messenger.putMessage(k);
                 do{
-                    territory = BM.queryTerritory(scanner, "Player #" + id + " -- Territory select: ",
+                    territory = BM.queryTerritory("Player #" + id + " -- Territory select: ",
                             "INITIALIZE", playerList[id], "");
                 } while(territory == null);
 
@@ -457,21 +454,25 @@ public class GameManager {
     }
 
 
-    public void strengthenTerritories(Scanner scanner, int id) {
+    public void strengthenTerritories(int id) throws InterruptedException {
         String territory;
 
             while (playerList[id].getNumberOfArmies() > 0) {
 
-                System.out.println("Infantry Count And Player #"+ id +" Territories");
+                // System.out.println("Infantry Count And Player #"+ id +" Territories");
+                messenger.putMessage("Infantry Count And Player #"+ id +" Territories");
 
                 for (String country: playerList[id].getTerritories()) {
-                    System.out.println(BM.getOccupantCount(country) + " " + country);}
+                    //System.out.println(BM.getOccupantCount(country) + " " + country);}
+                    messenger.putMessage(BM.getOccupantCount(country) + " " + country);}
 
-                System.out.println("Remaining armies: " + playerList[id].getNumberOfArmies());
-                System.out.println("Select a territory to ship your Army to: ");
+                //System.out.println("Remaining armies: " + playerList[id].getNumberOfArmies());
+                //System.out.println("Select a territory to ship your Army to: ");
+                messenger.putMessage("Remaining armies: " + playerList[id].getNumberOfArmies());
+                messenger.putMessage("Select a territory to ship your Army to: ");
 
                 do{
-                    territory = BM.queryTerritory(scanner, "Player #" + id + " -- Territory select: ",
+                    territory = BM.queryTerritory("Player #" + id + " -- Territory select: ",
                             "STRENGTHEN", playerList[id], "");
                 } while(territory == null);
 
@@ -483,10 +484,11 @@ public class GameManager {
         current_turn++;
     }
     // Player list only contains Players, and you can freely check if players have all the territories
-    public boolean isGameOver(){
+    public boolean isGameOver() throws InterruptedException {
         for(Player i: playerList){
             if (i.isPlayerTheWinner(BM)){
-                System.out.println("Someone won!?");
+                // System.out.println("Someone won!?");
+                messenger.putMessage("Someone won!?");
                 return true;
             }
         }

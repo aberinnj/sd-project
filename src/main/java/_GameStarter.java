@@ -9,6 +9,7 @@ calls GameManager methods to store them.
 or by initializing GameManager and runs a game
 *///////////////////////////////////////////////////////////////////////////////*/
 public class _GameStarter {
+    Messenger messenger;
     Scanner scanner;
     String base;
     String bucketName;
@@ -23,35 +24,38 @@ public class _GameStarter {
         this.base = System.getProperty("user.dir");
         bucketName = "risk-game-team-one";
         playerCount = 0;
-
         GM = new GameManager();
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////
     Main function
     //////////////////////////////////////////////////////////////////////////////////*/
-    public void initGame(String id) throws IOException {
+    public void initGame(String id, Messenger messenger) throws IOException, InterruptedException {
+        this.messenger = messenger;
         defaultStart(id);
-        GM.runGame(GM, scanner);
+        GM.runGame(GM, messenger);
     }
 
-    public void loadGame(String id) throws IOException {
-        Loader loader = new Loader(bucketName);
+    public void loadGame(String id) throws IOException, InterruptedException {
+        Loader loader = new Loader();
         GM.loadGame(0, loader);
-        GM.runGame(GM, scanner);
+        GM.runGame(GM, messenger);
     }
 
-    public void defaultStart(String id) {
+    public void defaultStart(String id) throws InterruptedException {
         while (setNumberOfPlayers()) {}
         GM.initializeAsNormal(playerCount);
         GameManager.fileObjKeyName = id;
-        GameManager.runSetup(GM, scanner);
+        GameManager.runSetup(GM, messenger);
     }
 
     // Query for number of players for this new game
     // Returns true if it succeeds, Returns false otherwise
-    public boolean setNumberOfPlayers() {
-        System.out.println("Number of Players: ");
+
+    // Do we still need this function with the telegram API?
+    public boolean setNumberOfPlayers() throws InterruptedException {
+        //System.out.println("Number of Players: ");
+        messenger.putMessage("Enter Number of Players: ");
         try {
             int size = Integer.parseInt(scanner.nextLine());
             System.out.println(size);
