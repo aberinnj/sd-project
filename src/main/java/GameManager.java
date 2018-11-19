@@ -12,6 +12,8 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
+import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
 import java.io.*;
 import java.util.*;
@@ -107,10 +109,40 @@ public class GameManager {
         twitter = tf.getInstance();
     }
 
+<<<<<<< HEAD
     public void runGame(GameManager GM, Messenger messenger) throws IOException, InterruptedException {
 
         this.messenger = messenger;
         BM.setMessenger(messenger);
+=======
+    public String gameTimeout(int timeout) {
+        ExecutorService ex = Executors.newSingleThreadExecutor();
+        String input = null;
+
+        try{
+            Future<String> result = ex.submit(new ConsoleInputReader());
+            try {
+                input = result.get(timeout,TimeUnit.SECONDS);
+            } catch (ExecutionException e) {
+                e.getCause().printStackTrace();
+            } catch (TimeoutException e) {
+                System.out.println("Cancelling reading task");
+                result.cancel(true);
+                System.out.println("\nThread cancelled. input is null because you did not take action");
+                System.out.println("\nMOVING TO NEXT PLAYER");
+            }
+            catch(InterruptedException e)
+            {
+                // this part is executed when an exception (in this example InterruptedException) occurs
+            }
+        } finally {
+            ex.shutdownNow();
+        }
+        return input;
+    }
+
+    public void runGame(GameManager GM, Scanner scanner) throws IOException {
+>>>>>>> 1fcbcdcbe0b092a624f93985721da3ecf91cc1cb
         JSONhandler JH = new JSONhandler(BM, playerList, GM.playerTurnPattern, GM.base);
         //  initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
         JH.JSONinitializer(0);
@@ -122,10 +154,17 @@ public class GameManager {
         while(!GM.isGameOver()){
 
             for (int id: GM.playerTurnPattern) {
+<<<<<<< HEAD
                 //System.out.println("Player " + id + " turn: " + GM.current_turn);
                 messenger.putMessage("Player " + id + " turn: " + GM.current_turn);
                 TM.save(makeTurn(GM, messenger, playerList[id], GM.current_turn));
 
+=======
+                System.out.println("Player " + id + " turn: " + GM.current_turn);
+                if (GM.gameTimeout(30)!=null) {
+                    TM.save(makeTurn(GM, scanner, playerList[id], GM.current_turn));
+                }
+>>>>>>> 1fcbcdcbe0b092a624f93985721da3ecf91cc1cb
                 GM.incrementTurn();
                 JH.JSONwriter(GM.current_turn);
 
