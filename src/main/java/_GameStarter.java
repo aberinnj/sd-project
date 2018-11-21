@@ -29,30 +29,33 @@ public class _GameStarter {
 
     /*//////////////////////////////////////////////////////////////////////////////////
     Main function
+    todo: enable functions below
     //////////////////////////////////////////////////////////////////////////////////*/
-    public void initGame(String id, Messenger messenger) throws IOException, InterruptedException {
-        this.messenger = messenger;
-        defaultStart(id);
-        GM.runGame(GM, messenger);
+    public void initGame(Game thisGame) throws IOException, InterruptedException {
+        this.messenger = thisGame.messenger;
+        playerCount = thisGame.playerDirectory.size();
+        GM.setMessenger(thisGame);
+        defaultStart(thisGame);
+        System.out.println("Init done. \n");
+        //GM.runGame(GM, thisGame.messenger, thisGame);
     }
 
-    public void loadGame(String id) throws IOException, InterruptedException {
+    public void loadGame(Game thisGame) throws IOException, InterruptedException {
         Loader loader = new Loader();
         GM.loadGame(0, loader);
-        GM.runGame(GM, messenger);
+        GM.runGame(GM, thisGame.messenger, thisGame);
     }
 
-    public void defaultStart(String id) throws InterruptedException {
-        while (setNumberOfPlayers()) {}
-        GM.initializeAsNormal(playerCount);
-        GameManager.fileObjKeyName = id;
-        GameManager.runSetup(GM, messenger);
+    public void defaultStart(Game thisGame) throws InterruptedException {
+        //while (setNumberOfPlayers()) {}
+        GM.initializeAsNormal(playerCount, thisGame);
+        GameManager.fileObjKeyName = thisGame.gameID;
     }
 
-    // Query for number of players for this new game
-    // Returns true if it succeeds, Returns false otherwise
-
-    // Do we still need this function with the telegram API?
+    /* NOT CALLED WHEN USING TELEGRAM
+    Query for number of players for this new game
+    Returns true if it succeeds, Returns false otherwise
+    */
     public boolean setNumberOfPlayers() throws InterruptedException {
         //System.out.println("Number of Players: ");
         messenger.putMessage("Enter Number of Players: ");
@@ -71,10 +74,6 @@ public class _GameStarter {
         }
     }
 
-    // made mainly for testing, playerCount can be accessed directly
-    public int getPlayerCount(){
-        return playerCount;
-    }
 
     public boolean queryGameChecker(ArrayList<String> games)
     {

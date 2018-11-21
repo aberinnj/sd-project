@@ -24,12 +24,12 @@ public class Turn {
     }
 
     // Run each function
-    public void turnFunction(GameManager GM, Messenger messenger) throws InterruptedException {
+    public void turnFunction(GameManager GM, Messenger messenger, Game thisGame) throws InterruptedException {
         this.messenger = messenger;
         this.GM = GM;
-        placeNewArmies();
-        attack();
-        fortifyTerritories();
+        placeNewArmies(thisGame);
+        attack(thisGame);
+        fortifyTerritories(thisGame);
         earnCards();
         addCredit();
         purchaseUndo();
@@ -127,7 +127,7 @@ public class Turn {
     /*////////////////////////////////////////////////////////////////////////////////
      Place New Armies from results received in getFreeArmiesFromTerritories
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void placeNewArmies() throws InterruptedException {
+    public void placeNewArmies(Game thisGame) throws InterruptedException {
         // System.out.println("__PLACE NEW ARMIES__");
         messenger.putMessage("__PLACE NEW ARMIES__");
         int newArmies = getFreeArmiesFromTerritories();
@@ -136,7 +136,7 @@ public class Turn {
         //System.out.println((newArmies) + " new armies available");
         messenger.putMessage((newArmies) + " new armies available");
 
-        GM.strengthenTerritories(player.getId());
+        GM.strengthenTerritories(player.getId(), thisGame);
     }
 
     // handles calculations of trading-in a set
@@ -246,7 +246,7 @@ public class Turn {
     /*////////////////////////////////////////////////////////////////////////////////
     Attacking and battle
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void attack() throws InterruptedException {
+    public void attack(Game thisGame) throws InterruptedException {
         // System.out.println("__LAUNCH AN ATTACK__");
         messenger.putMessage("__LAUNCH AN ATTACK__");
 
@@ -273,17 +273,18 @@ public class Turn {
             int defenderDice;
 
             do{
-                origin = BM.queryTerritory("From: ", "ATTACK_FROM", player, "");
+                origin = BM.queryTerritory("From: ", "ATTACK_FROM", player, "", thisGame);
             } while(origin == null);
             do{
-                territory = BM.queryTerritory("Attack: ", "ATTACK", player, origin);
+                territory = BM.queryTerritory("Attack: ", "ATTACK", player, origin, thisGame);
             } while(territory == null);
             BM.getBoardMap().get(territory).setStatusToUnderAttack();
             do{
-                attackerDice = BM.queryCount("Attacker (Player "+ player.getId()+") rolls: ", "ATTACK", player, origin);
+                attackerDice = BM.queryCount("Attacker (Player "+ player.getId()+") rolls: ", "ATTACK", player, origin, thisGame);
             } while(attackerDice == 0);
             do{
-                defenderDice = BM.queryCount("Defender of " + territory + "(Player " + BM.getBoardMap().get(territory).getOccupantID() + ") rolls: ", "DEFEND", player, territory);
+                defenderDice = BM.queryCount("Defender of " + territory + "(Player " + BM.getBoardMap().get(territory).getOccupantID() + ") rolls: ",
+                        "DEFEND", player, territory, thisGame);
             } while(defenderDice == 0);
 
             // setup
@@ -382,7 +383,7 @@ public class Turn {
     /*////////////////////////////////////////////////////////////////////////////////
     Fortifying is simple
     *///////////////////////////////////////////////////////////////////////////////*/
-    public void fortifyTerritories() throws InterruptedException {
+    public void fortifyTerritories(Game thisGame) throws InterruptedException {
         String origin;
         String destination;
         int transfer;
@@ -397,7 +398,7 @@ public class Turn {
             }
 
             do{
-                origin = BM.queryTerritory("From: ", "FORTIFY_FROM", player, "");
+                origin = BM.queryTerritory("From: ", "FORTIFY_FROM", player, "", thisGame);
             }while(origin == null);
 
             //System.out.println("Territories fortify-able from " + origin);
@@ -409,11 +410,11 @@ public class Turn {
             }
 
             do{
-                destination = BM.queryTerritory("Fortify: ", "FORTIFY", player, origin);
+                destination = BM.queryTerritory("Fortify: ", "FORTIFY", player, origin, thisGame);
             }while(destination == null);
 
             do{
-                transfer = BM.queryCount("Transfer: ", "FORTIFY", player, origin);
+                transfer = BM.queryCount("Transfer: ", "FORTIFY", player, origin, thisGame);
             } while(transfer == 0);
 
             BM.fortifyTerritory(origin, destination, transfer);

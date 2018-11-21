@@ -14,10 +14,47 @@ enum GameState {
     QUEUE, // the default state
     START, // when a game gets 3 players, this is the state until functions are called (a brief window) and the state is changed again
     INIT, // the state when the game has started
+    CLAIM, // the state when the game allows for players to claim territories
     WAIT, // the state when the gmae is waiting on a player
+    THINK, // the neutral state to switch from WAIT or to WAIT -- thinking
     PAUSE, // the state when the timer is set off (future functionality)
     END, // the state when the game has ended until functions are called (another brief window)
     CLOSED // the final state, when all functions are called
+}
+
+/*////////////////////////////////////////////////////////////////////////////////
+High-level way of managing user reply below in onUpdateReceived
+Used to check if input is what was expected
+More descriptive than GameState
+todo: expected context is a todo
+*///////////////////////////////////////////////////////////////////////////////*/
+enum Context {
+
+};
+
+class ExpectedContext {
+    Integer expectedReplier;
+    String actualReply;
+
+    ExpectedContext(){
+        expectedReplier = 0;
+        actualReply = "";
+    }
+
+    void setExpectedReplier(Integer id)
+    {
+        expectedReplier = id;
+    }
+    void setActualReply(String msg){
+        actualReply = msg;
+    }
+    String getActualReply(){
+        return actualReply;
+    }
+
+    Integer getExpectedReplier(){
+        return expectedReplier;
+    }
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -51,11 +88,17 @@ class Fetcher implements Observer {
         else if(thisGame.state == GameState.INIT)
         {
             try{
-                thisGame.game.initGame(thisGame.gameID, thisGame.messenger);
+                System.out.print("Initializing... ");
+                thisGame.game.initGame(thisGame);
             }
             catch(IOException | InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+        else if(thisGame.state == GameState.CLAIM)
+        {
+            System.out.println("\nClaiming Territories... ");
+
         }
     }
 }
@@ -66,41 +109,62 @@ todo: check if static is causing problems
 *///////////////////////////////////////////////////////////////////////////////*/
 class Game extends Observable {
     _GameStarter game;
-    HashMap<Integer, User> playerList;
+    HashMap<Integer, User> playerDirectory;
+
+    ArrayList<Integer> users;
+    ArrayList<Integer> turnPattern;
+
     String gameID;
     GameState state;
-
-    // I think I am putting a messenger with this game?
     Messenger messenger;
+    ExpectedContext EC;
+
 
     Game(String id) {
         messenger = new Messenger();
         game = new _GameStarter();
-        playerList = new HashMap<>();
+        playerDirectory = new HashMap<>();
+
+        users = new ArrayList<>();
+        turnPattern = new ArrayList<>();
+
         gameID = id;
         state = GameState.QUEUE;
+        EC = new ExpectedContext();
 
     }
 
     public void addUser(Integer user_id, String username, long chat_id){
-        if(!playerList.containsKey(user_id))
+
+        playerDirectory.put(user_id, new User(user_id, username, chat_id));
+        users.add(user_id);
+
+        if(playerDirectory.size() == _GameMaster.MIN_PLAYERS_PER_GAME)
         {
-            playerList.put(user_id, new User(user_id, username, chat_id));
-            if(playerList.size() == _GameMaster.MIN_PLAYERS_PER_GAME)
-            {
-                state = GameState.START;
-                setChanged();
-                notifyObservers();
-            }
+            state = GameState.START;
+            setChanged();
+            notifyObservers();
         }
+
     }
 
     public void begin()
     {
-        if(playerList.size() == _GameMaster.MIN_PLAYERS_PER_GAME) {
+        if(playerDirectory.size() == _GameMaster.MIN_PLAYERS_PER_GAME) {
                 state = GameState.INIT;
                 setChanged();
                 notifyObservers();
+        } else {
+            System.out.println("ERROR: NOT ENOUGH PLAYERS SOMEHOW");
+        }
+    }
+
+    public void claim()
+    {
+        if(playerDirectory.size() == _GameMaster.MIN_PLAYERS_PER_GAME && state == GameState.INIT) {
+            state = GameState.CLAIM;
+            setChanged();
+            notifyObservers();
         } else {
             System.out.println("ERROR: NOT ENOUGH PLAYERS SOMEHOW");
         }
@@ -110,9 +174,11 @@ class Game extends Observable {
 /*////////////////////////////////////////////////////////////////////////////////
 _GameMaster is the BOT that handles all chat commands and game hosting/handling
 todo: make sure only one instance is currently running
+todo: directory is a dangerous way of mapping a user to a game. Only one game per person for now
 *///////////////////////////////////////////////////////////////////////////////*/
 public class _GameMaster {
     static HashMap<String, Game> gamesListing;
+    static HashMap<Integer, String> allPlayersAndTheirGames;
     static Fetcher kineticEntity;
     final static int MIN_PLAYERS_PER_GAME = 2;
     final static int MAX_PLAYERS_PER_GAME = 6;
@@ -120,6 +186,7 @@ public class _GameMaster {
     public static void main(String[] args) {
         gamesListing = new HashMap<>();
         kineticEntity = new Fetcher();
+        allPlayersAndTheirGames = new HashMap<>();
 
         // Telegram
         ApiContextInitializer.init();
@@ -148,14 +215,13 @@ This is when the player is playing multiple games in the same chat.
 *///////////////////////////////////////////////////////////////////////////////*/
 class CommandsHandler extends TelegramLongPollingBot{
 
-    Messenger messenger;
-
     @Override
     public void onUpdateReceived (Update update){
 
         if (update.hasMessage() && update.getMessage().hasText()){
 
             SendMessage message = new SendMessage();
+
 
             message.setChatId(update.getMessage().getChatId());
 
@@ -180,7 +246,10 @@ class CommandsHandler extends TelegramLongPollingBot{
                     break;
                 }
                 case "/join": {
-                    message.setText(Responses.onJoin(in, update.getMessage().getFrom().getId(), update.getMessage().getFrom().getUserName(), update.getMessage().getChatId()));
+                    if(_GameMaster.allPlayersAndTheirGames.containsKey(update.getMessage().getFrom().getId())){
+                        message.setText("@"+update.getMessage().getFrom().getUserName() + " sorry! you are already playing a game.");
+                    } else
+                        message.setText(Responses.onJoin(in, update.getMessage().getFrom().getId(), update.getMessage().getFrom().getUserName(), update.getMessage().getChatId()));
                     break;
                 }
 
@@ -201,10 +270,17 @@ class CommandsHandler extends TelegramLongPollingBot{
                 }
 
                 case "/create": {
-                    String gameID = "risk-game-" + UUID.randomUUID().toString();
-                    int user_id = update.getMessage().getFrom().getId();
-                    long chat_id = update.getMessage().getChatId();
-                    message.setText(Responses.onCreate(user_id, gameID, update.getMessage().getFrom().getUserName(), chat_id));
+                    if(_GameMaster.allPlayersAndTheirGames.containsKey(update.getMessage().getFrom().getId())){
+                        message.setText("@"+update.getMessage().getFrom().getUserName() + " sorry! You are already playing a game.");
+                    } else{
+                        message.setText(Responses.onCreate(
+                                update.getMessage().getFrom().getId(),
+                                "risk-game-" + UUID.randomUUID().toString(),
+                                update.getMessage().getFrom().getUserName(),
+                                update.getMessage().getChatId())
+                        );
+                    }
+
 
                     break;
                 }
@@ -214,15 +290,34 @@ class CommandsHandler extends TelegramLongPollingBot{
                     break;
                 }
 
-                // put message from the reply into the buffer to be read by the consumer (AKA the scanner replacement
-                // probably should be hooked up to an observer of some kind
-                case "/reply": {
-                    try {
-                        messenger.putMessage(String.valueOf(in));
-                        wait(100); // wait for messages to finish entering buffer
-                        message.setText(messenger.getMessage());
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                case "/pick": {
+                    int user_id = update.getMessage().getFrom().getId();
+                    message.setText(Responses.onPick(user_id, in));
+
+                    break;
+                }
+
+
+                case "/listFreeTerritories": {
+                    int user_id = update.getMessage().getFrom().getId();
+                    if(_GameMaster.allPlayersAndTheirGames.containsKey(user_id))
+                    {
+                        String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
+                            if(_GameMaster.gamesListing.get(gameID).state == GameState.QUEUE || _GameMaster.gamesListing.get(gameID).state == GameState.INIT )
+                            {
+                                message.setText("The game has not yet started.");
+
+                            } else if (_GameMaster.gamesListing.get(gameID).state == GameState.CLAIM) {
+                                Messenger msg = _GameMaster.gamesListing.get(gameID).messenger;
+                                msg.putMessage(_GameMaster.gamesListing.get(gameID).game.GM.getBM().getFreeTerritories());
+                                message.setText(msg.getMessage());
+                            }
+                            else{
+                                message.setText("There is no territory to claim.");
+                            }
+
+                    }else{
+                        message.setText("You are not playing a game.");
                     }
                     break;
                 }
@@ -240,8 +335,7 @@ class CommandsHandler extends TelegramLongPollingBot{
 
             String res = "";
 
-            // guess context here
-
+            // follow up messages
             if(in.args.size() > 0){
                 // GAME START ANNOUNCEMENT -- GameState.START is when this /join triggered the game start, then take the gameID and broadcast to all chats
                 if(in.getCommand().equals("/join") && _GameMaster.gamesListing.containsKey(in.args.get(0)) && _GameMaster.gamesListing.get(in.args.get(0)).state == GameState.START) {
@@ -251,21 +345,53 @@ class CommandsHandler extends TelegramLongPollingBot{
                     ArrayList<Long> chat_reply_list = new ArrayList<>();
                     SendMessage announcement = new SendMessage();
 
-                    for (int user_id : _GameMaster.gamesListing.get(context).playerList.keySet()) {
-                        if(!chat_reply_list.contains(_GameMaster.gamesListing.get(context).playerList.get(user_id).chat_id)){
-                            chat_reply_list.add(_GameMaster.gamesListing.get(context).playerList.get(user_id).chat_id);
+                    for (int user_id : _GameMaster.gamesListing.get(context).playerDirectory.keySet()) {
+                        if(!chat_reply_list.contains(_GameMaster.gamesListing.get(context).playerDirectory.get(user_id).chat_id)){
+                            chat_reply_list.add(_GameMaster.gamesListing.get(context).playerDirectory.get(user_id).chat_id);
                         }
                         res += "@";
-                        res += _GameMaster.gamesListing.get(context).playerList.get(user_id).username;
+                        res += _GameMaster.gamesListing.get(context).playerDirectory.get(user_id).username;
+                        res += " ";
+                    }
+                    res += "\n";
+
+
+
+
+                    _GameMaster.gamesListing.get(context).begin();
+
+
+
+
+                    String fromMessenger = _GameMaster.gamesListing.get(context).messenger.getMessage();
+                    // fromMessenger should never be null for init, otherwise logical error
+                    if(fromMessenger != null)
+                    {
                         res += "\n";
+                        res += fromMessenger;
                     }
 
+                    res += "\n\n";
+                    res += "To begin claiming your initial territories, enter /listFreeTerritories to get the list of available territories again." +
+                            " The list is automatically shown below. \n\n" +
+                            "__AVAILABLE TERRITORIES__";
 
+                    Messenger tempMSG = _GameMaster.gamesListing.get(context).messenger;
+                    tempMSG.putMessage(_GameMaster.gamesListing.get(context).game.GM.getBM().getFreeTerritories());
+
+                    fromMessenger = _GameMaster.gamesListing.get(context).messenger.getMessage();
+                    if(fromMessenger != null)
+                    {
+                        res += "\n";
+                        res += fromMessenger;
+                    }
+
+                    res +=  "\nEnter /pick <country> to select and capture your initial territories. ";
 
                     for (Long dest: chat_reply_list)
                     {
                         announcement.setChatId(dest);
-                        announcement.setText("Your game " + _GameMaster.gamesListing.get(context).gameID + "is now starting. \n\nPlayers:\n" + res);
+                        announcement.setText("Your game " + _GameMaster.gamesListing.get(context).gameID + " is now starting. " + res);
                         try {
                             execute(announcement);
                         } catch (TelegramApiException e) {
@@ -273,25 +399,12 @@ class CommandsHandler extends TelegramLongPollingBot{
                         }
                     }
 
-                    // Attach same messenger to game and telegram bot
-                    this.messenger = _GameMaster.gamesListing.get(context).messenger; // only one messenger/game allowed at one time until Austin learns how java works
 
-                    _GameMaster.gamesListing.get(context).begin();
-                    SendMessage initMessage = new SendMessage();
-                    initMessage.setChatId(update.getMessage().getChatId());
-                    try {
-                        wait(1000);
-                        initMessage.setText(messenger.getMessage() + "message sent");
-                        execute(initMessage);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
+
+                    _GameMaster.gamesListing.get(context).claim();
+
                 }
             }
-
-
         }
     }
 

@@ -1,33 +1,32 @@
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
+/*//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////*/
 public class Messenger {
+    private ArrayList<String> messages;
 
-    static final int MAXQUEUE = 10;
-    private Vector messages = new Vector();
+    Messenger(){
+        messages = new ArrayList<>();
+    }
 
-    public synchronized String getMessage()
-            throws InterruptedException {
-        notify();
-        while ( messages.size() == 0 )
-            wait();
+    public String getMessage(){
+        String message = "";
 
-        // Because declaring message as null doesn't work and not declaring message doesn't work
-        String message = (String) messages.elementAt(0) + "\n";
-
-        // read all messages in buffer queue
-        for (int x = 1; messages.size()- 1 >= x; x++) {
-            message += messages.elementAt(x) + "\n";
+        for(int i=0; i<messages.size(); i++){
+            message += messages.get(i);
+            message += "\n";
         }
         messages.clear();
         return message;
     }
 
-    public synchronized void putMessage(String put)
-            throws InterruptedException {
+    public void putMessage(String put){
+        messages.add(put);
+    }
 
-        while ( messages.size() == MAXQUEUE )
-            wait();
-        messages.addElement(put);
-        notify();
+    public void putMessage(List<String> listing){
+        for(String item: listing)
+            putMessage(item);
     }
 }

@@ -72,6 +72,12 @@ public class GameManager {
     private String fileName;
     Messenger messenger;
 
+
+    void setMessenger(Game thisGame)
+    {
+        messenger = thisGame.messenger;
+    }
+
     // Sets up ALL Game Variables, which must be testable upon initialization
     GameManager() {
         BM = new BoardManager();
@@ -79,6 +85,7 @@ public class GameManager {
         base = System.getProperty("user.dir");
         this.fileName = base + "/src/files/Risk.json";
         current_turn = 0;
+
 
         ConfigurationBuilder cb = new ConfigurationBuilder();
         try {
@@ -109,12 +116,6 @@ public class GameManager {
         twitter = tf.getInstance();
     }
 
-<<<<<<< HEAD
-    public void runGame(GameManager GM, Messenger messenger) throws IOException, InterruptedException {
-
-        this.messenger = messenger;
-        BM.setMessenger(messenger);
-=======
     public String gameTimeout(int timeout) {
         ExecutorService ex = Executors.newSingleThreadExecutor();
         String input = null;
@@ -141,10 +142,13 @@ public class GameManager {
         return input;
     }
 
-    public void runGame(GameManager GM, Scanner scanner) throws IOException {
->>>>>>> 1fcbcdcbe0b092a624f93985721da3ecf91cc1cb
+
+    public void runGame(GameManager GM, Messenger messenger, Game thisGame) throws IOException, InterruptedException {
+
+        this.messenger = messenger;
+
         JSONhandler JH = new JSONhandler(BM, playerList, GM.playerTurnPattern, GM.base);
-        //  initialize(JH, ng, bm, MM, playerList, numPlayers, -1);
+        //  initialize(JH, ng, bm, MM, playerDirectory, numPlayers, -1);
         JH.JSONinitializer(0);
 
 
@@ -154,17 +158,14 @@ public class GameManager {
         while(!GM.isGameOver()){
 
             for (int id: GM.playerTurnPattern) {
-<<<<<<< HEAD
                 //System.out.println("Player " + id + " turn: " + GM.current_turn);
                 messenger.putMessage("Player " + id + " turn: " + GM.current_turn);
-                TM.save(makeTurn(GM, messenger, playerList[id], GM.current_turn));
-
-=======
-                System.out.println("Player " + id + " turn: " + GM.current_turn);
                 if (GM.gameTimeout(30)!=null) {
-                    TM.save(makeTurn(GM, scanner, playerList[id], GM.current_turn));
+                    TM.save(makeTurn(GM, messenger, playerList[id], GM.current_turn, thisGame));
                 }
->>>>>>> 1fcbcdcbe0b092a624f93985721da3ecf91cc1cb
+
+                System.out.println("Player " + id + " turn: " + GM.current_turn);
+
                 GM.incrementTurn();
                 JH.JSONwriter(GM.current_turn);
 
@@ -308,18 +309,28 @@ public class GameManager {
     }
 
     // must be called to start GameManager
-    public void initializeAsNormal(int playerCount) throws InterruptedException {
+    public void initializeAsNormal(int playerCount, Game thisGame) throws InterruptedException {
         playerList = setPlayerList(playerCount);
 
+        System.out.println("Initialize as Normal");
+
         // System.out.println("\n__Order of Turns:__");
-        messenger.putMessage("\n__Order of Turns:__");
+        thisGame.messenger.putMessage("Dice automatically rolled. Order of turns");
         Dice k = new Dice();
         ArrayList<Integer> diceArr = new ArrayList<Integer>();
         for (int i = 0; i < playerCount; i++) {
             k.roll();
             diceArr.add(k.getDiceValue());
         }
-        playerTurnPattern = getTurnPattern(playerCount, getIndexOfHighestRollIn(diceArr, playerCount));
+        playerTurnPattern = getTurnPattern(playerCount, getIndexOfHighestRollIn(diceArr, playerCount), thisGame);
+
+        System.out.print("Decided pattern: " );
+        for(int i: playerTurnPattern)
+        {
+            System.out.print(i + " ");
+
+        }
+        System.out.println();
     }
 
     // Query for yes/no
@@ -389,43 +400,38 @@ public class GameManager {
     }
 
     // Setup UserTurnPattern and display (optional)
-    public int[] getTurnPattern(int size, int highest) throws InterruptedException {
+    public int[] getTurnPattern(int size, int highest, Game thisGame) throws InterruptedException {
         int[] array = new int[size];
+
         for (int i = 0; i < size; i++) {
             array[i] = (highest + i) % size;
             //System.out.println((i+1)+ ". Player#" + array[i]);
-            messenger.putMessage((i+1)+ ". Player#" + array[i]);
+
+            //messenger.putMessage((i+1)+ ". Player @" + thisGame.playerDirectory.get(players.get(i)).username);
         }
         return array;
     }
 
-    // Run setup to finish Game setup for all players
-    public static void runSetup(GameManager GM, Messenger scanner) throws InterruptedException {
-
-        //System.out.println("__CLAIM TERRITORIES__");
-        scanner.putMessage("__CLAIM TERRITORIES__");
-        GM.claimTerritories();
-
+    public static void strengthenTerritory(Game thisGame) {
         //System.out.println("__STRENGTHEN TERRITORIES__");
-        scanner.putMessage("__STRENGTHEN TERRITORIES__");
-        for (int id: GM.playerTurnPattern) {
-            GM.strengthenTerritories(id);
+        thisGame.messenger.putMessage("__STRENGTHEN TERRITORIES__");
+        for (int id: thisGame.game.GM.playerTurnPattern) {
+            thisGame.game.GM.strengthenTerritories(id, thisGame);
         }
-
     }
 
     // make a turn
-    public static Turn makeTurn(GameManager GM, Messenger scanner, Player p, int id) throws InterruptedException {
+    public static Turn makeTurn(GameManager GM, Messenger messenger, Player p, int id, Game thisGame) throws InterruptedException {
         Turn newTurn;
         do {
             newTurn = new Turn(BM, p, id);
-            newTurn.turnFunction(GM, scanner);
+            newTurn.turnFunction(GM, messenger, thisGame);
 
             // find a way to display turn changes
             if(GM.baseQuery("Would you like to undo all actions for this turn? This will deduct one undo action."))
             {
                 // if (p.getUndos() < 1) { System.out.println("You can not perform an undo action now"); break;}
-                if (p.getUndos() < 1) { scanner.putMessage("You can not perform an undo action now"); break;}
+                if (p.getUndos() < 1) { messenger.putMessage("You can not perform an undo action now"); break;}
                 p.addUndos(-1);
                 GM.setGame(
                         TM.getTurnList().get(id-1),
@@ -439,8 +445,7 @@ public class GameManager {
             GM.broadcastToTwitter(newTurn, p);
         } catch (TwitterException e)
         {
-            //System.out.println(e.getMessage());
-            scanner.putMessage(e.getMessage());
+            e.printStackTrace();
         }
         return newTurn;
     }
@@ -471,8 +476,11 @@ public class GameManager {
 
 
     // Display Free territories -- removed displayPlayerTerritories for simplicity and less console clutter
-    public void claimTerritories() throws InterruptedException {
-        String territory;
+    public void claimTerritories(Game thisGame) {
+        String territory = BM.queryTerritory("Player  -- Territory select: ",
+                "INITIALIZE", playerList[0], "", thisGame);
+        /*
+        *         String territory;
         while(BM.getFreeTerritories().size() > 0) {
             for (int id : playerTurnPattern) {
 
@@ -483,17 +491,18 @@ public class GameManager {
                     messenger.putMessage(k);
                 do{
                     territory = BM.queryTerritory("Player #" + id + " -- Territory select: ",
-                            "INITIALIZE", playerList[id], "");
+                            "INITIALIZE", playerList[id], "", thisGame);
                 } while(territory == null);
 
                 BM.initializeTerritory(playerList[id], territory, 1);
 
             }
         }
+        * */
     }
 
 
-    public void strengthenTerritories(int id) throws InterruptedException {
+    public void strengthenTerritories(int id, Game thisGame) {
         String territory;
 
             while (playerList[id].getNumberOfArmies() > 0) {
@@ -505,14 +514,14 @@ public class GameManager {
                     //System.out.println(BM.getOccupantCount(country) + " " + country);}
                     messenger.putMessage(BM.getOccupantCount(country) + " " + country);}
 
-                //System.out.println("Remaining armies: " + playerList[id].getNumberOfArmies());
+                //System.out.println("Remaining armies: " + playerDirectory[id].getNumberOfArmies());
                 //System.out.println("Select a territory to ship your Army to: ");
                 messenger.putMessage("Remaining armies: " + playerList[id].getNumberOfArmies());
                 messenger.putMessage("Select a territory to ship your Army to: ");
 
                 do{
                     territory = BM.queryTerritory("Player #" + id + " -- Territory select: ",
-                            "STRENGTHEN", playerList[id], "");
+                            "STRENGTHEN", playerList[id], "", thisGame);
                 } while(territory == null);
 
                 BM.strengthenTerritory(playerList[id], territory, 1);

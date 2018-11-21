@@ -1,8 +1,3 @@
-import org.telegram.telegrambots.meta.api.objects.Chat;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
 /*////////////////////////////////////////////////////////////////////////////////
 
 *///////////////////////////////////////////////////////////////////////////////*/
@@ -25,7 +20,7 @@ public class Responses {
             String res = "The following game sessions have been found.\n";
             for(String game_id: _GameMaster.gamesListing.keySet()){
 
-                res += _GameMaster.gamesListing.get(game_id).playerList.size();
+                res += _GameMaster.gamesListing.get(game_id).playerDirectory.size();
                 res += " player(s) \t";
                 res += game_id;
 
@@ -43,8 +38,8 @@ public class Responses {
             String res = "";
             boolean gamesFound = false;
             for(String id: _GameMaster.gamesListing.keySet()){
-                if (_GameMaster.gamesListing.get(id).playerList.containsKey(user_id)) {
-                    res += _GameMaster.gamesListing.get(id).playerList.size();
+                if (_GameMaster.gamesListing.get(id).playerDirectory.containsKey(user_id)) {
+                    res += _GameMaster.gamesListing.get(id).playerDirectory.size();
                     res += " players(s) \t";
                     res += id;
                     res += "\n";
@@ -66,12 +61,14 @@ public class Responses {
 
             if (!_GameMaster.gamesListing.containsKey(context)) {
                 return "The game does not exist.";
-            } else if (_GameMaster.gamesListing.get(context).playerList.containsKey(user_id)) {
+            } else if (_GameMaster.gamesListing.get(context).playerDirectory.containsKey(user_id)) {
                 return "You are already in this game.";
             } else if (_GameMaster.gamesListing.get(context).state != GameState.QUEUE) {
                 return "This game is no longer accepting players.";
             } else {
+                _GameMaster.allPlayersAndTheirGames.put(user_id, context);
                 _GameMaster.gamesListing.get(context).addUser(user_id, username, chat_id);
+
                 return "You have successfully joined.";
             }
         }
@@ -86,7 +83,7 @@ public class Responses {
         }
         else {
             String res = "Status for " + game + ":\n";
-            res += _GameMaster.gamesListing.get(game).playerList.size();
+            res += _GameMaster.gamesListing.get(game).playerDirectory.size();
             res += " player(s) \t";
             res += game;
             res += "\n";
@@ -97,9 +94,45 @@ public class Responses {
         }
     }
 
+    public static String onPick(int user_id, ChatInput in)
+    {
+        if(_GameMaster.allPlayersAndTheirGames.containsKey(user_id))
+        {
+            String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
+
+            if(_GameMaster.gamesListing.get(gameID).state == GameState.QUEUE || _GameMaster.gamesListing.get(gameID).state == GameState.INIT )
+            {
+                return "The game has not yet started.";
+
+            } else {
+                for(int i=0; i<in.getArgs().size(); i++){
+                    _GameMaster.gamesListing.get(gameID).messenger.putMessage(in.getArgs().get(i));
+                }
+
+                // SWITCH CASE HERE for STATES, depending on what is needed. CLAIM for CLAIMING territories
+                // add more if necessary
+                switch(_GameMaster.gamesListing.get(gameID).state)
+                {
+                    case CLAIM:{
+                        _GameMaster.gamesListing.get(gameID).game.GM.claimTerritories(_GameMaster.gamesListing.get(gameID));
+                        break;
+                    }
+                }
+
+
+                return _GameMaster.gamesListing.get(gameID).messenger.getMessage();
+            }
+        } else {
+            return "You are not playing a game.";
+        }
+    }
+
     public static String onCreate(int user_id, String gameID, String username, long chat_id){
+
             _GameMaster.gamesListing.put(gameID, new Game(gameID));
             _GameMaster.gamesListing.get(gameID).addUser(user_id, username, chat_id);
+
+            _GameMaster.allPlayersAndTheirGames.put(user_id, gameID);
 
             _GameMaster.gamesListing.get(gameID).addObserver(_GameMaster.kineticEntity);
             return "Creating a new game session. \nGameID: " + gameID;
