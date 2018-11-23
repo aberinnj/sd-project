@@ -34,7 +34,7 @@ public class _GameStarter {
     public void initGame(Game thisGame) throws IOException, InterruptedException {
         this.messenger = thisGame.messenger;
         playerCount = thisGame.playerDirectory.size();
-        GM.setMessenger(thisGame);
+        // GM.setMessenger(thisGame);
         defaultStart(thisGame);
         System.out.println("Init done. \n");
         //GM.runGame(GM, thisGame.messenger, thisGame);
@@ -51,29 +51,6 @@ public class _GameStarter {
         GM.initializeAsNormal(playerCount, thisGame);
         GameManager.fileObjKeyName = thisGame.gameID;
     }
-
-    /* NOT CALLED WHEN USING TELEGRAM
-    Query for number of players for this new game
-    Returns true if it succeeds, Returns false otherwise
-    */
-    public boolean setNumberOfPlayers() throws InterruptedException {
-        //System.out.println("Number of Players: ");
-        messenger.putMessage("Enter Number of Players: ");
-        try {
-            int size = Integer.parseInt(scanner.nextLine());
-            System.out.println(size);
-            if (size < 2 || size > 6) {
-                return true;
-            } else{
-                playerCount = size;
-                return false;
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
-    }
-
 
     public boolean queryGameChecker(ArrayList<String> games)
     {

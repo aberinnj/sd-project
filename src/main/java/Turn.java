@@ -27,13 +27,13 @@ public class Turn {
     public void turnFunction(GameManager GM, Messenger messenger, Game thisGame) throws InterruptedException {
         this.messenger = messenger;
         this.GM = GM;
-        placeNewArmies(thisGame);
-        attack(thisGame);
-        fortifyTerritories(thisGame);
-        earnCards();
-        addCredit();
-        purchaseUndo();
-        purchaseCard();
+        //placeNewArmies(thisGame);
+        //attack(thisGame);
+        //fortifyTerritories(thisGame);
+        //earnCards();
+        //addCredit();
+        //purchaseUndo();
+        //purchaseCard();
     }
 
     // Purchase Credit
@@ -45,6 +45,7 @@ public class Turn {
             player.addMoney(Double.parseDouble(messenger.getMessage()));
         }
     }
+
 
     // use credit to buy cards or undo opportunities
     public void purchaseUndo() throws InterruptedException {
@@ -105,22 +106,22 @@ public class Turn {
         int freebies =  0;
         freebies += Math.max(3, (player.getTerritories().size() - player.getTerritories().size() % 3)/3);
         freebies += player.getContinentsOwned(BM);
+        return freebies;
+    }
 
-        //System.out.println("You have the following cards");
-        messenger.putMessage("You have the following cards:");
-
+    public int getArmiesFromCards() throws InterruptedException {
+        int freebies = 0;
         for(Card e: player.getHandListing())
             //System.out.println(e.getOrigin() + " - " + e.getUnit());
             messenger.putMessage(e.getOrigin() + " - " + e.getUnit());
-            if(player.getTotalCards() < 3){
-                // System.out.println("You do not have enough cards to trade");
-                messenger.putMessage("You do not have enough cards to trade");
-            }else if(player.getTotalCards() >= 5) {
+        if(player.getTotalCards() < 3){
+            // System.out.println("You do not have enough cards to trade");
+            messenger.putMessage("You do not have enough cards to trade");
+        }else if(player.getTotalCards() >= 5) {
             freebies += calculateTradeableCard();
-            } else if(GM.baseQuery("Would you like to exchange your cards for units? Yes/ No")){
+        } else if(GM.baseQuery("Would you like to exchange your cards for units? Yes/ No")){
             freebies += calculateTradeableCard();
-            }
-
+        }
         return freebies;
     }
 
@@ -243,73 +244,37 @@ public class Turn {
         }
     }
 
-    /*////////////////////////////////////////////////////////////////////////////////
-    Attacking and battle
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public void attack(Game thisGame) throws InterruptedException {
-        // System.out.println("__LAUNCH AN ATTACK__");
-        messenger.putMessage("__LAUNCH AN ATTACK__");
-
-        while (GM.baseQuery("Would you like to attack? {Yes/No) ")) {
-
-            //System.out.println("List of your territories and enemy territories you can attack:");
-            messenger.putMessage("List of your territories and enemy territories you can attack:");
-
-            for(String country: BM.getAbleTerritories(player, true))
+    public String getAttackableTerritories() {
+        String out = "";
+        for(String country: BM.getAbleTerritories(player, true))
+        {
+            out += country + ": " + BM.getOccupantCount(country) + " armies, CAN ATTACK\n";
+            for(String enemy: BM.getAllAdjacentEnemyTerritories(player.getId(), country))
             {
-                // System.out.println(country + ": " + BM.getOccupantCount(country) + " armies, CAN ATTACK");
-                messenger.putMessage(country + ": " + BM.getOccupantCount(country) + " armies, CAN ATTACK");
-
-                for(String enemy: BM.getAllAdjacentEnemyTerritories(player.getId(), country))
-                {
-                    // System.out.println("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies");
-                    messenger.putMessage("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies");
-                }
+                // System.out.println("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies");
+                messenger.putMessage("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies\n");
             }
-
-            String origin;
-            String territory;
-            int attackerDice;
-            int defenderDice;
-
-            do{
-                origin = BM.queryTerritory("From: ", "ATTACK_FROM", player, "", thisGame);
-            } while(origin == null);
-            do{
-                territory = BM.queryTerritory("Attack: ", "ATTACK", player, origin, thisGame);
-            } while(territory == null);
-            BM.getBoardMap().get(territory).setStatusToUnderAttack();
-            do{
-                attackerDice = BM.queryCount("Attacker (Player "+ player.getId()+") rolls: ", "ATTACK", player, origin, thisGame);
-            } while(attackerDice == 0);
-            do{
-                defenderDice = BM.queryCount("Defender of " + territory + "(Player " + BM.getBoardMap().get(territory).getOccupantID() + ") rolls: ",
-                        "DEFEND", player, territory, thisGame);
-            } while(defenderDice == 0);
-
-            // setup
-            Dice dice = new Dice();
-            ArrayList<Integer> attacker_dice;
-            ArrayList<Integer> defender_dice;
-            attacker_dice = new ArrayList<Integer>();
-            for (int i = 0; i < attackerDice; i++) {
-                dice.roll();
-                attacker_dice.add(dice.getDiceValue());
-            }
-            defender_dice = new ArrayList<Integer>();
-            for (int i = 0; i < defenderDice; i++) {
-                dice.roll();
-                defender_dice.add(dice.getDiceValue());
-            }
-
-            // Deciding battles
-            battle(GM, attackerDice, territory, origin, attacker_dice, defender_dice);
         }
+        return out;
     }
 
-    // Battle function
-    public void battle(GameManager GM, int attackerDice, String defending, String attacking, ArrayList<Integer> attacker_dice, ArrayList<Integer> defender_dice) throws InterruptedException {
+    public String battle(String attacker, String defender, int attackerDice, int defenderDice) {
 
+        String out = null;
+        // setup
+        Dice dice = new Dice();
+        ArrayList<Integer> attacker_dice;
+        ArrayList<Integer> defender_dice;
+        attacker_dice = new ArrayList<Integer>();
+        for (int i = 0; i < attackerDice; i++) {
+            dice.roll();
+            attacker_dice.add(dice.getDiceValue());
+        }
+        defender_dice = new ArrayList<Integer>();
+        for (int i = 0; i < defenderDice; i++) {
+            dice.roll();
+            defender_dice.add(dice.getDiceValue());
+        }
         int topIndexAttacker;
         int topIndexDefender;
         int potentialTransfer = attackerDice;
@@ -318,51 +283,23 @@ public class Turn {
             topIndexAttacker = GM.getIndexOfHighestRollIn(attacker_dice, attacker_dice.size());
             topIndexDefender = GM.getIndexOfHighestRollIn(defender_dice, defender_dice.size());
 
-            // System.out.println("Attacker: "+attacker_dice.get(topIndexAttacker) + " vs. Defender: " + defender_dice.get(topIndexDefender));
-            messenger.putMessage("Attacker: "+attacker_dice.get(topIndexAttacker) + " vs. Defender: " + defender_dice.get(topIndexDefender));
-
-            // Attack CASES
-            if(attacker_dice.get(topIndexAttacker) > defender_dice.get(topIndexDefender)) {
-                //System.out.println("\tDefender loses one army.");
-                messenger.putMessage("\tDefender loses one army.");
-
-                BM.removeOccupantsFrom(defending, 1);
-
-                if(BM.getOccupantCount(defending) == 0) {
-                    BM.getBoardMap().get(defending).setStatusToFallen();
-                    //System.out.println("The ATTACK is a success! " + defending + " is captured.");
-                    messenger.putMessage("The ATTACK is a success! " + defending + " is captured.");
-
-                    GM.getPlayer(BM.getBoardMap().get(defending).getOccupantID()).loseTerritories(defending);
-                    BM.getBoardMap().get(attacking).loseOccupants(potentialTransfer, ArmyType.INFANTRY);
+            if (attacker_dice.get(topIndexAttacker) > defender_dice.get(topIndexDefender)) {
+                BM.removeOccupantsFrom(defender, 1);
+                if (BM.getOccupantCount(defender) == 0) { // if the defender loses all of its armies
+                    BM.getBoardMap().get(defender).setStatusToFallen();
+                    GM.getPlayer(BM.getBoardMap().get(defender).getOccupantID()).loseTerritories(defender); // take remove territory from defending player
+                    BM.getBoardMap().get(attacker).loseOccupants(potentialTransfer, ArmyType.INFANTRY); // remove remaining attacking armies from attacking territory
                     GM.getPlayer(player.getId()).addArmies(potentialTransfer);
-                    BM.initializeTerritory(player, defending, potentialTransfer);
+                    BM.initializeTerritory(player, defender, potentialTransfer); // reinitialize territory for defender
+                    out += "Defender has lost the territory\n";
                     break;
                 }
             }
-            else if(attacker_dice.get(topIndexAttacker).equals(defender_dice.get(topIndexDefender))) {
-                //System.out.println("\tAttacker loses one army.");
-                messenger.putMessage("\tAttacker loses one army.");
 
-                BM.removeOccupantsFrom(attacking, 1);
+            else if(attacker_dice.get(topIndexAttacker).equals(defender_dice.get(topIndexDefender)) || attacker_dice.get(topIndexAttacker) < defender_dice.get(topIndexDefender)) {
+                BM.removeOccupantsFrom(attacker, 1);
                 potentialTransfer--;
-
-                if(BM.getOccupantCount(attacking) == 1) {
-                    //System.out.println("The ATTACK fails with no remaining army left. " + attacking + " can no longer attack. ");
-                    messenger.putMessage("The ATTACK fails with no remaining army left. " + attacking + " can no longer attack. ");
-                    break;
-                }
-            }
-            else if(attacker_dice.get(topIndexAttacker) < defender_dice.get(topIndexDefender)) {
-                //System.out.println("\tAttacker loses one army.");
-                messenger.putMessage("\tAttacker loses one army.");
-
-                BM.removeOccupantsFrom(attacking, 1);
-                potentialTransfer--;
-
-                if(BM.getOccupantCount(attacking) == 1) {
-                    // System.out.println("The ATTACK fails with no remaining army left. "+ attacking + " can no longer attack. ");
-                    messenger.putMessage("The ATTACK fails with no remaining army left. "+ attacking + " can no longer attack. ");
+                if(BM.getOccupantCount(attacker) == 1) {
                     break;
                 }
             }
@@ -374,11 +311,12 @@ public class Turn {
             // runs roll comparison again
             if(attacker_dice.size() == 0 || defender_dice.size() == 0) break;
 
-        } while(true);
-        BM.getBoardMap().get(defending).setStatusToNormal();
+        }while (true);
 
+        BM.getBoardMap().get(defender).setStatusToNormal();
+        out += "Attacker lost " + (attackerDice - attacker_dice.size()) + ", Defender lost " + (defenderDice - defender_dice.size()) + "\n";
+        return out;
     }
-
 
     /*////////////////////////////////////////////////////////////////////////////////
     Fortifying is simple

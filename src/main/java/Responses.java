@@ -2,6 +2,9 @@
 
 *///////////////////////////////////////////////////////////////////////////////*/
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Responses {
 
     public static String onStart(){
@@ -94,38 +97,31 @@ public class Responses {
         }
     }
 
-    public static String onPick(int user_id, ChatInput in)
-    {
-        if(_GameMaster.allPlayersAndTheirGames.containsKey(user_id))
-        {
-            String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
+    public static List<String> onPick(String gameID, ChatInput in) {
+        if (_GameMaster.gamesListing.get(gameID).state == GameState.QUEUE || _GameMaster.gamesListing.get(gameID).state == GameState.INIT) {
+            // return "The game has not yet started.";
+            return null;
 
-            if(_GameMaster.gamesListing.get(gameID).state == GameState.QUEUE || _GameMaster.gamesListing.get(gameID).state == GameState.INIT )
-            {
-                return "The game has not yet started.";
-
-            } else {
-                for(int i=0; i<in.getArgs().size(); i++){
-                    _GameMaster.gamesListing.get(gameID).messenger.putMessage(in.getArgs().get(i));
-                }
-
-                // SWITCH CASE HERE for STATES, depending on what is needed. CLAIM for CLAIMING territories
-                // add more if necessary
-                switch(_GameMaster.gamesListing.get(gameID).state)
-                {
-                    case CLAIM:{
-                        _GameMaster.gamesListing.get(gameID).game.GM.claimTerritories(_GameMaster.gamesListing.get(gameID));
-                        break;
-                    }
-                }
-
-
-                return _GameMaster.gamesListing.get(gameID).messenger.getMessage();
-            }
         } else {
-            return "You are not playing a game.";
+            for (int i = 0; i < in.getArgs().size(); i++) {
+                _GameMaster.gamesListing.get(gameID).messenger.putMessage(in.getArgs().get(i));
+            }
+
+            // SWITCH CASE HERE for STATES, depending on what is needed. CLAIM for CLAIMING territories
+            // add more if necessary
+            switch (_GameMaster.gamesListing.get(gameID).state) {
+                case CLAIM: {
+                    //_GameMaster.gamesListing.get(gameID).game.GM.claimTerritories(_GameMaster.gamesListing.get(gameID));
+                    List<String> vacantTerritories = _GameMaster.gamesListing.get(gameID).game.GM.availableTerritories(_GameMaster.gamesListing.get(gameID));
+                    return vacantTerritories;
+                    //break;
+                }
+            }
         }
+        return null;
     }
+
+
 
     public static String onCreate(int user_id, String gameID, String username, long chat_id){
 

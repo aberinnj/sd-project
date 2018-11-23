@@ -58,7 +58,7 @@ class Props{
 
 public class GameManager {
     static String base;
-
+    Game game;
     static Player[] playerList;
     int[] playerTurnPattern;
     static TurnManager TM;
@@ -73,9 +73,9 @@ public class GameManager {
     Messenger messenger;
 
 
-    void setMessenger(Game thisGame)
+    void setGame(Game thisGame)
     {
-        messenger = thisGame.messenger;
+        game = thisGame;
     }
 
     // Sets up ALL Game Variables, which must be testable upon initialization
@@ -205,9 +205,6 @@ public class GameManager {
             messenger.putMessage(String.valueOf(e));
         }
 
-        //ObjectMapper objectMapper = new ObjectMapper();
-        //byte[] bytesToWrite = objectMapper.writeValueAsBytes(json);
-
         try {
 
             // Upload a text string as a new object.
@@ -282,7 +279,8 @@ public class GameManager {
     setGame can an also be used for loading a game IF loader is using init TurnManager instead to store an entire game's turn listing
     in short, Loader gives all data to TurnManager and leaves everything to TurnManager and setGame
     then in _GameStarter, after loading all game, call this function to setGame from a turn
-    *///////////////////////////////////////////////////////////////////////////////*/
+    *///////////////////////////////////////////////////////////////////////////////*
+    /*
     public void setGame(final Turn lastTurnOfPlayerBefore, final Turn lastTurnOfThisPlayer)
     {
         // playerTurnPattern = Loader.getPlayerTurnPattern -- unused by undo
@@ -296,7 +294,7 @@ public class GameManager {
                 new ArrayList<Card>(){{addAll(lastTurnOfThisPlayer.player.getHandListing());}},
                 new ArrayList<String>(){{addAll(lastTurnOfThisPlayer.player.getTerritories());}});
 
-    }
+    }*/
 
     //
     public void loadGame(int turnToLoad, Loader loader) throws IOException, InterruptedException {
@@ -310,7 +308,9 @@ public class GameManager {
 
     // must be called to start GameManager
     public void initializeAsNormal(int playerCount, Game thisGame) throws InterruptedException {
-        playerList = setPlayerList(playerCount);
+        // playerList = setPlayerList(playerCount);
+        setGame(thisGame);
+        setPlayerList(playerCount);
 
         System.out.println("Initialize as Normal");
 
@@ -328,7 +328,6 @@ public class GameManager {
         for(int i: playerTurnPattern)
         {
             System.out.print(i + " ");
-
         }
         System.out.println();
     }
@@ -353,11 +352,9 @@ public class GameManager {
 
     public BoardManager getBM() {return BM;}
 
-    // Initializes PlayerList Array with the right amount of Infantry
-    public Player[] setPlayerList(int size){
-        Player[] playerList = new Player[size];
+    // telegram style, gives each players the appropriate number of armies on init
+    public void setPlayerList(int size){
         int default_infantry = 0;
-
         switch(size){
             case 2:
                 default_infantry=40;
@@ -375,13 +372,9 @@ public class GameManager {
                 default_infantry=20;
                 break;
         }
-
         for(int a=0; a<size; a++){
-            playerList[a] = new Player(a, default_infantry);
+            playerList[a].addArmies(default_infantry);
         }
-
-        return playerList;
-
     }
 
     // Get Highest Roll
@@ -404,8 +397,12 @@ public class GameManager {
         int[] array = new int[size];
 
         for (int i = 0; i < size; i++) {
-            array[i] = (highest + i) % size;
+            int roll = (highest + i) % size;
+            array[i] = roll;
             //System.out.println((i+1)+ ". Player#" + array[i]);
+
+            // use turnPattern to hold the order of player turns
+            thisGame.setTurnPattern(i, roll);
 
             //messenger.putMessage((i+1)+ ". Player @" + thisGame.playerDirectory.get(players.get(i)).username);
         }
@@ -433,10 +430,11 @@ public class GameManager {
                 // if (p.getUndos() < 1) { System.out.println("You can not perform an undo action now"); break;}
                 if (p.getUndos() < 1) { messenger.putMessage("You can not perform an undo action now"); break;}
                 p.addUndos(-1);
+                /*
                 GM.setGame(
                         TM.getTurnList().get(id-1),
                         TM.getTurnList().get(id-GM.playerTurnPattern.length)
-                );
+                );*/
             } else
                 break;
         } while(true);
@@ -474,31 +472,9 @@ public class GameManager {
             System.out.println(result + "no territories this turn.");
     }
 
-
-    // Display Free territories -- removed displayPlayerTerritories for simplicity and less console clutter
-    public void claimTerritories(Game thisGame) {
-        String territory = BM.queryTerritory("Player  -- Territory select: ",
-                "INITIALIZE", playerList[0], "", thisGame);
-        /*
-        *         String territory;
-        while(BM.getFreeTerritories().size() > 0) {
-            for (int id : playerTurnPattern) {
-
-                //System.out.println("__Free Territories__");
-                messenger.putMessage("__Free Territories__");
-                for(String k : BM.getFreeTerritories())
-                    //System.out.println(k);
-                    messenger.putMessage(k);
-                do{
-                    territory = BM.queryTerritory("Player #" + id + " -- Territory select: ",
-                            "INITIALIZE", playerList[id], "", thisGame);
-                } while(territory == null);
-
-                BM.initializeTerritory(playerList[id], territory, 1);
-
-            }
-        }
-        * */
+    // Create list of free territories for creating keyboard during game initialization
+    public List availableTerritories(Game thisGame) {
+        return BM.getFreeTerritories();
     }
 
 
@@ -531,6 +507,7 @@ public class GameManager {
     public void incrementTurn(){
         current_turn++;
     }
+
     // Player list only contains Players, and you can freely check if players have all the territories
     public boolean isGameOver() throws InterruptedException {
         for(Player i: playerList){

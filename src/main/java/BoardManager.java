@@ -294,7 +294,7 @@ public class BoardManager {
 
     public List<String> getAllAdjacentEnemyTerritories(int id, String countryOfOrigin) {
         List<String> listing = new ArrayList<String>();
-         for(String country: getNeighborsOf(countryOfOrigin)){
+        for(String country: getNeighborsOf(countryOfOrigin)){
             if(boardMap.get(country).getOccupantID() != id)
                 listing.add(country);
         }

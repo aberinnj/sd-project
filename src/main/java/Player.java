@@ -1,6 +1,17 @@
 import java.util.*;
 import java.util.Observer;
 
+
+enum PlayerState {
+    QUEUE, // the default state
+    REINFORCE, // player is able to reinforce territories
+    ATTACK, // player can attack other players
+    FORTIFY, // player can move their own armies
+    PURCHASE  // player can but undos and whatnot
+}
+
+
+
 /*////////////////////////////////////////////////////////////////////////////////
 Player Class
 
@@ -10,11 +21,51 @@ todo: resetTerritories renders null throwing nullpointerexception in testing
 public class Player implements Observer {
 
     private int id;
+    String username;
+    long chat_id;
+    private PlayerState state;
+
     private Army placeholder;
     private List<String> territories;
-    private HashMap<String, Stack<Card>> Hand;
+    private HashMap<String, Stack<Card>> Hand = new HashMap<String, Stack<Card>>();;
     private Double wallet = 0.0;
     private int Undos = 0;
+
+    /*
+    Player (int id, String username, long chat_id) {
+        this.id = id;
+        this.username = username;
+        this.chat_id = chat_id; // send messages to this chat_id.
+    } */
+
+    // load-game constructor
+    //Player(int id, String username, long chat_id, int infantryCount, ArrayList<Card> cardStack, ArrayList<String> territories)
+
+    Player(int id, String username, long chat_id, int infantryCount)
+    {
+        this.id = id;
+        this.placeholder = new Army(infantryCount);
+        Hand.put("INFANTRY", new Stack<Card>());
+        Hand.put("CAVALRY", new Stack<Card>());
+        Hand.put("ARTILLERY", new Stack<Card>());
+        Hand.put("WILD", new Stack<Card>());
+
+
+        this.username = username;
+        this.chat_id = chat_id; // send messages to this chat_id.
+        this.state = PlayerState.QUEUE;
+    }
+
+    public void setTerritories(ArrayList<String> territories) {
+        this.territories = territories;
+    }
+
+    public void setCardStack(ArrayList<Card> cardStack) {
+        for(Card e: cardStack)
+        {
+            Hand.get(e.getUnit()).push(e);
+        }
+    }
 
     @Override
     public void update(Observable territory, Object arg)
@@ -35,6 +86,18 @@ public class Player implements Observer {
 
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public long getChat_id() {
+        return chat_id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
     // add undos
     public void addUndos(int undos) { Undos = Undos + undos; }
 
@@ -46,11 +109,6 @@ public class Player implements Observer {
 
     // get wallet contents
     public Double getWallet() { return wallet; }
-
-    // get player id
-    public int getId() {
-        return id;
-    }
 
     // get continents
     public int getContinentsOwned(BoardManager bm){
@@ -151,26 +209,5 @@ public class Player implements Observer {
         Hand.put("CAVALRY", new Stack<Card>());
         Hand.put("ARTILLERY", new Stack<Card>());
         Hand.put("WILD", new Stack<Card>());
-    }
-
-    // load-game constructor
-    Player(int id, int infantryCount, ArrayList<Card> cardStack, ArrayList<String> territories)
-    {
-        this.id = id;
-        this.placeholder = new Army(infantryCount);
-        this.Hand = new HashMap<String, Stack<Card>>();
-        Hand.put("INFANTRY", new Stack<Card>());
-        Hand.put("CAVALRY", new Stack<Card>());
-        Hand.put("ARTILLERY", new Stack<Card>());
-        Hand.put("WILD", new Stack<Card>());
-
-        for(Card e: cardStack)
-        {
-            Hand.get(e.getUnit()).push(e);
-        }
-        this.territories = territories;
-
-
-
     }
 }
