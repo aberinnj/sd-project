@@ -12,22 +12,11 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import twitter4j.TwitterException;
 
 import static java.lang.Math.toIntExact;
 
-enum GameState {
-    QUEUE, // the default state
-    START, // when a game gets 3 players, this is the state until functions are called (a brief window) and the state is changed again
-    INIT, // the state when the game has started
-    CLAIM, // the state when the game allows for players to claim territories
-    ARMIES, // same as CLAIM except armies instead of territories
-    TURNS, // state for running actual turns
-    WAIT, // the state when the gmae is waiting on a player
-    THINK, // the neutral state to switch from WAIT or to WAIT -- thinking
-    PAUSE, // the state when the timer is set off (future functionality)
-    END, // the state when the game has ended until functions are called (another brief window)
-    CLOSED // the final state, when all functions are called
-}
+
 
 /*////////////////////////////////////////////////////////////////////////////////
 High-level way of managing user reply below in onUpdateReceived
@@ -92,107 +81,6 @@ class Fetcher implements Observer {
             System.out.println("\nClaiming Territories... ");
 
         }
-    }
-}
-
-/*////////////////////////////////////////////////////////////////////////////////
-Game holds all each game's information and the list of players in the game
-todo: check if static is causing problems
-*///////////////////////////////////////////////////////////////////////////////*/
-class Game extends Observable {
-    _GameStarter game;
-    HashMap<Integer, Player> playerDirectory;
-    GameManager GM;
-    BoardManager BM;
-    ArrayList<Integer> users;
-    //ArrayList<Integer> turnPattern;
-    ArrayList<Player> turnPattern;
-    int turn;
-    String gameID;
-    GameState state;
-    Messenger messenger;
-    ExpectedContext EC;
-    Turn currentTurn;
-
-
-    Game(String id) {
-        messenger = new Messenger();
-        game = new _GameStarter();
-        playerDirectory = new HashMap<>();
-        GM = new GameManager();
-        BM = GM.getBM();
-        users = new ArrayList<>();
-        turnPattern = new ArrayList<>();
-        turn = 0;
-        gameID = id;
-        state = GameState.QUEUE;
-        EC = new ExpectedContext();
-
-    }
-
-    public void addUser(Integer user_id, String username, long chat_id){
-
-        //playerDirectory.put(user_id, new User(user_id, username, chat_id));
-
-        // Create new player to add to the list of players for the game
-        playerDirectory.put(playerDirectory.size(), new Player(user_id, username, chat_id, 0));
-        users.add(user_id);
-
-        if(playerDirectory.size() == _GameMaster.MIN_PLAYERS_PER_GAME)
-        {
-            state = GameState.START;
-            setChanged();
-            notifyObservers();
-        }
-
-    }
-
-    public void begin()
-    {
-        if(playerDirectory.size() == _GameMaster.MIN_PLAYERS_PER_GAME) {
-                state = GameState.INIT;
-                setChanged();
-                notifyObservers();
-        } else {
-            System.out.println("ERROR: NOT ENOUGH PLAYERS SOMEHOW");
-        }
-    }
-
-    public void claim()
-    {
-        if(playerDirectory.size() == _GameMaster.MIN_PLAYERS_PER_GAME && state == GameState.INIT) {
-            state = GameState.CLAIM;
-            setChanged();
-            notifyObservers();
-        } else {
-            System.out.println("ERROR: NOT ENOUGH PLAYERS SOMEHOW");
-        }
-    }
-
-    public void beginTurns() {
-        state = GameState.TURNS;
-        setChanged();
-        notifyObservers();
-    }
-
-    public void beginDistribute() {
-        state = GameState.ARMIES;
-        setChanged();
-        notifyObservers();
-    }
-
-    public void setTurnPattern(int i, int roll) {
-        turnPattern.set(i, playerDirectory.get(roll));
-    }
-
-    public void setCurrentTurn(Turn turn) { this.currentTurn = turn;}
-
-    //function to determine it all players have distributed their armies
-    public boolean checkArmies() {
-        for (int key: playerDirectory.keySet()) {
-            if (playerDirectory.get(key).getNumberOfArmies() > 0) return false;
-        }
-        return true;
     }
 }
 
@@ -268,6 +156,69 @@ class CommandsHandler extends TelegramLongPollingBot{
                 case "/listAllGames": {
                     message.setText(Responses.onListAllGames());
                     break;
+                }
+
+                case "/listGamesS3": {
+                    AWS aws = null;
+                    try {
+                        aws = new AWS();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    ArrayList<String> games = aws.listObjects();
+                    message.setText("Available games to load: \n");
+                    for (String g: games) {
+                        message.setText(g + "\n");
+                    }
+                    break;
+                }
+
+                case "/saveGame": {
+                    AWS aws = null;
+                    try {
+                        aws = new AWS();
+                        Game game = getGame(update);
+                        aws.upload(game.gameID);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    message.setText("your game has been saved");
+                }
+
+                case "/undo": {
+                    try {
+                        AWS aws = new AWS();
+                        aws.download(in.getArgs().get(0));
+                        // create new loader & game using the input gameID
+                        Loader loader = new Loader(in.getArgs().get(0));
+                        _GameMaster.gamesListing.put(in.getArgs().get(0), loader.LoadGame());
+                        message.setText("Turn undid");
+                        break;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // format -> /loadGame (gameID)
+                case "/loadGame": {
+                    try {
+                        AWS aws = new AWS();
+                        aws.download(in.getArgs().get(0));
+                        // create new loader & game using the input gameID
+                        Loader loader = new Loader(in.getArgs().get(0));
+                        _GameMaster.gamesListing.put(in.getArgs().get(0), loader.LoadGame());
+                        int turn = _GameMaster.gamesListing.get(in.getArgs().get(0)).turn;
+                        message.setText("Game loaded, it is now the " + turn + " turn");
+                        break;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 case "/debugMyID": {
@@ -400,7 +351,7 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                             } else if (_GameMaster.gamesListing.get(gameID).state == GameState.CLAIM) {
                                 Messenger msg = _GameMaster.gamesListing.get(gameID).messenger;
-                                msg.putMessage(_GameMaster.gamesListing.get(gameID).game.GM.getBM().getFreeTerritories());
+                                msg.putMessage(_GameMaster.gamesListing.get(gameID).BM.getFreeTerritories());
                                 message.setText(msg.getMessage());
                             }
                             else{
@@ -471,8 +422,24 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                 case "/endturn": {
                     Game game = getGame(update);
-                    // write turn to saved games
-                    // save game to S3
+
+                    // Write game to save game file
+                    try {
+                        JSONhandler JSONhandler = new JSONhandler(game);
+                        JSONhandler.JSONwriter();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    // broadcast to Twitter
+                    Twitter tw = new Twitter();
+                    try {
+                        tw.broadcastToTwitter(game.currentTurn, game.currentTurn.player);
+                    } catch (TwitterException e) {
+                        e.printStackTrace();
+                    }
+
+                    // move to next turn
                     game.turn += 1;
                     int turnNo = game.turn % game.playerDirectory.size();
                     Player player = game.playerDirectory.get(turnNo);
@@ -494,6 +461,11 @@ class CommandsHandler extends TelegramLongPollingBot{
                     }
                     message.setText("You have " + player.getNumberOfArmies() + " available to place\n");
                     message.setText(turn.getAttackableTerritories());
+                    message.setText("Your hand currently includes: ");
+                    ArrayList<Card> cards = player.getHandListing();
+                    for (Card c: cards) {
+                        message.setText(c.getOrigin() + ": " + c.getUnit());
+                    }
                     message.setText("You currently have:\n");
                     message.setText("\t" + player.getUndos() + " undos\n");
                     message.setText("\t" + player.getWallet() + " credit");
@@ -548,7 +520,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                             "__AVAILABLE TERRITORIES__";
 
                     Messenger tempMSG = _GameMaster.gamesListing.get(context).messenger;
-                    tempMSG.putMessage(_GameMaster.gamesListing.get(context).game.GM.getBM().getFreeTerritories());
+                    tempMSG.putMessage(_GameMaster.gamesListing.get(context).BM.getFreeTerritories());
 
                     fromMessenger = _GameMaster.gamesListing.get(context).messenger.getMessage();
                     if (fromMessenger != null) {

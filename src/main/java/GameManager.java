@@ -18,58 +18,15 @@ import java.util.concurrent.TimeUnit;
 import java.io.*;
 import java.util.*;
 
-/*///////////////////////////////////////////////////////////////////////
-GameManager sets up game
-
-On a high-level, this class sets up the game by Initializing Players and the Board
-as well as the Deck
-
-
-todo: make changes to current_turn, UPDATE JH.JSON_writer
-*//////////////////////////////////////////////////////////////////////*/
-
-class Props{
-    String configPath;
-    Properties props = new Properties();
-
-    Props() throws IOException
-    {
-        this.configPath = System.getProperty("user.dir") +  "/secrets_TeamOne.prop";
-        this.props.load(new FileInputStream(configPath));
-    }
-
-    public String getTwitter_apiKey() { return props.getProperty("twitter_apiKey"); }
-
-    public String getTwitter_accessToken() { return props.getProperty("twitter_accessToken"); }
-
-    public String getTwitter_apiSecretKey() { return props.getProperty("twitter_apiSecretKey"); }
-
-    public String getTwitter_accessTokenSecret() { return props.getProperty("twitter_accessTokenSecret"); }
-
-    public String getAws_access_key_id() { return props.getProperty("aws_access_key_id"); }
-
-    public String getAws_secret_access_key() { return props.getProperty("aws_secret_access_key"); }
-
-    public String getBot_name() { return props.getProperty("bot_name");}
-
-    public String getBot_apiToken() { return props.getProperty("bot_token");}
-
-}
-
 public class GameManager {
-    static String base;
     Game game;
     static Player[] playerList;
     int[] playerTurnPattern;
     static TurnManager TM;
     private static BoardManager BM;
-    private String bucketName = "risk-game-team-one";
-    protected static String fileObjKeyName;
     int current_turn;
-    TwitterFactory tf;
-    Twitter twitter;
-    AmazonS3 s3Client;
-    private String fileName;
+
+
     Messenger messenger;
 
 
@@ -82,41 +39,11 @@ public class GameManager {
     GameManager() {
         BM = new BoardManager();
         TM = new TurnManager();
-        base = System.getProperty("user.dir");
-        this.fileName = base + "/src/files/Risk.json";
+
         current_turn = 0;
-
-
-        ConfigurationBuilder cb = new ConfigurationBuilder();
-        try {
-            Props props = new Props();
-
-            cb.setDebugEnabled(true)
-                    .setOAuthConsumerKey(props.getTwitter_apiKey())
-                    .setOAuthConsumerSecret(props.getTwitter_apiSecretKey())
-                    .setOAuthAccessToken(props.getTwitter_accessToken())
-                    .setOAuthAccessTokenSecret(props.getTwitter_accessTokenSecret());
-
-            // s3Client = AmazonS3ClientBuilder.defaultClient();
-            BasicAWSCredentials awsCreds = new BasicAWSCredentials(props.getAws_access_key_id(), props.getAws_secret_access_key());
-
-            s3Client = AmazonS3ClientBuilder.standard()
-                    .withRegion("us-east-1")
-                    //.withCredentials(new AWSStaticCredentialsProvider(sessionCredentials))
-                    .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
-                    .build();
-
-
-        } catch (IOException e){
-            System.out.println("Error: No api-keys found");
-        }
-
-        // twitter setup
-        tf = new TwitterFactory(cb.build());
-        twitter = tf.getInstance();
     }
 
-    public String gameTimeout(int timeout) {
+        public String gameTimeout(int timeout) {
         ExecutorService ex = Executors.newSingleThreadExecutor();
         String input = null;
 
@@ -177,135 +104,6 @@ public class GameManager {
         }
     }
 
-    //Function to upload saved game file to S3 bucket
-    public void upload() throws InterruptedException {
-
-        try {
-
-            if (!s3Client.doesBucketExistV2(bucketName)) {
-                // Because the CreateBucketRequest object doesn't specify a region, the
-                // bucket is created in the region specified in the client.
-                s3Client.createBucket(new CreateBucketRequest(bucketName));
-
-                // Verify that the bucket was created by retrieving it and checking its location.
-                //String bucketLocation = s3Client.getBucketLocation(new GetBucketLocationRequest(bucketName));
-                //System.out.println("Bucket location: " + bucketLocation);
-            }
-        }
-        catch(AmazonServiceException e) {
-            // The call was transmitted successfully, but Amazon S3 couldn't process
-            // it and returned an error response.
-            // e.printStackTrace();
-            messenger.putMessage(String.valueOf(e));
-        }
-        catch(SdkClientException e) {
-            // Amazon S3 couldn't be contacted for a response, or the client
-            // couldn't parse the response from Amazon S3.
-            // e.printStackTrace();
-            messenger.putMessage(String.valueOf(e));
-        }
-
-        try {
-
-            // Upload a text string as a new object.
-            //s3Client.putObject(bucketName, stringObjKeyName, "Uploaded String Object");
-
-            // Upload a file as a new object with ContentType and title specified.
-            PutObjectRequest request = new PutObjectRequest(bucketName, fileObjKeyName, new File(fileName));
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType("plain/text");
-            metadata.addUserMetadata("Risk_Json_SavedGames", "RiskJSON");
-            request.setMetadata(metadata);
-            s3Client.putObject(request);
-        }
-        catch(AmazonServiceException e) {
-            // The call was transmitted successfully, but Amazon S3 couldn't process
-            // it, so it returned an error response.
-            // e.printStackTrace();
-            messenger.putMessage(String.valueOf(e));
-        }
-        catch(SdkClientException e) {
-            // Amazon S3 couldn't be contacted for a response, or the client
-            // couldn't parse the response from Amazon S3.
-            // e.printStackTrace();
-            messenger.putMessage(String.valueOf(e));
-        }
-    }
-
-    //Function to download saved game file to S3 bucket
-    public void download() throws IOException, InterruptedException {
-
-        S3Object fullObject = null, objectPortion = null, headerOverrideObject = null;
-        try {
-            s3Client.getObject(
-                    new GetObjectRequest(bucketName, fileObjKeyName),
-                    new File(fileName)
-            );
-
-            // Get an object
-            fullObject = s3Client.getObject(new GetObjectRequest(bucketName, fileObjKeyName));
-            S3ObjectInputStream stream = fullObject.getObjectContent();
-            File targetFile = new File(fileName);
-            FileUtils.copyInputStreamToFile(stream, targetFile);
-        }
-        catch(AmazonServiceException e) {
-            // The call was transmitted successfully, but Amazon S3 couldn't process
-            // it, so it returned an error response.
-            // e.printStackTrace();
-            messenger.putMessage(String.valueOf(e));
-        }
-        catch(SdkClientException e) {
-            // Amazon S3 couldn't be contacted for a response, or the client
-            // couldn't parse the response from Amazon S3.
-            // e.printStackTrace();
-            messenger.putMessage(String.valueOf(e));
-        }
-        finally {
-            // To ensure that the network connection doesn't remain open, close any open input streams.
-            if(fullObject != null) {
-                fullObject.close();
-            }
-            if(objectPortion != null) {
-                objectPortion.close();
-            }
-            if(headerOverrideObject != null) {
-                headerOverrideObject.close();
-            }
-        }
-    }
-
-    /*////////////////////////////////////////////////////////////////////////////////
-    setGame is used to re-set all game variables from a turn, after initialization (like undo)
-    setGame can an also be used for loading a game IF loader is using init TurnManager instead to store an entire game's turn listing
-    in short, Loader gives all data to TurnManager and leaves everything to TurnManager and setGame
-    then in _GameStarter, after loading all game, call this function to setGame from a turn
-    *///////////////////////////////////////////////////////////////////////////////*
-    /*
-    public void setGame(final Turn lastTurnOfPlayerBefore, final Turn lastTurnOfThisPlayer)
-    {
-        // playerTurnPattern = Loader.getPlayerTurnPattern -- unused by undo
-        BM = new BoardManager(
-                TM.copy(lastTurnOfPlayerBefore.BM.getBoardMap()),
-                TM.copy(lastTurnOfPlayerBefore.BM.getGameDeck()),
-                lastTurnOfPlayerBefore.BM.completeSets);
-
-        playerList[lastTurnOfThisPlayer.player.getId()] = new Player(lastTurnOfThisPlayer.player.getId(),
-                lastTurnOfThisPlayer.player.getNumberOfArmies(),
-                new ArrayList<Card>(){{addAll(lastTurnOfThisPlayer.player.getHandListing());}},
-                new ArrayList<String>(){{addAll(lastTurnOfThisPlayer.player.getTerritories());}});
-
-    }*/
-
-    //
-    public void loadGame(int turnToLoad, Loader loader) throws IOException, InterruptedException {
-        download();
-        JsonObject turn = loader.LoadGame(turnToLoad, BM, GameManager.base);
-        int numPlayers = loader.getNumPlayers(turn);
-        loader.setPlayers(BM, numPlayers, turn);
-        //BM.gameDeck = loader.setDeck(turn); <- reinstantiates the deck from the JSON, currently Deck is private in and immutable
-
-    }
-
     // must be called to start GameManager
     public void initializeAsNormal(int playerCount, Game thisGame) throws InterruptedException {
         // playerList = setPlayerList(playerCount);
@@ -331,26 +129,6 @@ public class GameManager {
         }
         System.out.println();
     }
-
-    // Query for yes/no
-    // for Queries for territories, check BoardManager's queryTerritory
-    public boolean baseQuery(String query) throws InterruptedException {
-        String res;
-        do {
-            //System.out.println(query);
-            messenger.putMessage(query);
-            res = messenger.getMessage();
-        }while(!res.toLowerCase().equals("y") && !res.toLowerCase().equals("yes") && !res.toLowerCase().equals("n") && !res.toLowerCase().equals("no"));
-
-        return (res.toLowerCase().equals("y") || res.toLowerCase().equals("yes"));
-    }
-
-
-    public Player getPlayer(int playerID) {
-        return playerList[playerID];
-    }
-
-    public BoardManager getBM() {return BM;}
 
     // telegram style, gives each players the appropriate number of armies on init
     public void setPlayerList(int size){
@@ -415,66 +193,6 @@ public class GameManager {
         for (int id: thisGame.game.GM.playerTurnPattern) {
             thisGame.game.GM.strengthenTerritories(id, thisGame);
         }
-    }
-
-    // make a turn
-    public static Turn makeTurn(GameManager GM, Messenger messenger, Player p, int id, Game thisGame) throws InterruptedException {
-        Turn newTurn;
-        do {
-            newTurn = new Turn(BM, p, id);
-            newTurn.turnFunction(GM, messenger, thisGame);
-
-            // find a way to display turn changes
-            if(GM.baseQuery("Would you like to undo all actions for this turn? This will deduct one undo action."))
-            {
-                // if (p.getUndos() < 1) { System.out.println("You can not perform an undo action now"); break;}
-                if (p.getUndos() < 1) { messenger.putMessage("You can not perform an undo action now"); break;}
-                p.addUndos(-1);
-                /*
-                GM.setGame(
-                        TM.getTurnList().get(id-1),
-                        TM.getTurnList().get(id-GM.playerTurnPattern.length)
-                );*/
-            } else
-                break;
-        } while(true);
-        // post status to Twitter, differentiate newTurn.player.territories and newTurn.previousTerritories
-        try {
-            GM.broadcastToTwitter(newTurn, p);
-        } catch (TwitterException e)
-        {
-            e.printStackTrace();
-        }
-        return newTurn;
-    }
-
-    public void broadcastToTwitter(Turn k, Player p) throws TwitterException
-    {
-        int gains = 0;
-        String result = "Turn("+ k.turnId + "):Player " + p.getId() + " captured ";
-        for(String terr: p.getTerritories())
-        {
-            if (!k.previousTerritories.contains(terr)) {
-                gains++;
-            }
-        }
-        result += gains;
-        if(gains == 1)
-            result += " territory.";
-        else
-            result += " territories.";
-
-        System.out.println("\nTurn Summary: ");
-        if (gains > 0) {
-            Status status = twitter.updateStatus(result);
-            System.out.println(status.getText());
-        } else
-            System.out.println(result + "no territories this turn.");
-    }
-
-    // Create list of free territories for creating keyboard during game initialization
-    public List availableTerritories(Game thisGame) {
-        return BM.getFreeTerritories();
     }
 
 

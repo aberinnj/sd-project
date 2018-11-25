@@ -24,7 +24,6 @@ public class _GameStarter {
         this.base = System.getProperty("user.dir");
         bucketName = "risk-game-team-one";
         playerCount = 0;
-        GM = new GameManager();
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////
@@ -40,52 +39,10 @@ public class _GameStarter {
         //GM.runGame(GM, thisGame.messenger, thisGame);
     }
 
-    public void loadGame(Game thisGame) throws IOException, InterruptedException {
-        Loader loader = new Loader();
-        GM.loadGame(0, loader);
-        GM.runGame(GM, thisGame.messenger, thisGame);
-    }
-
     public void defaultStart(Game thisGame) throws InterruptedException {
         //while (setNumberOfPlayers()) {}
         GM.initializeAsNormal(playerCount, thisGame);
         GameManager.fileObjKeyName = thisGame.gameID;
     }
-
-    public boolean queryGameChecker(ArrayList<String> games)
-    {
-        String name;
-        if (games.size() == 0){
-            System.out.println("No previous games are found. Hence, none can be loaded!");
-            System.out.println("Starting default start! Setting up a new game. \n");
-            return false;
-        } else {
-            do {
-                name = queryGame(games);
-            } while(name == null);
-
-            if(name.toLowerCase().equals("cancel")) return false;
-        }
-        // set Object for AWS S3
-        GameManager.fileObjKeyName = name;
-        return true;
-    }
-
-    public String queryGame(ArrayList<String> games)
-    {
-        System.out.println("Loadable games: ");
-        for(String i: games) System.out.println(i);
-        System.out.println("CANCEL\n");
-
-        String select = scanner.nextLine();
-        if(select.toLowerCase().equals("cancel")) return select;
-        else if(games.contains(select.toLowerCase())) {
-            return select;
-        } else{
-            System.out.println("Error: Cannot find game " + select);
-            return null;
-        }
-    }
-
 }
 

@@ -1,26 +1,6 @@
 import java.util.*;
 
 /*///////////////////////////////////////////////////////////////////////////////
-Card Class
- *//////////////////////////////////////////////////////////////////////////////
-class Card {
-    private String origin;
-    private String unit;
-
-    Card(String o, String u)
-    {
-        this.origin = o;
-        this.unit = u;
-    }
-    public String getOrigin(){
-        return origin;
-    }
-    public String getUnit(){
-        return unit;
-    }
-}
-
-/*///////////////////////////////////////////////////////////////////////////////
 Deck Class
  *//////////////////////////////////////////////////////////////////////////////
 public class Deck {
@@ -88,5 +68,9 @@ public class Deck {
         Collections.shuffle(GameDeck);
     }
 
-    Deck(Stack<Card> stack) {GameDeck = stack;}
+    // using for reseting the deck when reloading
+    Deck(Stack<Card> stack) {
+        GameDeck = stack;
+        Collections.shuffle(GameDeck);   // Just in case
+    }
 }

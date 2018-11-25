@@ -49,8 +49,6 @@ public class Player implements Observer {
         Hand.put("CAVALRY", new Stack<Card>());
         Hand.put("ARTILLERY", new Stack<Card>());
         Hand.put("WILD", new Stack<Card>());
-
-
         this.username = username;
         this.chat_id = chat_id; // send messages to this chat_id.
         this.state = PlayerState.QUEUE;
@@ -60,6 +58,7 @@ public class Player implements Observer {
         this.territories = territories;
     }
 
+    // reset the hand when reloading game
     public void setCardStack(ArrayList<Card> cardStack) {
         for(Card e: cardStack)
         {

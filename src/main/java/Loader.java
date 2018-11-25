@@ -1,12 +1,3 @@
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CreateBucketRequest;
-import com.amazonaws.services.s3.model.GetBucketLocationRequest;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -16,26 +7,33 @@ import java.util.*;
 
 
 /*////////////////////////////////////////////////////////////////////////////////
-Loader class takes car of remote turns, makes use of JSONHandler to get results
+Loader class takes care of remote turns, makes use of JSONHandler to get results
+reinstantiates loaded game
 *///////////////////////////////////////////////////////////////////////////////*/
 public class Loader {
 
-    public JsonObject LoadGame(int turnNumber, BoardManager bm, String base) throws IOException {
+    Game game;
 
-        Player[] emptyPlayer = null;
-        int[] emptyTurnPattern = null;
-
-        JSONhandler JH = new JSONhandler(bm, emptyPlayer, emptyTurnPattern, base);
-        JsonObject turn = JH.getTurnJSON(turnNumber);
-        return turn;
+    // New loader creates new game to later be fully instantiated using saved variables loaded from S3
+    Loader(String ID) {
+        this.game = new Game();
+        game.setGameID(ID);
     }
 
-    public static int getNumPlayers(JsonObject turn) {
-        JsonArray players = (JsonArray) turn.get("Players");
-        return players.size();
+    public Game LoadGame() throws IOException {
+        JSONhandler JH = new JSONhandler(game);
+        JsonObject gameJson = JH.JSONreader();
+        setGame(gameJson);
+        setDeck(gameJson);
+        setPlayers(gameJson);
+        return game;
     }
 
-    public Stack<Card> setDeck(JsonObject turn)
+    public void setGame(JsonObject gameJson) {
+        game.setTurn(gameJson.get("Turn").getAsInt());
+    }
+
+    public void setDeck(JsonObject turn)
     {
 
         Stack<Card> GameDeck = new Stack<Card>();
@@ -50,25 +48,30 @@ public class Loader {
             String army = String.valueOf(tempCard.get(territory));
             GameDeck.push(new Card(territory, army));
         }
-        return GameDeck;
+        game.resetDeck(GameDeck);
     }
 
-    public Player[] setPlayers(BoardManager bm, int numPlayers, JsonObject turn) {
+    public void setPlayers(JsonObject gameJson) {
+        JsonArray players = (JsonArray) gameJson.get("Players");
 
-        Player[] playerList = new Player[numPlayers];
-
-        JsonArray players = (JsonArray) turn.get("Players");
         Iterator<JsonElement> itr = players.iterator();
-        int i = 0;
-
         while (itr.hasNext()) {
+            JsonObject playerJSON = (JsonObject) itr.next();
 
-            JsonObject jsonObject = (JsonObject) itr.next();
+            //Get variables saved in the JSON
+            int playerID = playerJSON.get("PlayerID").getAsInt();
+            String playerName = playerJSON.get("PlayerName").getAsString();
+            long chat_id = playerJSON.get("ChatID").getAsLong();
+            double wallet = playerJSON.get("PlayerWallet").getAsDouble();
+            int undos = playerJSON.get("Undos").getAsInt();
 
-            int playerID = jsonObject.get("Player").getAsInt();
-            Player tempPlayer = new Player(playerID, 0);
-            //While loop to add territories to player from JSON
-            JsonArray territories = (JsonArray) jsonObject.get("Territories");
+            //re-instantiate the players from the loaded variables
+            Player tempPlayer = new Player(playerID, playerName, chat_id, 0);
+            tempPlayer.addMoney(wallet);
+            tempPlayer.addUndos(undos);
+
+            //While loop to add territories/ armies to player from JSON
+            JsonArray territories = (JsonArray)playerJSON.get("Territories");
             Iterator<JsonElement> teris = territories.iterator();
             while (teris.hasNext()) {
                 JsonObject tempTerriory = (JsonObject) teris.next();
@@ -76,12 +79,13 @@ public class Loader {
                 int territoryArmy = tempTerriory.get(territoryName).getAsInt();
 
                 tempPlayer.addTerritories(territoryName);
-                bm.addOccupantsTo(territoryName, territoryArmy);
+                game.BM.addOccupantsTo(territoryName, territoryArmy);
             }
+
             // While loop to add cards to hand from JSON
-            JsonArray hand = (JsonArray) jsonObject.get("Hand");
+            JsonArray hand = (JsonArray) playerJSON.get("Hand");
             Iterator<JsonElement> cads = hand.iterator();
-            while (teris.hasNext())
+            while (cads.hasNext())
             {
                 JsonObject tempCard = (JsonObject) cads.next();
                 String territory = String.valueOf(tempCard.keySet());
@@ -89,24 +93,10 @@ public class Loader {
                 Card nextCard = new Card(territory, army);
                 tempPlayer.getHand().get(nextCard.getUnit()).push(nextCard);
             }
-            playerList[i] = tempPlayer;
+
+            // put the tempPlayer into the games player directory
+            game.playerDirectory.put(game.playerDirectory.size(), tempPlayer);
+            _GameMaster.allPlayersAndTheirGames.put(playerID, game.gameID);
         }
-
-        return playerList;
     }
-
-    // list available game objects;
-    public ArrayList<String> listObjects(String bucket){
-        ArrayList<String> k = new ArrayList<>();
-        final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion("us-east-1")
-                .withCredentials(new ProfileCredentialsProvider())
-                .build();
-        ListObjectsV2Result result = s3.listObjectsV2(bucket);
-        List<S3ObjectSummary> objects = result.getObjectSummaries();
-        for (S3ObjectSummary os: objects) {
-            k.add(os.getKey());
-        }
-        return k;
-    }
-
 }

@@ -122,10 +122,10 @@ public class Responses {
     }
 
 
-
     public static String onCreate(int user_id, String gameID, String username, long chat_id){
-
-            _GameMaster.gamesListing.put(gameID, new Game(gameID));
+            Game game = new Game();// create new game
+            game.setGameID(gameID);// give it the ID
+            _GameMaster.gamesListing.put(gameID, game);
             _GameMaster.gamesListing.get(gameID).addUser(user_id, username, chat_id);
 
             _GameMaster.allPlayersAndTheirGames.put(user_id, gameID);

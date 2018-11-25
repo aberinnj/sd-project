@@ -11,7 +11,6 @@ public class Turn {
     BoardManager BM;
     Player player;
     int turnId;
-    Messenger messenger;
     GameManager GM;
 
     // Turn stores all game-board details and events from a specific turn
@@ -21,62 +20,6 @@ public class Turn {
         this.player = p;
         this.turnId = id;
         this.previousTerritories.addAll(p.getTerritories());
-    }
-
-    // Run each function
-    public void turnFunction(GameManager GM, Messenger messenger, Game thisGame) throws InterruptedException {
-        this.messenger = messenger;
-        this.GM = GM;
-        //placeNewArmies(thisGame);
-        //attack(thisGame);
-        //fortifyTerritories(thisGame);
-        //earnCards();
-        //addCredit();
-        //purchaseUndo();
-        //purchaseCard();
-    }
-
-    // Purchase Credit
-    public void addCredit() throws InterruptedException {
-        if (GM.baseQuery("Would you like to purchase credit?")) {
-            //System.out.println("How much credit would you like to purchase?");
-            //player.addMoney(Double.parseDouble(scanner.nextLine()));
-            messenger.putMessage("How much credit would you like to purchase?");
-            player.addMoney(Double.parseDouble(messenger.getMessage()));
-        }
-    }
-
-
-    // use credit to buy cards or undo opportunities
-    public void purchaseUndo() throws InterruptedException {
-        if (GM.baseQuery("Would you like to purchase Undo?")) {
-            Double cash = player.getWallet();
-            // System.out.println("Undos cost 1000 each, you have " + cash + ", how many would you like to purchase?");
-            messenger.putMessage("Undos cost 1000 each, you have " + cash + ", how many would you like to purchase?");
-            int undos = Integer.parseInt(messenger.getMessage());
-            if (undos * 1000 < cash) {
-                player.addUndos(undos);
-                player.addMoney( undos * 1000 * -1);
-            }
-        }
-    }
-
-    // use credit to buy cards or undo opportunities
-    public void purchaseCard() throws InterruptedException {
-        if (GM.baseQuery("Would you like to purchase more Cards?")) {
-            Double cash = player.getWallet();
-            //System.out.println("Cards cost 100 each, you have " + cash + ", how many would you like to purchase?");
-            //int cards = Integer.parseInt(scanner.nextLine());
-            messenger.putMessage("Cards cost 100 each, you have " + cash + ", how many would you like to purchase?");
-            Double cards = Double.valueOf(messenger.getMessage());
-            if (cards * 100 < cash) {
-                for (int i = 0; i < cards; i++) {
-                    Card c = BM.getGameDeck().draw();
-                    if(c != null) player.getHand().get(c.getUnit()).push(c);
-                }
-                player.addMoney( cards * 100 * -1);
-            }
-        }
     }
 
     // Passes if a new territory is added to player's territories

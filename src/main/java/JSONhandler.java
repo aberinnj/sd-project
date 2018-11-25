@@ -1,13 +1,6 @@
 import java.io.*;
 import java.util.*;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import com.google.gson.stream.JsonWriter;
@@ -15,130 +8,86 @@ import com.google.gson.stream.JsonWriter;
 public class JSONhandler {
 
     Gson gson;
-    ArrayList<String> linststring;
     BoardManager bm = null;
-    Player[] playerList = null;
     Writer file;
     JsonWriter jw;
-    int[] playerTurnPattern;
-    private String fileName;
+    Game game;
+    String fileName;
+    String base;
 
-
-    JSONhandler(BoardManager bm, Player[] playerList, int[] playerTurnPattern, String base) throws IOException {
-        this.bm = bm;
-        this.playerList = playerList;
-        this.playerTurnPattern = playerTurnPattern;
+    JSONhandler(Game game) throws IOException {
+        this.bm = game.BM;
+        this.game = game;
+        this.base = System.getProperty("user.dir");
         this.fileName = base + "/src/files//Risk.json";
         this.file = new FileWriter(fileName, false);
         this.jw = new JsonWriter(file);
         this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
-    public void write(Turns turns) throws IOException {
+    public void write(JsonObject newTurnJSON) throws IOException {
         Writer writer = new FileWriter(fileName);
-        gson.toJson(turns, Turns.class, writer);
+        gson.toJson(newTurnJSON, writer);
         writer.flush();
         writer.close();
     }
 
-    public JsonArray JSONreader() throws FileNotFoundException {
+    public JsonObject JSONreader() throws FileNotFoundException {
         JsonParser parser = new JsonParser();
         JsonElement obj = parser.parse(new FileReader(fileName));
         JsonObject jsonObject = obj.getAsJsonObject();
-
-        JsonArray msg = jsonObject.getAsJsonArray("turns");
-
-        return msg;
+        return jsonObject;
     }
 
-    public void JSONwriter(int turnNumber) throws IOException {
-
-        JSONturn newTurn = new JSONturn(bm, playerList, turnNumber, playerTurnPattern);
+    public void JSONwriter() throws IOException {
+        JSONturn newTurn = new JSONturn(game);
         JsonObject newTurnJSON = newTurn.createTurnJSON();
-        JsonArray msg = JSONreader();
-
-        Turns turns = new Turns();
-        Iterator< JsonElement > itr = msg.iterator();
-        while (itr.hasNext()) {
-            JsonObject jsonObject = (JsonObject) itr.next();
-            turns.addTurn(jsonObject);
-        }
-
-        turns.addTurn(newTurnJSON);
-        write(turns);
+        write(newTurnJSON);
     }
-
-    public void JSONinitializer(int turnNumber) throws IOException {
-        JSONturn newTurn = new JSONturn(bm, playerList, turnNumber, playerTurnPattern);
-        JsonObject newTurnJSON = newTurn.createTurnJSON();
-        Turns Turns = new Turns();
-        Turns.addTurn(newTurnJSON);
-        write(Turns);
-    }
-
-    public JsonObject getTurnJSON(int turnNumber) throws FileNotFoundException {
-        JsonArray msg = JSONreader();
-        Iterator< JsonElement > itr = msg.iterator();
-        while (itr.hasNext()) {
-            JsonObject jsonObject = (JsonObject) itr.next();
-            Object Obj = jsonObject.get("Turn");
-            if (((JsonElement) Obj).getAsInt() == turnNumber) {
-                return jsonObject;
-            }
-        }
-        System.out.println("Turn not found");
-        return null; //it wasn't found at all
-    }
-
 }
 
 class JSONturn {
 
     @Expose
-    BoardManager bm = null;
-    Player[] playerList = null;
-    int turnNumber;
-    int[] playerTurnPattern;
+    Game game;
 
-    JSONturn(BoardManager bm, Player[] playerList, int turnNumber, int[] playerTurnPattern) {
-        this.bm = bm;
-        this.playerList = playerList;
-        this.turnNumber = turnNumber;
-        this.playerTurnPattern = playerTurnPattern;
+    JSONturn(Game game) {
+        this.game = game;
     }
 
     public JsonObject createTurnJSON() {
         JsonObject turnJSON = new JsonObject();
-
-        turnJSON.addProperty("Turn", turnNumber);
+        turnJSON.addProperty("gameID", game.gameID); // save gameID as gameID
+        turnJSON.addProperty("Turn", game.turn);//dido for turn number
         JsonArray deck = createDeck();
-        turnJSON.add("Deck", (JsonElement) deck);
-        JsonArray players = new JsonArray();
-
+        turnJSON.add("Deck", deck); // save Deck
         JsonArray Players = new JsonArray();
-        for (int jsonPlayer: playerTurnPattern) {
+        for (int i = 0; i < game.playerDirectory.size(); i++) { // save players
 
-            JsonObject tempPlayer = new JsonObject();
+            JsonObject tempPlayerJSON = new JsonObject();
 
-            Player player = playerList[jsonPlayer];
+            Player tempPlayer = game.playerDirectory.get(i);
+            tempPlayerJSON.addProperty("PlayerID", tempPlayer.getId());
+            tempPlayerJSON.addProperty("PlayerName", tempPlayer.username);
+            tempPlayerJSON.addProperty("ChatID", tempPlayer.chat_id);
+            tempPlayerJSON.addProperty("PlayerWallet", tempPlayer.getWallet());
+            tempPlayerJSON.addProperty("Undos",tempPlayer.getUndos());
 
-            tempPlayer.addProperty("Player", jsonPlayer);
+            JsonArray hand = createPlayerHand(tempPlayer);
+            tempPlayerJSON.add("Hand", hand);
 
-            JsonArray hand = createPlayerHand(player);
-            tempPlayer.add("Hand", hand);
+            JsonArray territories = createPlayerTerritories(tempPlayer);
+            tempPlayerJSON.add("Territories", territories);
 
-            JsonArray territories = createPlayerTerritories(player);
-            tempPlayer.add("Territories", territories);
-
-            Players.add(tempPlayer);
+            Players.add(tempPlayerJSON);
         }
 
-        turnJSON.add("Players", (JsonElement) Players);
+        turnJSON.add("Players", Players);
         return turnJSON;
     }
 
     public JsonArray createDeck() {
-        ArrayList<Card> deck = new ArrayList<Card>(){{addAll(bm.getGameDeck().GameDeck);}};
+        ArrayList<Card> deck = new ArrayList<Card>(){{addAll(game.BM.getGameDeck().GameDeck);}};
         //JsonObject cards = new JsonObject();
         JsonArray cards = new JsonArray();
         for (Card card: deck) {
@@ -167,24 +116,11 @@ class JSONturn {
         JsonArray ter = new JsonArray();
         for (String terr: t) {
             JsonObject temp = new JsonObject();
-            int a = bm.getOccupantCount(terr);
+            int a = game.BM.getOccupantCount(terr);
             temp.addProperty(terr, a);
             ter.add(temp);
         }
         return ter;
     }
 
-}
-
-class Turns {
-    @Expose
-    List<JsonObject> turns = new ArrayList<JsonObject>();
-
-    public List<JsonObject> getTurns() {
-        return turns;
-    }
-
-    public void addTurn(JsonObject turn) {
-        this.turns.add(turn);
-    }
 }
