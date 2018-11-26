@@ -93,8 +93,11 @@ class Game extends Observable {
         List<Player> valueList = new ArrayList<Player>(playerDirectory.values());
         Collections.shuffle(valueList);
         Iterator<Player> valueIt = valueList.iterator();
+        messenger.putMessage("Turn-Order:");
         for(Map.Entry<Integer,Player> e : playerDirectory.entrySet()) {
-            e.setValue(valueIt.next());
+            Player thisPlayer = valueIt.next();
+            messenger.putMessage("@"+thisPlayer.username);
+            e.setValue(thisPlayer);
         }
     }
 

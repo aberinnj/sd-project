@@ -123,7 +123,6 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                 case "/debugAfterClaim": {
                     int user_id = update.getMessage().getFrom().getId();
-                    String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
 
                     Game game = getGame(update);
 
@@ -268,7 +267,6 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                     String tempTerritory = String.join(" ", in.getArgs());
 
-                    System.out.println(tempTerritory);
                     game.BM.initializeTerritory(player, tempTerritory, 1);
 
                     message.setText(player.username + " chose " + tempTerritory + "\n");
@@ -278,7 +276,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                     {
 
                     }
-                    String out = "It is now player " + game.turn % game.playerDirectory.size() + " turn\n";
+                    String out = "It is now player @" + game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size())).username + " turn\n";
                     out += "The following territories are still available\n";
                     List<String> territories = _GameMaster.gamesListing.get(gameID).BM.getFreeTerritories();
                     for(String territory: territories) {
@@ -548,6 +546,11 @@ class CommandsHandler extends TelegramLongPollingBot{
                         res += fromMessenger;
                     }
 
+                    ArrayList<Integer> tempListing = new ArrayList<>();
+                    tempListing.addAll(_GameMaster.gamesListing.get(context).playerDirectory.keySet());
+                    Game game = _GameMaster.gamesListing.get(context);
+                    res += "\nIt is now player @" +
+                            game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size())).username + "'s turn";
                     res += "\nEnter /pick <country> to select and capture your initial territories. ";
 
                     for (Long dest : chat_reply_list) {
