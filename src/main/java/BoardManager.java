@@ -77,7 +77,6 @@ public class BoardManager {
         continentsMap.put("AUSTRALIA", new Continent(new String[]{"WESTERN AUSTRALIA", "INDONESIA", "EASTERN AUSTRALIA", "NEW GUINEA"}));
 
         gameDeck = new Deck();
-
         completeSets = 0;
     }
 

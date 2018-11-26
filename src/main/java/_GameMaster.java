@@ -1,5 +1,6 @@
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.Observer;
 
@@ -111,6 +112,26 @@ class CommandsHandler extends TelegramLongPollingBot{
                 }
                 case "/listAllGames": {
                     message.setText(Responses.onListAllGames());
+                    break;
+                }
+
+                case "/debugAfterClaim": {
+                    int user_id = update.getMessage().getFrom().getId();
+                    String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
+
+                    Game game = getGame(update);
+
+                    String msg = "";
+                    ArrayList<Integer> tempListing = new ArrayList<>();
+                    tempListing.addAll(game.playerDirectory.keySet());
+                    for(String terr: game.BM.getFreeTerritories())
+                    {
+                        Player player = game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size()));
+                        game.BM.initializeTerritory(player, terr, 1);
+                        msg += (player.username + " chose " + terr + "\n");
+                        game.turn += 1;
+                    }
+                    message.setText(msg);
                     break;
                 }
 
@@ -237,8 +258,11 @@ class CommandsHandler extends TelegramLongPollingBot{
                     String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
 
                     Game game = getGame(update);
-                    int turn = game.turn % game.playerDirectory.size();
-                    Player player = game.playerDirectory.get(turn);
+
+                    ArrayList<Integer> tempListing = new ArrayList<>();
+                    tempListing.addAll(game.playerDirectory.keySet());
+
+                    Player player = game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size()));
 
                     String tempTerritory = String.join(" ", in.getArgs());
 

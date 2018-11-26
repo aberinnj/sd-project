@@ -98,31 +98,6 @@ public class Responses {
         }
     }
 
-    public static List<String> onPick(String gameID, ChatInput in) {
-        if (_GameMaster.gamesListing.get(gameID).state == GameState.QUEUE || _GameMaster.gamesListing.get(gameID).state == GameState.INIT) {
-            // return "The game has not yet started.";
-            return null;
-
-        } else {
-            for (int i = 0; i < in.getArgs().size(); i++) {
-                _GameMaster.gamesListing.get(gameID).messenger.putMessage(in.getArgs().get(i));
-            }
-
-            // SWITCH CASE HERE for STATES, depending on what is needed. CLAIM for CLAIMING territories
-            // add more if necessary
-            switch (_GameMaster.gamesListing.get(gameID).state) {
-                case CLAIM: {
-                    //_GameMaster.gamesListing.get(gameID).game.GM.claimTerritories(_GameMaster.gamesListing.get(gameID));
-                    List<String> vacantTerritories = _GameMaster.gamesListing.get(gameID).BM.getFreeTerritories();
-                    return vacantTerritories;
-                    //break;
-                }
-            }
-        }
-        return null;
-    }
-
-
     public static String onCreate(int user_id, String gameID, String username, long chat_id){
             Game game = new Game();// create new game
             game.setGameID(gameID);// give it the ID
