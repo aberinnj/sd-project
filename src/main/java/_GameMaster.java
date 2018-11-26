@@ -266,12 +266,12 @@ class CommandsHandler extends TelegramLongPollingBot{
                     Player player = getPlayer(game);
 
                     String tempTerritory = String.join(" ", in.getArgs());
-
                     game.BM.initializeTerritory(player, tempTerritory, 1);
 
                     message.setText(player.username + " chose " + tempTerritory + "\n");
                     game.turn += 1;
 
+<<<<<<< HEAD
                     if(game.BM.getFreeTerritories().size() == 0)
                     {
                         message.setText("Pick no more territories, there are none, begin reinforcement");
@@ -282,6 +282,13 @@ class CommandsHandler extends TelegramLongPollingBot{
                     player = getPlayer(game);
 
                     String out = "It is now player @" + player.username + " turn\n";
+=======
+
+                    ArrayList<Integer> tempListing = new ArrayList<>();
+                    tempListing.addAll(game.playerDirectory.keySet());
+                    
+                    String out = "It is now player @" + game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size())).username + " turn\n";
+>>>>>>> dc123f3b765dbd11509b953f0ed82538c0676ec0
                     out += "The following territories are still available\n";
                     List<String> territories = _GameMaster.gamesListing.get(gameID).BM.getFreeTerritories();
                     for(String territory: territories) {
