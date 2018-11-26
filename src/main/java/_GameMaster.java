@@ -93,6 +93,12 @@ class CommandsHandler extends TelegramLongPollingBot{
         return game;
     }
 
+    public Player getPlayer(Game game) {
+        ArrayList<Integer> tempListing = new ArrayList<>();
+        tempListing.addAll(game.playerDirectory.keySet());
+        return game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size()));
+    }
+
     @Override
     public void onUpdateReceived (Update update){
 
@@ -258,11 +264,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                     String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
 
                     Game game = getGame(update);
-
-                    ArrayList<Integer> tempListing = new ArrayList<>();
-                    tempListing.addAll(game.playerDirectory.keySet());
-
-                    Player player = game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size()));
+                    Player player = getPlayer(game);
 
                     String tempTerritory = String.join(" ", in.getArgs());
 
@@ -288,10 +290,14 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                 case "/reinforce": {
                     Game game = getGame(update);
-                    int turn = game.turn % game.playerDirectory.size();
-                    Player player = game.playerDirectory.get(turn);
-                    game.BM.strengthenTerritory(player, in.getArgs().get(0), 1);
+                    Player player = getPlayer(game);
+
+                    String tempTerritory = String.join(" ", in.getArgs());
+                    game.BM.strengthenTerritory(player, tempTerritory, 1);
+                    String out = player.username + " you have " + player.getNumberOfArmies() + "left\n";
                     game.turn += 1;
+                    out += "It is now player " + game.turn % game.playerDirectory.size() + " turn";
+                    message.setText(out);
                     break;
                 }
 
@@ -327,7 +333,6 @@ class CommandsHandler extends TelegramLongPollingBot{
                     int defenseDie = Integer.parseInt(in.getArgs().get(3));
                     Game game = getGame(update);
                     Turn turn = game.currentTurn;
-                    Player player = turn.player;
                     message.setText(turn.battle(attacker, defender, attackDie, defenseDie));
                     break;
                 }
@@ -353,7 +358,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                 }
 
                 // format -> /buyshit (# undos to buy) (# cards to buy)
-                case "/buyshit": {
+                case "/buystuff": {
                     Game game = getGame(update);
                     int turnNo = game.turn % game.playerDirectory.size();
                     Player player = game.playerDirectory.get(turnNo);
@@ -405,7 +410,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                 case "/beginTurn": {
                     Game game = getGame(update);
                     int turnNo = game.turn % game.playerDirectory.size();
-                    Player player = game.playerDirectory.get(turnNo);
+                    Player player = getPlayer(game);
                     message.setText("Player " +player.getUsername()+ " may /reinforce then /attack then /fortify then /buycredit then /buyshit only in that order or / then type /endturn to move to next player, ending your turn\n");
                     Turn turn = new Turn(game.BM, player, game.turn);
                     game.setCurrentTurn(turn);
