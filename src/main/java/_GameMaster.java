@@ -266,16 +266,15 @@ class CommandsHandler extends TelegramLongPollingBot{
                     Player player = getPlayer(game);
 
                     String tempTerritory = String.join(" ", in.getArgs());
-
                     game.BM.initializeTerritory(player, tempTerritory, 1);
 
                     message.setText(player.username + " chose " + tempTerritory + "\n");
                     game.turn += 1;
 
-                    if(game.BM.getFreeTerritories().size() == 0)
-                    {
 
-                    }
+                    ArrayList<Integer> tempListing = new ArrayList<>();
+                    tempListing.addAll(game.playerDirectory.keySet());
+                    
                     String out = "It is now player @" + game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size())).username + " turn\n";
                     out += "The following territories are still available\n";
                     List<String> territories = _GameMaster.gamesListing.get(gameID).BM.getFreeTerritories();
