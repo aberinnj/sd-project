@@ -14,45 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import twitter4j.TwitterException;
 
-import static java.lang.Math.toIntExact;
-
-
-
-/*////////////////////////////////////////////////////////////////////////////////
-High-level way of managing user reply below in onUpdateReceived
-Used to check if input is what was expected
-More descriptive than GameState
-todo: expected context is a todo
-*///////////////////////////////////////////////////////////////////////////////*/
-enum Context {
-
-};
-
-class ExpectedContext {
-    Integer expectedReplier;
-    String actualReply;
-
-    ExpectedContext(){
-        expectedReplier = 0;
-        actualReply = "";
-    }
-
-    void setExpectedReplier(Integer id)
-    {
-        expectedReplier = id;
-    }
-    void setActualReply(String msg){
-        actualReply = msg;
-    }
-    String getActualReply(){
-        return actualReply;
-    }
-
-    Integer getExpectedReplier(){
-        return expectedReplier;
-    }
-}
-
 /*////////////////////////////////////////////////////////////////////////////////
 Provides window and clean space for calling necessary functions
 *///////////////////////////////////////////////////////////////////////////////*/
@@ -279,12 +240,18 @@ class CommandsHandler extends TelegramLongPollingBot{
                     int turn = game.turn % game.playerDirectory.size();
                     Player player = game.playerDirectory.get(turn);
 
-                    String tempTerritory = in.getArgs().get(0);
-                    game.BM.initializeTerritory(player, tempTerritory, 0 );
+                    String tempTerritory = String.join(" ", in.getArgs());
+
+                    System.out.println(tempTerritory);
+                    game.BM.initializeTerritory(player, tempTerritory, 1);
 
                     message.setText(player.username + " chose " + tempTerritory + "\n");
                     game.turn += 1;
 
+                    if(game.BM.getFreeTerritories().size() == 0)
+                    {
+
+                    }
                     String out = "It is now player " + game.turn % game.playerDirectory.size() + " turn\n";
                     out += "The following territories are still available\n";
                     List<String> territories = _GameMaster.gamesListing.get(gameID).BM.getFreeTerritories();

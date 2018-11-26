@@ -30,7 +30,6 @@ class Game extends Observable {
     String gameID;
     GameState state;
     Messenger messenger;
-    ExpectedContext EC;
     Turn currentTurn;
     Deck deck;
 
@@ -45,7 +44,6 @@ class Game extends Observable {
         turnPattern = new ArrayList<>();
         turn = 0;
         state = GameState.QUEUE;
-        EC = new ExpectedContext();
         deck = new Deck();
     }
 
