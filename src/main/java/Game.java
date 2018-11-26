@@ -21,7 +21,6 @@ todo: check if static is causing problems
 class Game extends Observable {
     _GameStarter game;
     HashMap<Integer, Player> playerDirectory;
-    GameManager GM;
     BoardManager BM;
     ArrayList<Integer> users;
     //ArrayList<Integer> turnPattern;
@@ -38,7 +37,6 @@ class Game extends Observable {
         messenger = new Messenger();
         game = new _GameStarter();
         playerDirectory = new HashMap<>();
-        GM = new GameManager();
         BM = new BoardManager();
         users = new ArrayList<>();
         turnPattern = new ArrayList<>();

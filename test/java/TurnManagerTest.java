@@ -74,9 +74,9 @@ public class TurnManagerTest extends TestCase {
         Turn t1 = new Turn(BM, p1, 0);
         Turn t2 = new Turn(BM, p2, 1);
         Turn t3 = new Turn(BM, p3, 2);
-        TM.save(t1);
-        TM.save(t2);
-        TM.save(t3);
+        //TM.save(t1);
+        //TM.save(t2);
+        //TM.save(t3);
 
         /*///////////////////////////////////////////////////////////////////////////////
         Initial
@@ -108,8 +108,8 @@ public class TurnManagerTest extends TestCase {
         p3.loseTerritories("YAKUTSK");
         p2.getHand().get(a.getUnit()).push(b);
         Turn t5 = new Turn(BM, p2, 5);
-        TM.save(t4);
-        TM.save(t5);
+        //TM.save(t4);
+        //TM.save(t5);
         /*///////////////////////////////////////////////////////////////////////////////
         Changes made. Assume a player's turn changes the data, like above. Test if
         t1/t2/t3 stays the same by doing the same test as above

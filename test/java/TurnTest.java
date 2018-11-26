@@ -12,18 +12,6 @@ todo: clean placeNewArmies test below, read comments included.
  *//////////////////////////////////////////////////////////////////////////////
 public class TurnTest extends TestCase {
 
-    // expects turn to only serve as proxy and, as a reference
-    @Test
-    public void testTurnInit(){
-        GameManager GM = new GameManager();
-        GM.initializeAsNormal(3);
-
-        Turn k = new Turn(GM.getBM(), GM.getPlayer(2), 12);
-        assertEquals(35, k.player.getNumberOfArmies());
-        GM.getPlayer(2).loseArmies(1);
-        assertEquals(34, k.player.getNumberOfArmies());
-        assertEquals(12, k.turnId);
-    }
 
     @Test
     public void testBasicQuery(){

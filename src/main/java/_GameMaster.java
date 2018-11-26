@@ -274,9 +274,14 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                     if(game.BM.getFreeTerritories().size() == 0)
                     {
-
+                        message.setText("Pick no more territories, there are none, begin reinforcement");
+                        break;
                     }
-                    String out = "It is now player @" + game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size())).username + " turn\n";
+
+                    // get new player after turn increment
+                    player = getPlayer(game);
+
+                    String out = "It is now player @" + player.username + " turn\n";
                     out += "The following territories are still available\n";
                     List<String> territories = _GameMaster.gamesListing.get(gameID).BM.getFreeTerritories();
                     for(String territory: territories) {
@@ -403,6 +408,13 @@ class CommandsHandler extends TelegramLongPollingBot{
                     game.BM.fortifyTerritory(from,to,transfer);
                 }
 
+                // assumes it is your turn, checks your hand for three matching cards, pops them from your hand and gives you the armies
+                case "/tradecards": {
+                    Game game = getGame(update);
+                    Player player = getPlayer(game);
+                    Turn turn = game.currentTurn;
+
+                }
 
                 // message format -> /buycredit (credit amount)
                 case "/buycredit": {
@@ -437,6 +449,12 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                 case "/endturn": {
                     Game game = getGame(update);
+                    Turn turn = game.currentTurn;
+                    try {
+                        turn.earnCards();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
                     // Write game to save game file
                     try {
@@ -466,7 +484,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                     Game game = getGame(update);
                     int turnNo = game.turn % game.playerDirectory.size();
                     Player player = getPlayer(game);
-                    message.setText("Player " +player.getUsername()+ " may /reinforce then /attack then /fortify then /buycredit then /buyshit only in that order or / then type /endturn to move to next player, ending your turn\n");
+                    message.setText("Player " +player.getUsername()+ " may /tradecards /reinforce then /attack then /fortify then /buycredit then /buyshit only in that order or / then type /endturn to move to next player, ending your turn\n");
                     Turn turn = new Turn(game.BM, player, game.turn);
                     game.setCurrentTurn(turn);
                     try {
