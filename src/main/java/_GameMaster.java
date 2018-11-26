@@ -324,11 +324,40 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                 // message should be formatted /attack (attack territory) (defend territory) (Number of armies to attack with) (number of armies to defend with)
                 case "/attack": {
-                    String attacker = in.getArgs().get(0);
-                    String defender = in.getArgs().get(1);
-                    int attackDie = Integer.parseInt(in.getArgs().get(2));
-                    int defenseDie = Integer.parseInt(in.getArgs().get(3));
                     Game game = getGame(update);
+                    String attacker = null;
+                    String defender = null;
+                    int i = 0; // number to keep track of the size of the country inputs
+
+                    if (game.BM.boardMap.containsKey(in.getArgs().get(0))) {
+                        attacker = in.getArgs().get(0);
+                        i = 1;
+                    }
+                    else if (game.BM.boardMap.containsKey(in.getArgs().get(0) + " " + in.getArgs().get(1))) {
+                        attacker = in.getArgs().get(0) + " " + in.getArgs().get(1);
+                        i = 2;
+                    }
+                    else if (game.BM.boardMap.containsKey(in.getArgs().get(0) + " " + in.getArgs().get(1) + " " + in.getArgs().get(2))) {
+                        attacker = in.getArgs().get(0) + " " + in.getArgs().get(1) + " " + in.getArgs().get(2);
+                        i = 3;
+                    }
+
+                    if (game.BM.boardMap.containsKey(in.getArgs().get(i))) {
+                        defender = in.getArgs().get(i);
+                        i += 1;
+                    }
+                    else if (game.BM.boardMap.containsKey(in.getArgs().get(i) + " " + in.getArgs().get(i+1))) {
+                        defender = in.getArgs().get(i) + " " + in.getArgs().get(i+1);
+                        i += 2;
+                    }
+                    else if (game.BM.boardMap.containsKey(in.getArgs().get(i) + " " + in.getArgs().get(i+1) + " " + in.getArgs().get(i+2))) {
+                        defender = in.getArgs().get(i) + " " + in.getArgs().get(i+1) + " " + in.getArgs().get(i+2);
+                        i += 3;
+                    }
+
+                    int attackDie = Integer.parseInt(in.getArgs().get(i));
+                    int defenseDie = Integer.parseInt(in.getArgs().get(i+1));
+
                     Turn turn = game.currentTurn;
                     message.setText(turn.battle(attacker, defender, attackDie, defenseDie));
                     break;
@@ -337,12 +366,40 @@ class CommandsHandler extends TelegramLongPollingBot{
                 // message should be formatted /fortify (move from) (move to) (Num armies)
                 case "/fortify": {
                     Game game = getGame(update);
+                    String from = null;
+                    String to = null;
+                    int i = 0; // number to keep track of the size of the country inputs
+
+                    if (game.BM.boardMap.containsKey(in.getArgs().get(0))) {
+                        from = in.getArgs().get(0);
+                        i = 1;
+                    }
+                    else if (game.BM.boardMap.containsKey(in.getArgs().get(0) + " " + in.getArgs().get(1))) {
+                        from = in.getArgs().get(0) + " " + in.getArgs().get(1);
+                        i = 2;
+                    }
+                    else if (game.BM.boardMap.containsKey(in.getArgs().get(0) + " " + in.getArgs().get(1) + " " + in.getArgs().get(2))) {
+                        from = in.getArgs().get(0) + " " + in.getArgs().get(1) + " " + in.getArgs().get(2);
+                        i = 3;
+                    }
+
+                    if (game.BM.boardMap.containsKey(in.getArgs().get(i))) {
+                        to = in.getArgs().get(i);
+                        i += 1;
+                    }
+                    else if (game.BM.boardMap.containsKey(in.getArgs().get(i) + " " + in.getArgs().get(i+1))) {
+                        to = in.getArgs().get(i) + " " + in.getArgs().get(i+1);
+                        i += 2;
+                    }
+                    else if (game.BM.boardMap.containsKey(in.getArgs().get(i) + " " + in.getArgs().get(i+1) + " " + in.getArgs().get(i+2))) {
+                        to = in.getArgs().get(i) + " " + in.getArgs().get(i+1) + " " + in.getArgs().get(i+2);
+                        i += 3;
+                    }
+
                     int turnNo = game.turn % game.playerDirectory.size();
                     Player player = game.playerDirectory.get(turnNo);
-                    String origin = in.getArgs().get(0);
-                    String territory = in.getArgs().get(1);
-                    int transfer = Integer.parseInt(in.getArgs().get(2));
-                    game.BM.fortifyTerritory(origin,territory,transfer);
+                    int transfer = Integer.parseInt(in.getArgs().get(i));
+                    game.BM.fortifyTerritory(from,to,transfer);
                 }
 
 
