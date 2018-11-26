@@ -38,7 +38,7 @@ public class GameManager {
     // Sets up ALL Game Variables, which must be testable upon initialization
     GameManager() {
         BM = new BoardManager();
-        TM = new TurnManager();
+        //TM = new TurnManager();
 
         current_turn = 0;
     }
@@ -74,12 +74,7 @@ public class GameManager {
 
         this.messenger = messenger;
 
-        JSONhandler JH = new JSONhandler(BM, playerList, GM.playerTurnPattern, GM.base);
-        //  initialize(JH, ng, bm, MM, playerDirectory, numPlayers, -1);
-        JH.JSONinitializer(0);
-
-
-        TM.init(GM, playerList.length);
+        //TM.init(GM, playerList.length);
 
 
         while(!GM.isGameOver()){
@@ -88,17 +83,17 @@ public class GameManager {
                 //System.out.println("Player " + id + " turn: " + GM.current_turn);
                 messenger.putMessage("Player " + id + " turn: " + GM.current_turn);
                 if (GM.gameTimeout(30)!=null) {
-                    TM.save(makeTurn(GM, messenger, playerList[id], GM.current_turn, thisGame));
+                   // TM.save(makeTurn(GM, messenger, playerList[id], GM.current_turn, thisGame));
                 }
 
                 System.out.println("Player " + id + " turn: " + GM.current_turn);
 
                 GM.incrementTurn();
-                JH.JSONwriter(GM.current_turn);
+                //JH.JSONwriter(GM.current_turn);
 
-                if (GM.baseQuery("Would you like to save this game?")) {
-                    upload();
-                }
+                //if (GM.baseQuery("Would you like to save this game?")) {
+                //    upload();
+                //}
 
             }
         }
@@ -108,7 +103,7 @@ public class GameManager {
     public void initializeAsNormal(int playerCount, Game thisGame) throws InterruptedException {
         // playerList = setPlayerList(playerCount);
         setGame(thisGame);
-        setPlayerList(playerCount);
+        //setPlayerList(playerCount);
 
         System.out.println("Initialize as Normal");
 
@@ -128,31 +123,6 @@ public class GameManager {
             System.out.print(i + " ");
         }
         System.out.println();
-    }
-
-    // telegram style, gives each players the appropriate number of armies on init
-    public void setPlayerList(int size){
-        int default_infantry = 0;
-        switch(size){
-            case 2:
-                default_infantry=40;
-                break;
-            case 3:
-                default_infantry=35;
-                break;
-            case 4:
-                default_infantry=30;
-                break;
-            case 5:
-                default_infantry=25;
-                break;
-            case 6:
-                default_infantry=20;
-                break;
-        }
-        for(int a=0; a<size; a++){
-            playerList[a].addArmies(default_infantry);
-        }
     }
 
     // Get Highest Roll

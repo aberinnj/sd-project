@@ -68,13 +68,8 @@ class Fetcher implements Observer {
         }
         else if(thisGame.state == GameState.INIT)
         {
-            try{
-                System.out.print("Initializing... ");
-                thisGame.game.initGame(thisGame);
-            }
-            catch(IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
+            System.out.print("Initializing... ");
+            thisGame.start();
         }
         else if(thisGame.state == GameState.CLAIM)
         {
@@ -185,6 +180,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                         e.printStackTrace();
                     }
                     message.setText("your game has been saved");
+                    break;
                 }
 
                 case "/undo": {
@@ -201,6 +197,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    break;
                 }
 
                 // format -> /loadGame (gameID)
@@ -219,6 +216,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    break;
                 }
 
                 case "/debugMyID": {
@@ -229,10 +227,11 @@ class CommandsHandler extends TelegramLongPollingBot{
                     break;
                 }
                 case "/join": {
-                    if(_GameMaster.allPlayersAndTheirGames.containsKey(update.getMessage().getFrom().getId())){
-                        message.setText("@"+update.getMessage().getFrom().getUserName() + " sorry! you are already playing a game.");
-                    } else
-                        message.setText(Responses.onJoin(in, update.getMessage().getFrom().getId(), update.getMessage().getFrom().getUserName(), update.getMessage().getChatId()));
+                    //if(_GameMaster.allPlayersAndTheirGames.containsKey(update.getMessage().getFrom().getId())){
+                    //    message.setText("@"+update.getMessage().getFrom().getUserName() + " sorry! you are already playing a game.");
+                    //}
+                    //else
+                    message.setText(Responses.onJoin(in, update.getMessage().getFrom().getId(), update.getMessage().getFrom().getUserName(), update.getMessage().getChatId()));
                     break;
                 }
 
@@ -275,70 +274,35 @@ class CommandsHandler extends TelegramLongPollingBot{
                 case "/pick": {
                     int user_id = update.getMessage().getFrom().getId();
                     String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
-                    //message.setText(Responses.onPick(user_id, in));
 
-                    List<String> territories = null;
-                    if(_GameMaster.allPlayersAndTheirGames.containsKey(user_id)) {
-                        territories = Responses.onPick(gameID, in);
-                        if(territories == null) {
-                            message.setText("You can't do that right now");
-                            break;
-                        }
-                        else {
-                            message.setText("Pick Your Territory");
-                            InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-                            List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-                            // add each territory available as a button
-                            for(String territory: territories) {
-                                List<InlineKeyboardButton> rowInline = new ArrayList<>();
-                                rowInline.add(new InlineKeyboardButton().setText(territory).setCallbackData("CLAIM " + territory));
-                                // Set the keyboard to the markup
-                                rowsInline.add(rowInline);
-                            }
-                            // Add it to the message
-                            markupInline.setKeyboard(rowsInline);
-                            message.setReplyMarkup(markupInline);
-                            // Is this right? trying to send to a specific user based on the player id that sent the initial message
-                            message.setReplyToMessageId(user_id);
-                            break;
-                        }
+                    Game game = getGame(update);
+                    int turn = game.turn % game.playerDirectory.size();
+                    Player player = game.playerDirectory.get(turn);
+
+                    String tempTerritory = in.getArgs().get(0);
+                    game.BM.initializeTerritory(player, tempTerritory, 0 );
+
+                    message.setText(player.username + " chose " + tempTerritory + "\n");
+                    game.turn += 1;
+
+                    String out = "It is now player " + game.turn % game.playerDirectory.size() + " turn\n";
+                    out += "The following territories are still available\n";
+                    List<String> territories = _GameMaster.gamesListing.get(gameID).BM.getFreeTerritories();
+                    for(String territory: territories) {
+                        out += (territory + "\n");
                     }
-
+                    message.setText(out);
                     break;
                 }
 
                 case "/reinforce": {
-                    int user_id = update.getMessage().getFrom().getId();
                     Game game = getGame(update);
-                    if (game.state == GameState.ARMIES) {
-                        int turn = game.turn % game.playerDirectory.size();
-                        Player player = game.playerDirectory.get(turn);
-                        int armies = player.getNumberOfArmies();
-                        message.setText("You have " + armies + " left. Please select a territory to reinforce.");
-                        List<String> territories = player.getTerritories();
-                        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-                        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-                        // add each territory available as a button
-                        for(String territory: territories) {
-                            List<InlineKeyboardButton> rowInline = new ArrayList<>();
-                            rowInline.add(new InlineKeyboardButton().setText(territory).setCallbackData("REINFORCE " + territory));
-                            // Set the keyboard to the markup
-                            rowsInline.add(rowInline);
-                        }
-                        // Add it to the message
-                        markupInline.setKeyboard(rowsInline);
-                        message.setReplyMarkup(markupInline);
-
-                        // Is this right? trying to send to a specific user based on the player id that sent the initial message
-                        message.setReplyToMessageId(user_id);
-                        break;
-                    }
-                    else {
-                        message.setText("IT IS NOT TIME!!!!");
-                        break;
-                    }
+                    int turn = game.turn % game.playerDirectory.size();
+                    Player player = game.playerDirectory.get(turn);
+                    game.BM.strengthenTerritory(player, in.getArgs().get(0), 1);
+                    game.turn += 1;
+                    break;
                 }
-
 
                 case "/listFreeTerritories": {
                     int user_id = update.getMessage().getFrom().getId();
@@ -488,12 +452,15 @@ class CommandsHandler extends TelegramLongPollingBot{
             // follow up messages
             if(in.args.size() > 0) {
                 // GAME START ANNOUNCEMENT -- GameState.START is when this /join triggered the game start, then take the gameID and broadcast to all chats
-                if (in.getCommand().equals("/join") && _GameMaster.gamesListing.containsKey(in.args.get(0)) && _GameMaster.gamesListing.get(in.args.get(0)).state == GameState.START) {
+                if (in.getCommand().equals("/join") && _GameMaster.gamesListing.containsKey(in.args.get(0)) && _GameMaster.gamesListing.get(in.args.get(0)).playerDirectory.size() == 2) {
 
                     String context = in.args.get(0);
 
                     ArrayList<Long> chat_reply_list = new ArrayList<>();
                     SendMessage announcement = new SendMessage();
+
+                    // add most sender of join command to the playerDirectory
+                    message.setText(Responses.onJoin(in, update.getMessage().getFrom().getId(), update.getMessage().getFrom().getUserName(), update.getMessage().getChatId()));
 
                     for (int user_id : _GameMaster.gamesListing.get(context).playerDirectory.keySet()) {
                         if (!chat_reply_list.contains(_GameMaster.gamesListing.get(context).playerDirectory.get(user_id).chat_id)) {
@@ -505,7 +472,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                     }
                     res += "\n";
 
-                    _GameMaster.gamesListing.get(context).begin();
+                    _GameMaster.gamesListing.get(context).start();
 
                     String fromMessenger = _GameMaster.gamesListing.get(context).messenger.getMessage();
                     // fromMessenger should never be null for init, otherwise logical error
@@ -539,110 +506,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                             e.printStackTrace();
                         }
                     }
-
-                    _GameMaster.gamesListing.get(context).claim();
                 }
-            }
-        }
-
-        else if (update.hasCallbackQuery()) {
-            // Set variables
-            String call_data = update.getCallbackQuery().getData();
-            long message_id = update.getCallbackQuery().getMessage().getMessageId();
-            long chat_id = update.getCallbackQuery().getMessage().getChatId();
-            long user_id = update.getMessage().getFrom().getId();
-
-            // if claiming territories callback
-            if (call_data.contains("CLAIM")) {
-
-                String[] data = call_data.split(" "); // format of data for claim territory -> "CLAIM (territory name)"
-                String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
-                Game game = _GameMaster.gamesListing.get(gameID);
-
-                // initialize territory with player and territory then add to turn number
-                game.BM.initializeTerritory(game.playerDirectory.get(game.turn % game.playerDirectory.size()), data[1], 1);
-
-                // game.turn += 1; // assume players can keep track of the order right now
-
-                // if no more free territories begin distributing armies
-                if (game.BM.getFreeTerritories().size() == 0) {
-                    game.turn += 1;
-                    game.beginDistribute();
-                    String answer = "You chose " + data[1] + " ,type /reinforce to reinforce territory";
-
-                    EditMessageText new_message = new EditMessageText()
-                            .setChatId(chat_id)
-                            .setMessageId(toIntExact(message_id))
-                            .setText(answer);
-                    try {
-                        execute(new_message);
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                String answer = "You chose " + data[1] + " ,type /pick to select the next territory";
-                EditMessageText new_message = new EditMessageText()
-                        .setChatId(chat_id)
-                        .setMessageId(toIntExact(message_id))
-                        .setText(answer);
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            // if reinforcing callback
-            if (call_data.contains("REINFORCE")) {
-                String[] data = call_data.split(" "); // format of data for claim territory -> "REINFORCE (territory name)"
-                String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
-                Game game = _GameMaster.gamesListing.get(gameID);
-                Player player = game.playerDirectory.get(game.turn % game.playerDirectory.size());
-
-                game.BM.strengthenTerritory(player, data[1], 1);
-
-                EditMessageText new_message;
-
-                // if no more armies begin next turn
-                if (game.checkArmies()) {
-                    game.turn += 1;
-                    game.beginTurns();
-                    String answer = "You chose " + data[1] + " ,type /beginTurn to start the next turn";
-
-                    new_message = new EditMessageText()
-                            .setChatId(chat_id)
-                            .setMessageId(toIntExact(message_id))
-                            .setText(answer);
-                }
-                else {
-                    String answer = "You chose " + data[1] + " ,type /reinforce to select the next territory";
-                    new_message = new EditMessageText()
-                            .setChatId(chat_id)
-                            .setMessageId(toIntExact(message_id))
-                            .setText(answer);
-                }
-
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-            else {
-                String answer = "This code is broke, call Norman he'll know what to do";
-                EditMessageText new_message = new EditMessageText()
-                        .setChatId(chat_id)
-                        .setMessageId(toIntExact(message_id))
-                        .setText(answer);
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-
             }
         }
     }

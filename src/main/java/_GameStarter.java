@@ -31,9 +31,7 @@ public class _GameStarter {
     todo: enable functions below
     //////////////////////////////////////////////////////////////////////////////////*/
     public void initGame(Game thisGame) throws IOException, InterruptedException {
-        this.messenger = thisGame.messenger;
         playerCount = thisGame.playerDirectory.size();
-        // GM.setMessenger(thisGame);
         defaultStart(thisGame);
         System.out.println("Init done. \n");
         //GM.runGame(GM, thisGame.messenger, thisGame);
@@ -42,7 +40,7 @@ public class _GameStarter {
     public void defaultStart(Game thisGame) throws InterruptedException {
         //while (setNumberOfPlayers()) {}
         GM.initializeAsNormal(playerCount, thisGame);
-        GameManager.fileObjKeyName = thisGame.gameID;
+        //GameManager.fileObjKeyName = thisGame.gameID;
     }
 }
 

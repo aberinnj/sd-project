@@ -28,7 +28,7 @@ public class Turn {
         for(String k : player.getTerritories()) {
             if( !previousTerritories.contains(k)) {
                 //System.out.println("Player is eligible to earn a card for claiming a new Territory: claimed "+ k +".");
-                messenger.putMessage("Player is eligible to earn a card for claiming a new Territory: claimed "+ k +".");
+                //messenger.putMessage("Player is eligible to earn a card for claiming a new Territory: claimed "+ k +".");
                 return true;
             }
         }
@@ -56,15 +56,15 @@ public class Turn {
         int freebies = 0;
         for(Card e: player.getHandListing())
             //System.out.println(e.getOrigin() + " - " + e.getUnit());
-            messenger.putMessage(e.getOrigin() + " - " + e.getUnit());
+            //messenger.putMessage(e.getOrigin() + " - " + e.getUnit());
         if(player.getTotalCards() < 3){
             // System.out.println("You do not have enough cards to trade");
-            messenger.putMessage("You do not have enough cards to trade");
+            //messenger.putMessage("You do not have enough cards to trade");
         }else if(player.getTotalCards() >= 5) {
             freebies += calculateTradeableCard();
-        } else if(GM.baseQuery("Would you like to exchange your cards for units? Yes/ No")){
-            freebies += calculateTradeableCard();
-        }
+        } //else if(GM.baseQuery("Would you like to exchange your cards for units? Yes/ No")){
+            //freebies += calculateTradeableCard();
+        //}
         return freebies;
     }
 
@@ -73,12 +73,12 @@ public class Turn {
     *///////////////////////////////////////////////////////////////////////////////*/
     public void placeNewArmies(Game thisGame) throws InterruptedException {
         // System.out.println("__PLACE NEW ARMIES__");
-        messenger.putMessage("__PLACE NEW ARMIES__");
+        //messenger.putMessage("__PLACE NEW ARMIES__");
         int newArmies = getFreeArmiesFromTerritories();
 
         player.addArmies(newArmies);
         //System.out.println((newArmies) + " new armies available");
-        messenger.putMessage((newArmies) + " new armies available");
+        //messenger.putMessage((newArmies) + " new armies available");
 
         GM.strengthenTerritories(player.getId(), thisGame);
     }
@@ -177,8 +177,8 @@ public class Turn {
             if (getBonus) {
                 // System.out.println("One of your cards have been found to represent a territory you're currently occupying." +
                 //        " +2 Armies will be added to your territory: "+ bonusTo);
-                messenger.putMessage("One of your cards have been found to represent a territory you're currently occupying." +
-                                " +2 Armies will be added to your territory: "+ bonusTo);
+                //messenger.putMessage("One of your cards have been found to represent a territory you're currently occupying." +
+                                //" +2 Armies will be added to your territory: "+ bonusTo);
                 BM.addOccupantsTo(bonusTo, 2);
             }
             return new_sum;
@@ -195,7 +195,7 @@ public class Turn {
             for(String enemy: BM.getAllAdjacentEnemyTerritories(player.getId(), country))
             {
                 // System.out.println("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies");
-                messenger.putMessage("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies\n");
+                //messenger.putMessage("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies\n");
             }
         }
         return out;
@@ -230,9 +230,9 @@ public class Turn {
                 BM.removeOccupantsFrom(defender, 1);
                 if (BM.getOccupantCount(defender) == 0) { // if the defender loses all of its armies
                     BM.getBoardMap().get(defender).setStatusToFallen();
-                    GM.getPlayer(BM.getBoardMap().get(defender).getOccupantID()).loseTerritories(defender); // take remove territory from defending player
+                    //GM.getPlayer(BM.getBoardMap().get(defender).getOccupantID()).loseTerritories(defender); // take remove territory from defending player
                     BM.getBoardMap().get(attacker).loseOccupants(potentialTransfer, ArmyType.INFANTRY); // remove remaining attacking armies from attacking territory
-                    GM.getPlayer(player.getId()).addArmies(potentialTransfer);
+                    //GM.getPlayer(player.getId()).addArmies(potentialTransfer);
                     BM.initializeTerritory(player, defender, potentialTransfer); // reinitialize territory for defender
                     out += "Defender has lost the territory\n";
                     break;
@@ -269,8 +269,9 @@ public class Turn {
         String destination;
         int transfer;
         // System.out.println("__FORTIFY TERRITORIES__");
-        messenger.putMessage("__FORTIFY TERRITORIES__");
+        //messenger.putMessage("__FORTIFY TERRITORIES__");
 
+        /*
         if(GM.baseQuery("Would you like to fortify your territories?"))
         {
             for(String country: BM.getAbleTerritories(player, false)) {
@@ -299,7 +300,7 @@ public class Turn {
             } while(transfer == 0);
 
             BM.fortifyTerritory(origin, destination, transfer);
-        }
+        }*/
 
 
     }

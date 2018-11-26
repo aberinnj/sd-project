@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Observable;
-import java.util.Stack;
+import java.util.*;
 
 enum GameState {
     QUEUE, // the default state
@@ -67,6 +64,47 @@ class Game extends Observable {
         deck = new Deck(GameDeck);
     }
 
+    // telegram style, gives each players the appropriate number of armies on init
+    public void setPlayerList(){
+        int size = playerDirectory.size();
+        int default_infantry = 0;
+        switch(size){
+            case 2:
+                default_infantry=40;
+                break;
+            case 3:
+                default_infantry=35;
+                break;
+            case 4:
+                default_infantry=30;
+                break;
+            case 5:
+                default_infantry=25;
+                break;
+            case 6:
+                default_infantry=20;
+                break;
+        }
+        for(int a=0; a<size; a++){
+            playerDirectory.get(a).addArmies(default_infantry);
+        }
+    }
+
+    // shuffle players to create random turn order
+    public void shufflePlayers() {
+        List<Player> valueList = new ArrayList<Player>(playerDirectory.values());
+        Collections.shuffle(valueList);
+        Iterator<Player> valueIt = valueList.iterator();
+        for(Map.Entry<Integer,Player> e : playerDirectory.entrySet()) {
+            e.setValue(valueIt.next());
+        }
+    }
+
+    public void start() {
+        shufflePlayers();
+        setPlayerList();
+    }
+
     public void addUser(Integer user_id, String username, long chat_id){
 
         //playerDirectory.put(user_id, new User(user_id, username, chat_id));
@@ -82,28 +120,6 @@ class Game extends Observable {
             notifyObservers();
         }
 
-    }
-
-    public void begin()
-    {
-        if(playerDirectory.size() == _GameMaster.MIN_PLAYERS_PER_GAME) {
-            state = GameState.INIT;
-            setChanged();
-            notifyObservers();
-        } else {
-            System.out.println("ERROR: NOT ENOUGH PLAYERS SOMEHOW");
-        }
-    }
-
-    public void claim()
-    {
-        if(playerDirectory.size() == _GameMaster.MIN_PLAYERS_PER_GAME && state == GameState.INIT) {
-            state = GameState.CLAIM;
-            setChanged();
-            notifyObservers();
-        } else {
-            System.out.println("ERROR: NOT ENOUGH PLAYERS SOMEHOW");
-        }
     }
 
     public void beginTurns() {

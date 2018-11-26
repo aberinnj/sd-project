@@ -8,20 +8,6 @@ TurnManager should be making deep-copying turns for recreating entire games from
 public class TurnManager {
     private ArrayList<Turn> turnList;
 
-    public void save(final Turn k){
-        BoardManager actualBM = new BoardManager(
-                copy(k.BM.getBoardMap()),
-                copy(k.BM.getGameDeck()), k.BM.completeSets);
-
-        Player player = new Player(
-                k.player.getId(),
-                k.player.getNumberOfArmies(),
-                new ArrayList<Card>(){{addAll(k.player.getHandListing());}},
-                new ArrayList<String>(){{addAll(k.player.getTerritories());}});
-
-        turnList.add(new Turn(actualBM, player, k.turnId));
-    }
-
     public ArrayList<Turn> getTurnList(){
         return turnList;
     }
@@ -50,18 +36,6 @@ public class TurnManager {
             actualDeckStack.add(i, old.GameDeck.get(i));
         }
         return new Deck(actualDeckStack);
-    }
-  
-
-    // Now sets up the first (playerCount)-turns as initial player states
-    public void init(GameManager GM, int playerCount) {
-        Turn t;
-        for(int i=0; i<playerCount; i++)
-        {
-            t = new Turn(GM.getBM(), GM.getPlayer(i), GM.current_turn);
-            save(t);
-            GM.incrementTurn();
-        }
     }
 
     // Users can undo their actions with this

@@ -20,26 +20,16 @@ todo: resetTerritories renders null throwing nullpointerexception in testing
 
 public class Player implements Observer {
 
-    private int id;
+    int id;
     String username;
     long chat_id;
-    private PlayerState state;
+    PlayerState state;
 
-    private Army placeholder;
-    private List<String> territories;
-    private HashMap<String, Stack<Card>> Hand = new HashMap<String, Stack<Card>>();;
-    private Double wallet = 0.0;
-    private int Undos = 0;
-
-    /*
-    Player (int id, String username, long chat_id) {
-        this.id = id;
-        this.username = username;
-        this.chat_id = chat_id; // send messages to this chat_id.
-    } */
-
-    // load-game constructor
-    //Player(int id, String username, long chat_id, int infantryCount, ArrayList<Card> cardStack, ArrayList<String> territories)
+    Army placeholder;
+    List<String> territories = new ArrayList<>();
+    HashMap<String, Stack<Card>> Hand = new HashMap<String, Stack<Card>>();;
+    Double wallet = 0.0;
+    int Undos = 0;
 
     Player(int id, String username, long chat_id, int infantryCount)
     {
@@ -54,7 +44,7 @@ public class Player implements Observer {
         this.state = PlayerState.QUEUE;
     }
 
-    public void setTerritories(ArrayList<String> territories) {
+    public void setTerritories(List<String> territories) {
         this.territories = territories;
     }
 

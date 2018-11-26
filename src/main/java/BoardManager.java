@@ -310,6 +310,7 @@ public class BoardManager {
     public void initializeTerritory(Player p, String territory, int armyCount ){
         boardMap.get(territory).setTerritory(true, p.getId(), new Army(armyCount));
         boardMap.get(territory).addObserver(p);
+        System.out.println(territory);
         p.addTerritories(territory);
         p.loseArmies(armyCount);
     }

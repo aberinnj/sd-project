@@ -66,7 +66,8 @@ public class Responses {
                 return "The game does not exist.";
             } else if (_GameMaster.gamesListing.get(context).playerDirectory.containsKey(user_id)) {
                 return "You are already in this game.";
-            } else if (_GameMaster.gamesListing.get(context).state != GameState.QUEUE) {
+            }
+            else if (_GameMaster.gamesListing.get(context).state != GameState.QUEUE) {
                 return "This game is no longer accepting players.";
             } else {
                 _GameMaster.allPlayersAndTheirGames.put(user_id, context);
@@ -112,7 +113,7 @@ public class Responses {
             switch (_GameMaster.gamesListing.get(gameID).state) {
                 case CLAIM: {
                     //_GameMaster.gamesListing.get(gameID).game.GM.claimTerritories(_GameMaster.gamesListing.get(gameID));
-                    List<String> vacantTerritories = _GameMaster.gamesListing.get(gameID).game.GM.availableTerritories(_GameMaster.gamesListing.get(gameID));
+                    List<String> vacantTerritories = _GameMaster.gamesListing.get(gameID).BM.getFreeTerritories();
                     return vacantTerritories;
                     //break;
                 }
