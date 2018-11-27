@@ -83,6 +83,10 @@ public class Responses {
     }
 
     public static String onCreate(int user_id, String gameID, String username, long chat_id){
+        if(_GameMaster.allPlayersAndTheirGames.containsKey(user_id)){
+            return "@"+username + " sorry! You are already playing a game.";
+        }
+        else {
             Game game = new Game();// create new game
             game.setGameID(gameID);// give it the ID
             _GameMaster.gamesListing.put(gameID, game);
@@ -92,6 +96,7 @@ public class Responses {
 
             //_GameMaster.gamesListing.get(gameID).addObserver(_GameMaster.kineticEntity);
             return "Creating a new game session. \nGameID: " + gameID;
+        }
     }
 
     public static String onHelp(){
@@ -102,5 +107,36 @@ public class Responses {
                 "/listMyGames to list all your game sessions\n" +
                 "/getStatus to get the status on the chat's current game\n" +
                 "/load to replay a game.";
+    }
+
+    public static String onSkipReinforce(Game game){
+        String msg = "";
+        while(!CommandUtils.isReinforcingOver(game))
+        {
+            Player nextPlayer = CommandUtils.getPlayer(game);
+            if(nextPlayer.getNumberOfArmies() > 0)
+            {
+                String terr = nextPlayer.getTerritories().get(nextPlayer.getNumberOfArmies() % nextPlayer.getTerritories().size());
+                msg +=  nextPlayer.username + " reinforces " + terr + "\n";
+                game.BM.strengthenTerritory(nextPlayer, terr, 1);
+                game.turn++;
+            }
+        }
+        return msg;
+    }
+
+    public static String onSkipClaim(Game game)
+    {
+        String msg = "";
+        ArrayList<Integer> tempListing = new ArrayList<>();
+        tempListing.addAll(game.playerDirectory.keySet());
+        for(String terr: game.BM.getFreeTerritories())
+        {
+            Player player = game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size()));
+            game.BM.initializeTerritory(player, terr, 1);
+            msg += (player.username + " chose " + terr + "\n");
+            game.turn += 1;
+        }
+        return msg;
     }
 }

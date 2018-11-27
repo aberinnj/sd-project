@@ -103,39 +103,14 @@ class CommandsHandler extends TelegramLongPollingBot{
                 }
                 case "/skipReinforce": {
                     // THESE ARE FOR TESTING, REMOVE IF NEED BE
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
-                    String msg = "";
-                    while(!CommandUtils.isReinforcingOver(game))
-                    {
-                        Player nextPlayer = CommandUtils.getPlayer(game);
-                        if(nextPlayer.getNumberOfArmies() != 0)
-                        {
-                            String terr = nextPlayer.getTerritories().get(nextPlayer.getNumberOfArmies() % nextPlayer.getTerritories().size());
-                            msg += "@"+ nextPlayer.username + " reinforces " + terr + "\n";
-                            game.BM.strengthenTerritory(nextPlayer, terr, 1);
-                            game.turn++;
-                        }
-                    }
-                    message.setText(msg);
+                    message.setText(Responses.onSkipReinforce(CommandUtils.getGame(update.getMessage().getFrom().getId())));
                     break;
 
                 }
 
                 case "/skipClaim": {
                     // THESE ARE FOR TESTING, REMOVE IF NEED BE
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
-
-                    String msg = "";
-                    ArrayList<Integer> tempListing = new ArrayList<>();
-                    tempListing.addAll(game.playerDirectory.keySet());
-                    for(String terr: game.BM.getFreeTerritories())
-                    {
-                        Player player = game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size()));
-                        game.BM.initializeTerritory(player, terr, 1);
-                        msg += (player.username + " chose " + terr + "\n");
-                        game.turn += 1;
-                    }
-                    message.setText(msg);
+                    message.setText(Responses.onSkipClaim(CommandUtils.getGame(update.getMessage().getFrom().getId())));
                     break;
                 }
 
@@ -162,8 +137,6 @@ class CommandsHandler extends TelegramLongPollingBot{
                         aws.upload(game.gameID);
                     } catch (IOException e) {
                         e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
                     message.setText("your game has been saved");
                     break;
@@ -179,8 +152,6 @@ class CommandsHandler extends TelegramLongPollingBot{
                         message.setText("Turn undid");
                         break;
                     } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     break;
@@ -199,45 +170,26 @@ class CommandsHandler extends TelegramLongPollingBot{
                         break;
                     } catch (IOException e) {
                         e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
                     break;
                 }
-
-                case "/debugMyID": {
-                    int id = update.getMessage().getFrom().getId();
-                    String name = update.getMessage().getFrom().getUserName();
-                    String fullName = update.getMessage().getFrom().getFirstName() + update.getMessage().getFrom().getLastName() ;
-                    message.setText("Your ID: "+id + "\n Your USERNAME: "+name+ "\n Your NAME: "+ fullName);
-                    break;
-                }
                 case "/join": {
-                    //if(_GameMaster.allPlayersAndTheirGames.containsKey(update.getMessage().getFrom().getId())){
-                    //    message.setText("@"+update.getMessage().getFrom().getUserName() + " sorry! you are already playing a game.");
-                    //}
-                    //else
                     message.setText(Responses.onJoin(in, update.getMessage().getFrom().getId(), update.getMessage().getFrom().getUserName(), update.getMessage().getChatId()));
                     break;
                 }
 
                 case "/listMyGames": {
-                    int id = update.getMessage().getFrom().getId();
-                    message.setText(Responses.onListMyGames(id));
+                    message.setText(Responses.onListMyGames(update.getMessage().getFrom().getId()));
                     break;
                 }
 
                 case "/create": {
-                    if(_GameMaster.allPlayersAndTheirGames.containsKey(update.getMessage().getFrom().getId())){
-                        message.setText("@"+update.getMessage().getFrom().getUserName() + " sorry! You are already playing a game.");
-                    } else{
                         message.setText(Responses.onCreate(
                                 update.getMessage().getFrom().getId(),
                                 "risk-game-" + UUID.randomUUID().toString(),
                                 update.getMessage().getFrom().getUserName(),
                                 update.getMessage().getChatId())
                         );
-                    }
                     break;
                 }
 

@@ -24,7 +24,6 @@ class Game extends Observable {
     BoardManager BM;
     ArrayList<Integer> users;
     //ArrayList<Integer> turnPattern;
-    ArrayList<Player> turnPattern;
     int nextTurnUserID;
     int turn;
     String gameID;
@@ -39,7 +38,6 @@ class Game extends Observable {
         playerDirectory = new HashMap<>();
         BM = new BoardManager();
         users = new ArrayList<>();
-        turnPattern = new ArrayList<>();
         turn = 0;
         nextTurnUserID = 0;
         //state = GameState.QUEUE;
@@ -133,9 +131,6 @@ class Game extends Observable {
         notifyObservers();
     }*/
 
-    public void setTurnPattern(int i, int roll) {
-        turnPattern.set(i, playerDirectory.get(roll));
-    }
 
     public void setCurrentTurn(Turn turn) { this.currentTurn = turn;}
 
