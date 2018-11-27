@@ -80,6 +80,7 @@ public class BoardManager {
         completeSets = 0;
     }
 
+    /* I don't think we need this but I'm leaving it here just in case
     // re-initialize
     BoardManager(HashMap<String, Territory> k, Deck l, int m){
         boardMap = k;
@@ -93,7 +94,7 @@ public class BoardManager {
         continentsMap.put("AFRICA", new Continent(new String[]{"NORTH AFRICA", "EGYPT", "CONGO", "EAST AFRICA", "SOUTH AFRICA", "MADAGASCAR"}));
         continentsMap.put("ASIA", new Continent(new String[]{"SIAM", "INDIA", "AFGHANISTAN", "URAL", "SIBERIA", "MONGOLIA", "CHINA", "MIDDLE EAST", "JAPAN", "YAKUTSK", "IRKUTSK", "KAMCHATKA"}));
         continentsMap.put("AUSTRALIA", new Continent(new String[]{"WESTERN AUSTRALIA", "INDONESIA", "EASTERN AUSTRALIA", "NEW GUINEA"}));
-    }
+    }*/
 
     // simply returns boardmap
     public HashMap<String, Territory> getBoardMap(){

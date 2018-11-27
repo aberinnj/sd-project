@@ -40,7 +40,6 @@ class Game extends Observable {
         turnPattern = new ArrayList<>();
         turn = 0;
         state = GameState.QUEUE;
-        deck = new Deck();
     }
 
     //funciton to reset the game ID if reloading
@@ -51,11 +50,6 @@ class Game extends Observable {
     // function to reset the turn if reloading
     public void setTurn(int turn) {
         turn = turn;
-    }
-
-    // function for reseting deck
-    public void resetDeck(Stack<Card> GameDeck) {
-        deck = new Deck(GameDeck);
     }
 
     // telegram style, gives each players the appropriate number of armies on init
