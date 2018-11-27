@@ -48,7 +48,7 @@ public class Loader {
             String army = String.valueOf(tempCard.get(territory));
             GameDeck.push(new Card(territory, army));
         }
-        game.resetDeck(GameDeck);
+        game.BM.newDeck(GameDeck);
     }
 
     public void setPlayers(JsonObject gameJson) {

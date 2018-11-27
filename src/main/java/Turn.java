@@ -11,7 +11,6 @@ public class Turn {
     BoardManager BM;
     Player player;
     int turnId;
-    GameManager GM;
 
     // Turn stores all game-board details and events from a specific turn
     Turn(BoardManager BM, Player p, int id) {
@@ -66,21 +65,6 @@ public class Turn {
             //freebies += calculateTradeableCard();
         //}
         return freebies;
-    }
-
-    /*////////////////////////////////////////////////////////////////////////////////
-     Place New Armies from results received in getFreeArmiesFromTerritories
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public void placeNewArmies(Game thisGame) throws InterruptedException {
-        // System.out.println("__PLACE NEW ARMIES__");
-        //messenger.putMessage("__PLACE NEW ARMIES__");
-        int newArmies = getFreeArmiesFromTerritories();
-
-        player.addArmies(newArmies);
-        //System.out.println((newArmies) + " new armies available");
-        //messenger.putMessage((newArmies) + " new armies available");
-
-        GM.strengthenTerritories(player.getId(), thisGame);
     }
 
     // handles calculations of trading-in a set
@@ -201,6 +185,21 @@ public class Turn {
         return out;
     }
 
+    // Get Highest Roll
+    public int getIndexOfHighestRollIn(ArrayList<Integer> diceList,int iterations){
+        int indexOfHighestRoll = 0;
+        int valueOfHighestRoll = diceList.get(0);
+        for(int i=1; i<iterations; i++)
+        {
+            if (diceList.get(i) > valueOfHighestRoll)
+            {
+                valueOfHighestRoll = diceList.get(i);
+                indexOfHighestRoll = i;
+            }
+        }
+        return indexOfHighestRoll;
+    }
+
     public String battle(String attacker, String defender, int attackerDice, int defenderDice) {
 
         String out = null;
@@ -223,8 +222,8 @@ public class Turn {
         int potentialTransfer = attackerDice;
 
         do {
-            topIndexAttacker = GM.getIndexOfHighestRollIn(attacker_dice, attacker_dice.size());
-            topIndexDefender = GM.getIndexOfHighestRollIn(defender_dice, defender_dice.size());
+            topIndexAttacker = getIndexOfHighestRollIn(attacker_dice, attacker_dice.size());
+            topIndexDefender = getIndexOfHighestRollIn(defender_dice, defender_dice.size());
 
             if (attacker_dice.get(topIndexAttacker) > defender_dice.get(topIndexDefender)) {
                 BM.removeOccupantsFrom(defender, 1);
@@ -259,49 +258,5 @@ public class Turn {
         BM.getBoardMap().get(defender).setStatusToNormal();
         out += "Attacker lost " + (attackerDice - attacker_dice.size()) + ", Defender lost " + (defenderDice - defender_dice.size()) + "\n";
         return out;
-    }
-
-    /*////////////////////////////////////////////////////////////////////////////////
-    Fortifying is simple
-    *///////////////////////////////////////////////////////////////////////////////*/
-    public void fortifyTerritories(Game thisGame) throws InterruptedException {
-        String origin;
-        String destination;
-        int transfer;
-        // System.out.println("__FORTIFY TERRITORIES__");
-        //messenger.putMessage("__FORTIFY TERRITORIES__");
-
-        /*
-        if(GM.baseQuery("Would you like to fortify your territories?"))
-        {
-            for(String country: BM.getAbleTerritories(player, false)) {
-                //System.out.println(country + ": " + BM.getOccupantCount(country) + " armies");
-                messenger.putMessage(country + ": " + BM.getOccupantCount(country) + " armies");
-            }
-
-            do{
-                origin = BM.queryTerritory("From: ", "FORTIFY_FROM", player, "", thisGame);
-            }while(origin == null);
-
-            //System.out.println("Territories fortify-able from " + origin);
-            messenger.putMessage("Territories fortify-able from " + origin);
-
-            for(String country: BM.getAllAdjacentTerritories(player.getId(), origin)) {
-                // System.out.println(country);
-                messenger.putMessage(country);
-            }
-
-            do{
-                destination = BM.queryTerritory("Fortify: ", "FORTIFY", player, origin, thisGame);
-            }while(destination == null);
-
-            do{
-                transfer = BM.queryCount("Transfer: ", "FORTIFY", player, origin, thisGame);
-            } while(transfer == 0);
-
-            BM.fortifyTerritory(origin, destination, transfer);
-        }*/
-
-
     }
 }

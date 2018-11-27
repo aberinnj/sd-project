@@ -287,9 +287,9 @@ class CommandsHandler extends TelegramLongPollingBot{
                                 users.addAll(game.playerDirectory.keySet());
                                 game.nextTurnUserID = game.playerDirectory.get(users.get(0)).id;
                             }
-
                             message.setText(out);
                         }
+
 
                     } else {
                         message.setText("Uh Oh! It is not your turn player#" + user_id + ", it is player#"+game.nextTurnUserID+ "'s turn.");
@@ -415,6 +415,13 @@ class CommandsHandler extends TelegramLongPollingBot{
                     game.BM.fortifyTerritory(from,to,transfer);
                 }
 
+                // assumes it is your turn, checks your hand for three matching cards, pops them from your hand and gives you the armies
+                case "/tradecards": {
+                    Game game = getGame(update);
+                    Player player = getPlayer(game);
+                    Turn turn = game.currentTurn;
+
+                }
 
                 // message format -> /buycredit (credit amount)
                 case "/buycredit": {
@@ -449,6 +456,12 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                 case "/endturn": {
                     Game game = getGame(update);
+                    Turn turn = game.currentTurn;
+                    try {
+                        turn.earnCards();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
                     // Write game to save game file
                     try {
@@ -478,7 +491,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                     Game game = getGame(update);
                     int turnNo = game.turn % game.playerDirectory.size();
                     Player player = getPlayer(game);
-                    message.setText("Player " +player.getUsername()+ " may /reinforce then /attack then /fortify then /buycredit then /buyshit only in that order or / then type /endturn to move to next player, ending your turn\n");
+                    message.setText("Player " +player.getUsername()+ " may /tradecards /reinforce then /attack then /fortify then /buycredit then /buyshit only in that order or / then type /endturn to move to next player, ending your turn\n");
                     Turn turn = new Turn(game.BM, player, game.turn);
                     game.setCurrentTurn(turn);
                     try {

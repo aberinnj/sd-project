@@ -19,9 +19,7 @@ Game holds all each game's information and the list of players in the game
 todo: check if static is causing problems
 *///////////////////////////////////////////////////////////////////////////////*/
 class Game extends Observable {
-    _GameStarter game;
     HashMap<Integer, Player> playerDirectory;
-    GameManager GM;
     BoardManager BM;
     ArrayList<Integer> users;
     //ArrayList<Integer> turnPattern;
@@ -37,16 +35,13 @@ class Game extends Observable {
 
     Game() {
         messenger = new Messenger();
-        game = new _GameStarter();
         playerDirectory = new HashMap<>();
-        GM = new GameManager();
         BM = new BoardManager();
         users = new ArrayList<>();
         turnPattern = new ArrayList<>();
         turn = 0;
         nextTurnUserID = 0;
         state = GameState.QUEUE;
-        deck = new Deck();
     }
 
     //funciton to reset the game ID if reloading
@@ -57,11 +52,6 @@ class Game extends Observable {
     // function to reset the turn if reloading
     public void setTurn(int turn) {
         turn = turn;
-    }
-
-    // function for reseting deck
-    public void resetDeck(Stack<Card> GameDeck) {
-        deck = new Deck(GameDeck);
     }
 
     // telegram style, gives each players the appropriate number of armies on init
