@@ -76,12 +76,6 @@ public class _GameMaster {
 Bot is a proxy for games and players, it forwards output and input to respective
 entities
 
-Contextual problems.
-Remember: Once a user /joins or /creates in a chat, that is where they're gonna have
-the game for the rest of the game.
-
-It would help to have a list of known inputs to determine the context of a message.
-This is when the player is playing multiple games in the same chat.
 *///////////////////////////////////////////////////////////////////////////////*/
 class CommandsHandler extends TelegramLongPollingBot{
 
@@ -121,7 +115,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                     break;
                 }
 
-                case "/debugAfterClaim": {
+                case "/skipClaim": {
                     int user_id = update.getMessage().getFrom().getId();
 
                     Game game = getGame(update);
@@ -263,25 +257,44 @@ class CommandsHandler extends TelegramLongPollingBot{
                     String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
 
                     Game game = getGame(update);
-                    Player player = getPlayer(game);
-
-                    String tempTerritory = String.join(" ", in.getArgs());
-                    game.BM.initializeTerritory(player, tempTerritory, 1);
-
-                    message.setText(player.username + " chose " + tempTerritory + "\n");
-                    game.turn += 1;
-
-
                     ArrayList<Integer> tempListing = new ArrayList<>();
                     tempListing.addAll(game.playerDirectory.keySet());
-                    
-                    String out = "It is now player @" + game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size())).username + " turn\n";
-                    out += "The following territories are still available\n";
-                    List<String> territories = _GameMaster.gamesListing.get(gameID).BM.getFreeTerritories();
-                    for(String territory: territories) {
-                        out += (territory + "\n");
+
+                    if(user_id == game.nextTurnUserID)
+                    {
+                        Player player = getPlayer(game);
+
+                        String tempTerritory = String.join(" ", in.getArgs());
+                        if(tempTerritory.equals(""))
+                            message.setText("You did not put a country to claim.");
+                        else {
+                            // SUCCESS
+                            game.BM.initializeTerritory(player, tempTerritory, 1);
+                            String out = "@" + player.username + " chose " + tempTerritory + ".\n";
+                            game.turn += 1;
+
+                            if(game.BM.getFreeTerritories().size() != 0)
+                            {
+                                out += "\nIt is now player @" + game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size())).username + "'s turn\n";
+                                out += "The following territories are still available\n";
+                                List<String> territories = _GameMaster.gamesListing.get(gameID).BM.getFreeTerritories();
+                                for (String territory : territories) {
+                                    out += (territory + "\n");
+                                }
+                                game.nextTurnUserID = game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size())).id;
+                            } else {
+                                ArrayList<Integer> users = new ArrayList<Integer>();
+                                users.addAll(game.playerDirectory.keySet());
+                                game.nextTurnUserID = game.playerDirectory.get(users.get(0)).id;
+                            }
+
+                            message.setText(out);
+                        }
+
+                    } else {
+                        message.setText("Uh Oh! It is not your turn player#" + user_id + ", it is player#"+game.nextTurnUserID+ "'s turn.");
                     }
-                    message.setText(out);
+
                     break;
                 }
 
@@ -500,9 +513,8 @@ class CommandsHandler extends TelegramLongPollingBot{
             String res = "";
 
             // follow up messages
-            if(in.args.size() > 0) {
                 // GAME START ANNOUNCEMENT -- GameState.START is when this /join triggered the game start, then take the gameID and broadcast to all chats
-                if (in.getCommand().equals("/join") && _GameMaster.gamesListing.containsKey(in.args.get(0)) && _GameMaster.gamesListing.get(in.args.get(0)).playerDirectory.size() == 2) {
+                if (in.getCommand().equals("/join") && _GameMaster.gamesListing.containsKey(in.args.get(0)) && _GameMaster.gamesListing.get(in.args.get(0)).playerDirectory.size() == 2 && in.args.size() > 0) {
 
                     String context = in.args.get(0);
 
@@ -562,9 +574,33 @@ class CommandsHandler extends TelegramLongPollingBot{
                         }
                     }
                 }
+                else if((in.getCommand().equals("/pick") || (in.getCommand().equals("/skipClaim")) && _GameMaster.gamesListing.get(getGame(update).gameID).BM.getFreeTerritories().size() == 0))
+                {
+                    Game thisGame = getGame(update);
+                    SendMessage announcement = new SendMessage();
+                    announcement.setChatId(update.getMessage().getChatId());
+                    String out = "Initial territory claiming is complete." +
+                            "\nPlayers have remaining armies to dispatch to their territories. Please select a territory to dispatch your remaining armies to and fortify. \n" +
+                            "\n/reinforce <country> to select a country to dispatch one(1) army to." +
+                            "\n/listMyTerritories to view your territories and their status. (not implemented yet)" +
+                            "\n\nIt is now player @" + thisGame.playerDirectory.get(0).username + "'s turn:" +
+                            "\nYour territories you can reinforce";
+
+                    for(String k: thisGame.playerDirectory.get(0).getTerritories())
+                    {
+                        out += "\n"+k;
+                    }
+
+                    announcement.setText(out);
+                    try {
+                        execute(announcement);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+
+                }
             }
         }
-    }
 
     @Override
     public String getBotUsername(){
