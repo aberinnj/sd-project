@@ -93,6 +93,17 @@ class CommandsHandler extends TelegramLongPollingBot{
         return game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size()));
     }
 
+    public Boolean isReinforcingOver(Game game){
+        boolean reinforceDone = true;
+        ArrayList<Integer> tempListing = new ArrayList<>();
+        tempListing.addAll(game.playerDirectory.keySet());
+        for(Integer k: tempListing)
+        {
+            reinforceDone = reinforceDone && (game.playerDirectory.get(k).getNumberOfArmies()==0);
+        }
+        return reinforceDone;
+    }
+
     @Override
     public void onUpdateReceived (Update update){
 
@@ -114,10 +125,28 @@ class CommandsHandler extends TelegramLongPollingBot{
                     message.setText(Responses.onListAllGames());
                     break;
                 }
+                case "/skipReinforce": {
+                    // THESE ARE FOR TESTING, REMOVE IF NEED BE
+                    Game game = getGame(update);
+                    String msg = "";
+                    while(!isReinforcingOver(game))
+                    {
+                        Player nextPlayer = getPlayer(game);
+                        if(nextPlayer.getNumberOfArmies() != 0)
+                        {
+                            String terr = nextPlayer.getTerritories().get(nextPlayer.getNumberOfArmies() % nextPlayer.getTerritories().size());
+                            msg += "@"+ nextPlayer.username + " reinforces " + terr + "\n";
+                            game.BM.strengthenTerritory(nextPlayer, terr, 1);
+                            game.turn++;
+                        }
+                    }
+                    message.setText(msg);
+                    break;
+
+                }
 
                 case "/skipClaim": {
-                    int user_id = update.getMessage().getFrom().getId();
-
+                    // THESE ARE FOR TESTING, REMOVE IF NEED BE
                     Game game = getGame(update);
 
                     String msg = "";
@@ -257,9 +286,6 @@ class CommandsHandler extends TelegramLongPollingBot{
                     String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
 
                     Game game = getGame(update);
-                    ArrayList<Integer> tempListing = new ArrayList<>();
-                    tempListing.addAll(game.playerDirectory.keySet());
-
                     if(user_id == game.nextTurnUserID)
                     {
                         Player player = getPlayer(game);
@@ -267,21 +293,27 @@ class CommandsHandler extends TelegramLongPollingBot{
                         String tempTerritory = String.join(" ", in.getArgs());
                         if(tempTerritory.equals(""))
                             message.setText("You did not put a country to claim.");
+                        else if(!game.BM.getFreeTerritories().contains(tempTerritory))
+                        {
+                            message.setText("This territory has already been claimed.");
+                        }
                         else {
                             // SUCCESS
                             game.BM.initializeTerritory(player, tempTerritory, 1);
                             String out = "@" + player.username + " chose " + tempTerritory + ".\n";
                             game.turn += 1;
 
+
                             if(game.BM.getFreeTerritories().size() != 0)
                             {
-                                out += "\nIt is now player @" + game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size())).username + "'s turn\n";
+                                Player nextPlayer = getPlayer(game);
+                                out += "\nIt is now player @" + nextPlayer.username + "'s turn\n";
                                 out += "The following territories are still available\n";
                                 List<String> territories = _GameMaster.gamesListing.get(gameID).BM.getFreeTerritories();
                                 for (String territory : territories) {
                                     out += (territory + "\n");
                                 }
-                                game.nextTurnUserID = game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size())).id;
+                                game.nextTurnUserID = nextPlayer.id;
                             } else {
                                 ArrayList<Integer> users = new ArrayList<Integer>();
                                 users.addAll(game.playerDirectory.keySet());
@@ -301,13 +333,45 @@ class CommandsHandler extends TelegramLongPollingBot{
                 case "/reinforce": {
                     Game game = getGame(update);
                     Player player = getPlayer(game);
+                    String out;
+                    int user_id = update.getMessage().getFrom().getId();
 
-                    String tempTerritory = String.join(" ", in.getArgs());
-                    game.BM.strengthenTerritory(player, tempTerritory, 1);
-                    String out = player.username + " you have " + player.getNumberOfArmies() + "left\n";
-                    game.turn += 1;
-                    out += "It is now player " + game.turn % game.playerDirectory.size() + " turn";
-                    message.setText(out);
+                    if(player.getNumberOfArmies() == 0)
+                    {
+                        message.setText("You already have dispatched all available armies");
+                    }
+                    else if(user_id == game.nextTurnUserID)
+                    {
+                        String tempTerritory = String.join(" ", in.getArgs());
+                        if (tempTerritory.equals(""))
+                        {
+                            message.setText("You did not put a country to reinforce.");
+                        }
+                        else if (!player.getTerritories().contains(tempTerritory))
+                        {
+                            message.setText("You do not own this territory.");
+                        }
+                        else
+                        {
+                            out = "@"+player.username + " reinforces " + tempTerritory;
+                            game.BM.strengthenTerritory(player, tempTerritory, 1);
+                            out += "\n@"+player.username + " you have " + player.getNumberOfArmies() + " armies left\n";
+                            game.turn += 1;
+
+                            Player nextPlayer = getPlayer(game);
+                            out += "\nIt is now player @" + nextPlayer.getUsername()+ "'s turn";
+                            out += "\nYour territories are:";
+                            for(String i: nextPlayer.getTerritories())
+                            {
+                                out += "\n"+i;
+                            }
+
+                            game.nextTurnUserID = nextPlayer.id;
+                            message.setText(out);
+                        }
+                    } else {
+                        message.setText("Uh Oh! It is not your turn player #" + user_id + ", it is player #"+ game.nextTurnUserID+ "'s turn.");
+                    }
                     break;
                 }
 
@@ -611,6 +675,28 @@ class CommandsHandler extends TelegramLongPollingBot{
                         e.printStackTrace();
                     }
 
+                }
+                else if (in.getCommand().equals("/reinforce") || in.getCommand().equals("/skipReinforce"))
+                {
+                    Game game = getGame(update);
+
+                    if(isReinforcingOver(game))
+                    {
+                        SendMessage announcement = new SendMessage();
+                        announcement.setChatId(update.getMessage().getChatId());
+                        String out = "Initial territory reinforcing is complete." +
+                                "\nPlayers can now begin making turns\n" +
+                                "\n/beginTurn to begin your turn" +
+                                "\n/endTurn to end your turn" +
+                                "\n\nIt is now player @" + game.playerDirectory.get(0).username + "'s turn:";
+
+                        announcement.setText(out);
+                        try {
+                            execute(announcement);
+                        } catch (TelegramApiException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
