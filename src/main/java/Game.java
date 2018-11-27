@@ -19,7 +19,6 @@ Game holds all each game's information and the list of players in the game
 todo: check if static is causing problems
 *///////////////////////////////////////////////////////////////////////////////*/
 class Game extends Observable {
-    _GameStarter game;
     HashMap<Integer, Player> playerDirectory;
     BoardManager BM;
     ArrayList<Integer> users;
@@ -35,7 +34,6 @@ class Game extends Observable {
 
     Game() {
         messenger = new Messenger();
-        game = new _GameStarter();
         playerDirectory = new HashMap<>();
         BM = new BoardManager();
         users = new ArrayList<>();
