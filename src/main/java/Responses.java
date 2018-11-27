@@ -334,14 +334,11 @@ public class Responses {
                 "\n/endturn to finally end your turn");
         Turn turn = new Turn(game.BM, player, game.turn);
         game.setCurrentTurn(turn);
-        try {
+
+        System.out.println("Breakdown of free armies: ");
             int freebies = turn.getArmiesFromCards() + turn.getFreeArmiesFromTerritories();
-            System.out.println(freebies);
             player.addArmies(freebies);
-            System.out.println(player.getNumberOfArmies());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         out += ("\n\nYou have " + player.getNumberOfArmies() + " available armies to reinforce\n\n");
         out += ("\nFor attacking, you have the following able territories: \n");
         out += (turn.getAttackableTerritories());

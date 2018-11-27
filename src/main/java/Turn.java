@@ -44,14 +44,17 @@ public class Turn {
     }
 
     // calculate all free-armies to be received for placing new armies
-    public int getFreeArmiesFromTerritories() throws InterruptedException {
+    public int getFreeArmiesFromTerritories(){
         int freebies =  0;
+        int continents = 0;
         freebies += Math.max(3, (player.getTerritories().size() - player.getTerritories().size() % 3)/3);
-        freebies += player.getContinentsOwned(BM);
-        return freebies;
+        System.out.println(freebies + " from territories.");
+        continents += player.getContinentsOwned(BM);
+        System.out.println(continents + " from continents.");
+        return freebies + continents;
     }
 
-    public int getArmiesFromCards() throws InterruptedException {
+    public int getArmiesFromCards(){
         int freebies = 0;
         for(Card e: player.getHandListing())
             //System.out.println(e.getOrigin() + " - " + e.getUnit());
@@ -64,11 +67,12 @@ public class Turn {
         } //else if(GM.baseQuery("Would you like to exchange your cards for units? Yes/ No")){
             //freebies += calculateTradeableCard();
         //}
+        System.out.println(freebies + " from cards");
         return freebies;
     }
 
     // handles calculations of trading-in a set
-    public int calculateTradeableCard() throws InterruptedException {
+    public int calculateTradeableCard(){
         int new_sum = 0;
         boolean getBonus = false;
         String bonusTo = "";
