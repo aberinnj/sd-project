@@ -200,121 +200,19 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                 // function to pick territory, there may be a way to message a player directly and in turn order given a player's user_id and turn number
                 case "/pick": {
-                    int user_id = update.getMessage().getFrom().getId();
-                    String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
-
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
-                    if(user_id == game.nextTurnUserID)
-                    {
-                        Player player = CommandUtils.getPlayer(game);
-
-                        String tempTerritory = String.join(" ", in.getArgs());
-                        if(tempTerritory.equals(""))
-                            message.setText("You did not put a country to claim.");
-                        else if(!game.BM.getFreeTerritories().contains(tempTerritory))
-                        {
-                            message.setText("This territory has already been claimed.");
-                        }
-                        else {
-                            // SUCCESS
-                            game.BM.initializeTerritory(player, tempTerritory, 1);
-                            String out = "@" + player.username + " chose " + tempTerritory + ".\n";
-                            game.turn += 1;
-
-
-                            if(game.BM.getFreeTerritories().size() != 0)
-                            {
-                                Player nextPlayer = CommandUtils.getPlayer(game);
-                                out += "\nIt is now player @" + nextPlayer.username + "'s turn\n";
-                                out += "The following territories are still available\n";
-                                List<String> territories = _GameMaster.gamesListing.get(gameID).BM.getFreeTerritories();
-                                for (String territory : territories) {
-                                    out += (territory + "\n");
-                                }
-                                game.nextTurnUserID = nextPlayer.id;
-                            } else {
-                                ArrayList<Integer> users = new ArrayList<Integer>();
-                                users.addAll(game.playerDirectory.keySet());
-                                game.nextTurnUserID = game.playerDirectory.get(users.get(0)).id;
-                            }
-                            message.setText(out);
-                        }
-
-
-                    } else {
-                        message.setText("Uh Oh! It is not your turn player#" + user_id + ", it is player#"+game.nextTurnUserID+ "'s turn.");
-                    }
-
+                    message.setText(Responses.onPick(
+                            in,
+                            update.getMessage().getFrom().getId(),
+                            CommandUtils.getGame(update.getMessage().getFrom().getId())));
                     break;
                 }
 
                 case "/reinforce": {
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
-                    Player player = CommandUtils.getPlayer(game);
-                    String out;
-                    int user_id = update.getMessage().getFrom().getId();
+                    message.setText(Responses.onReinforce(
+                            in,
+                            update.getMessage().getFrom().getId(),
+                            CommandUtils.getGame(update.getMessage().getFrom().getId())));
 
-                    if(player.getNumberOfArmies() == 0)
-                    {
-                        message.setText("You already have dispatched all available armies");
-                    }
-                    else if(user_id == game.nextTurnUserID)
-                    {
-                        String tempTerritory = String.join(" ", in.getArgs());
-                        if (tempTerritory.equals(""))
-                        {
-                            message.setText("You did not put a country to reinforce.");
-                        }
-                        else if (!player.getTerritories().contains(tempTerritory))
-                        {
-                            message.setText("You do not own this territory.");
-                        }
-                        else
-                        {
-                            out = "@"+player.username + " reinforces " + tempTerritory;
-                            game.BM.strengthenTerritory(player, tempTerritory, 1);
-                            out += "\n@"+player.username + " you have " + player.getNumberOfArmies() + " armies left\n";
-                            game.turn += 1;
-
-                            Player nextPlayer = CommandUtils.getPlayer(game);
-                            out += "\nIt is now player @" + nextPlayer.getUsername()+ "'s turn";
-                            out += "\nYour territories are:";
-                            for(String i: nextPlayer.getTerritories())
-                            {
-                                out += "\n"+i;
-                            }
-
-                            game.nextTurnUserID = nextPlayer.id;
-                            message.setText(out);
-                        }
-                    } else {
-                        message.setText("Uh Oh! It is not your turn player #" + user_id + ", it is player #"+ game.nextTurnUserID+ "'s turn.");
-                    }
-                    break;
-                }
-
-                case "/listFreeTerritories": {
-                    int user_id = update.getMessage().getFrom().getId();
-                    if(_GameMaster.allPlayersAndTheirGames.containsKey(user_id))
-                    {
-                        String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
-                            /*
-                            if(_GameMaster.gamesListing.get(gameID).state == GameState.QUEUE || _GameMaster.gamesListing.get(gameID).state == GameState.INIT )
-                            {
-                                message.setText("The game has not yet started.");
-
-                            } else if (_GameMaster.gamesListing.get(gameID).state == GameState.CLAIM) {
-                                Messenger msg = _GameMaster.gamesListing.get(gameID).messenger;
-                                msg.putMessage(_GameMaster.gamesListing.get(gameID).BM.getFreeTerritories());
-                                message.setText(msg.getMessage());
-                            }
-                            else{
-                                message.setText("There is no territory to claim.");
-                            }*/
-
-                    }else{
-                        message.setText("You are not playing a game.");
-                    }
                     break;
                 }
 

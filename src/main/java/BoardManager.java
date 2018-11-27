@@ -169,7 +169,6 @@ public class BoardManager {
 
         boardMap.get(territory).setTerritory(true, p.getId(), new Army(armyCount));
         boardMap.get(territory).addObserver(p);
-        System.out.println(territory);
         p.addTerritories(territory);
         p.loseArmies(armyCount);
     }

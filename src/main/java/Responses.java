@@ -139,4 +139,89 @@ public class Responses {
         }
         return msg;
     }
+
+    public static String onPick(ChatInput in, Integer user_id, Game game ){
+        if(user_id == game.nextTurnUserID)
+        {
+            Player player = CommandUtils.getPlayer(game);
+
+            String tempTerritory = String.join(" ", in.getArgs());
+            if(tempTerritory.equals(""))
+                return "You did not put a country to claim.";
+            else if(!game.BM.getFreeTerritories().contains(tempTerritory))
+            {
+                return "This territory has already been claimed.";
+            }
+            else {
+                // SUCCESS
+                game.BM.initializeTerritory(player, tempTerritory, 1);
+                String out = "@" + player.username + " chose " + tempTerritory + ".\n";
+                game.turn += 1;
+
+
+                if(game.BM.getFreeTerritories().size() != 0)
+                {
+                    Player nextPlayer = CommandUtils.getPlayer(game);
+                    out += "\nIt is now player @" + nextPlayer.username + "'s turn\n";
+                    out += "The following territories are still available\n";
+                    List<String> territories = game.BM.getFreeTerritories();
+                    for (String territory : territories) {
+                        out += (territory + "\n");
+                    }
+                    game.nextTurnUserID = nextPlayer.id;
+                } else {
+                    ArrayList<Integer> users = new ArrayList<Integer>();
+                    users.addAll(game.playerDirectory.keySet());
+                    game.nextTurnUserID = game.playerDirectory.get(users.get(0)).id;
+                }
+                return out;
+            }
+
+
+        } else {
+            return "Uh Oh! It is not your turn player#" + user_id + ", it is player#"+game.nextTurnUserID+ "'s turn.";
+        }
+    }
+
+    public static String onReinforce(ChatInput in, Integer user_id, Game game){
+        String out;
+        Player player = CommandUtils.getPlayer(game);
+        if(player.getNumberOfArmies() == 0)
+        {
+            return "You already have dispatched all available armies";
+        }
+        else if(user_id == game.nextTurnUserID)
+        {
+            String tempTerritory = String.join(" ", in.getArgs());
+            if (tempTerritory.equals(""))
+            {
+                return "You did not put a country to reinforce.";
+            }
+            else if (!player.getTerritories().contains(tempTerritory))
+            {
+                return "You do not own this territory.";
+            }
+            else
+            {
+                out = "@"+player.username + " reinforces " + tempTerritory;
+                game.BM.strengthenTerritory(player, tempTerritory, 1);
+                out += "\n@"+player.username + " you have " + player.getNumberOfArmies() + " armies left\n";
+                game.turn += 1;
+
+                Player nextPlayer = CommandUtils.getPlayer(game);
+                out += "\nIt is now player @" + nextPlayer.username + "'s turn";
+                out += "\nYour territories are:";
+                for(String i: nextPlayer.getTerritories())
+                {
+                    System.out.println(i);
+                    out += "\n"+i;
+                }
+
+                game.nextTurnUserID = nextPlayer.id;
+                return out;
+            }
+        } else {
+            return "Uh Oh! It is not your turn player #" + user_id + ", it is player #"+ game.nextTurnUserID+ "'s turn.";
+        }
+    }
 }

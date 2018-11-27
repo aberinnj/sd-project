@@ -221,4 +221,232 @@ public class ResponseTest extends TestCase {
                 "her reinforces SIBERIA\n" +
                 "his reinforces ONTARIO\n", skipReinforce);
     }
+
+    @Test
+    public void testPick()
+    {
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        String onCreate = Responses.onCreate(0, "game", "her", 123);
+        String onJoin = Responses.onJoin(INPUT, 1, "his", (long)123);
+
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("");}};
+
+        String onPick = Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        assertEquals("You did not put a country to claim.", onPick);
+
+        onPick = Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        assertEquals("Uh Oh! It is not your turn player#1, it is player#0's turn.", onPick);
+
+        INPUT.args = new ArrayList<String>(){{add("YAKUTSK");}};
+        onPick = Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        assertEquals("@her chose YAKUTSK.\n" +
+                        "\nIt is now player @his's turn\n" +
+                        "The following territories are still available\n" +
+                        "SOUTH AFRICA\n" +
+                        "KAMCHATKA\n" +
+                        "ONTARIO\n" +
+                        "SIBERIA\n" +
+                        "ALASKA\n" +
+                        "NORTHERN EUROPE\n" +
+                        "ARGENTINA\n" +
+                        "GREAT BRITAIN\n" +
+                        "WESTERN EUROPE\n" +
+                        "SOUTHERN EUROPE\n" +
+                        "UKRAINE\n" +
+                        "WESTERN UNITED STATES\n" +
+                        "EGYPT\n" +
+                        "VENEZUELA\n" +
+                        "NEW GUINEA\n" +
+                        "JAPAN\n" +
+                        "GREENLAND\n" +
+                        "QUEBEC\n" +
+                        "MIDDLE EAST\n" +
+                        "PERU\n" +
+                        "CONGO\n" +
+                        "NORTH AFRICA\n" +
+                        "SIAM\n" +
+                        "IRKUTSK\n" +
+                        "SCANDINAVIA\n" +
+                        "INDONESIA\n" +
+                        "CHINA\n" +
+                        "NORTH WEST TERRITORY\n" +
+                        "BRAZIL\n" +
+                        "URAL\n" +
+                        "EAST AFRICA\n" +
+                        "MADAGASCAR\n" +
+                        "AFGHANISTAN\n" +
+                        "EASTERN AUSTRALIA\n" +
+                        "CENTRAL AMERICA\n" +
+                        "ALBERTA\n" +
+                        "WESTERN AUSTRALIA\n" +
+                        "EASTERN UNITED STATES\n" +
+                        "ICELAND\n" +
+                        "INDIA\n" +
+                        "MONGOLIA\n",
+                onPick);
+
+        INPUT.args = new ArrayList<String>(){{add("SOUTH AFRICA");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("KAMCHATKA");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("ONTARIO");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("SIBERIA");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("ALASKA");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("NORTHERN EUROPE");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("ARGENTINA");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("GREAT BRITAIN");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("WESTERN EUROPE");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("SOUTHERN EUROPE");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("NORTHERN EUROPE");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("ARGENTINA");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("GREAT BRITAIN");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("WESTERN EUROPE");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("SOUTHERN EUROPE");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("UKRAINE");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("WESTERN UNITED STATES");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("EGYPT");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("VENEZUELA");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("NEW GUINEA");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("JAPAN");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("GREENLAND");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("QUEBEC");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("MIDDLE EAST");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("PERU");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("CONGO");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("NORTH AFRICA");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("SIAM");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("IRKUTSK");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("SCANDINAVIA");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("INDONESIA");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("CHINA");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("NORTH WEST TERRITORY");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("BRAZIL");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("URAL");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("EAST AFRICA");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("MADAGASCAR");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("AFGHANISTAN");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("EASTERN AUSTRALIA");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("CENTRAL AMERICA");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("ALBERTA");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("WESTERN AUSTRALIA");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("EASTERN UNITED STATES");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("ICELAND");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("INDIA");}};
+        Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("MONGOLIA");}};
+        Responses.onPick(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("UKRAINE");}};
+        onPick = Responses.onPick(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        assertEquals("@his chose UKRAINE.\n", onPick);
+        assertEquals(0, _GameMaster.gamesListing.get("game").nextTurnUserID);
+    }
+
+    @Test
+    public void testOnReinforce(){
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        String onCreate = Responses.onCreate(0, "game", "her", 123);
+        String onJoin = Responses.onJoin(INPUT, 1, "his", (long)123);
+        String skipClaim = Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        _GameMaster.gamesListing.get("game").setPlayerList();
+
+        String onReinforce;
+
+        _GameMaster.gamesListing.get("game").playerDirectory.get(0).loseArmies(19);
+        onReinforce = Responses.onReinforce(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        assertEquals("You already have dispatched all available armies", onReinforce);
+
+        INPUT.args = new ArrayList<String>(){{add("YAKUTSK");}};
+        _GameMaster.gamesListing.get("game").playerDirectory.get(0).addArmies(19);
+        onReinforce = Responses.onReinforce(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        assertEquals("Uh Oh! It is not your turn player #1, it is player #0's turn.", onReinforce);
+
+
+        onReinforce = Responses.onReinforce(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        assertEquals("@her reinforces YAKUTSK\n" +
+                "@her you have 18 armies left\n" +
+                "\n" +
+                "It is now player @his's turn\n" +
+                "Your territories are:\n" +
+                "SOUTH AFRICA\n" +
+                "ONTARIO\n" +
+                "ALASKA\n" +
+                "ARGENTINA\n" +
+                "WESTERN EUROPE\n" +
+                "UKRAINE\n" +
+                "EGYPT\n" +
+                "NEW GUINEA\n" +
+                "GREENLAND\n" +
+                "MIDDLE EAST\n" +
+                "CONGO\n" +
+                "SIAM\n" +
+                "SCANDINAVIA\n" +
+                "CHINA\n" +
+                "BRAZIL\n" +
+                "EAST AFRICA\n" +
+                "AFGHANISTAN\n" +
+                "CENTRAL AMERICA\n" +
+                "WESTERN AUSTRALIA\n" +
+                "ICELAND\n" +
+                "MONGOLIA", onReinforce);
+
+        INPUT.args = new ArrayList<String>(){{add("YAKUTSK");}};
+        _GameMaster.gamesListing.get("game").playerDirectory.get(0).addArmies(19);
+        onReinforce = Responses.onReinforce(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        assertEquals("You do not own this territory.", onReinforce);
+
+    }
 }
