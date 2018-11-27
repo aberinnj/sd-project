@@ -4,7 +4,24 @@ import java.util.*;
 enum GameState {
     NULL,
     CLAIMING,
-    ON_TURN
+    ON_TURN,
+    ATTACKING,
+    RESULT
+
+}
+
+class Context {
+    public String countryFrom;
+    public String countryTo;
+    public int count1;
+    public int count2;
+
+    Context(){
+        countryFrom = "";
+        countryTo = "";
+        count1 = 0;
+        count2 = 0;
+    }
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -20,6 +37,7 @@ class Game extends Observable {
     int turn;
     String gameID;
     GameState state;
+    Context context;
     Messenger messenger;
     Turn currentTurn;
     Deck deck;
