@@ -419,70 +419,15 @@ class CommandsHandler extends TelegramLongPollingBot{
                 e.printStackTrace();
             }
 
-            String res = "";
 
             // follow up messages
-                // GAME START ANNOUNCEMENT -- GameState.START is when this /join triggered the game start, then take the gameID and broadcast to all chats
+            SendMessage announcement = new SendMessage();
                 if (in.getCommand().equals("/join") && _GameMaster.gamesListing.containsKey(in.args.get(0)) && _GameMaster.gamesListing.get(in.args.get(0)).playerDirectory.size() == 2 && in.args.size() > 0) {
-
-                    String context = in.args.get(0);
-
-                    ArrayList<Long> chat_reply_list = new ArrayList<>();
-                    SendMessage announcement = new SendMessage();
-
-                    for (int user_id : _GameMaster.gamesListing.get(context).playerDirectory.keySet()) {
-                        if (!chat_reply_list.contains(_GameMaster.gamesListing.get(context).playerDirectory.get(user_id).chat_id)) {
-                            chat_reply_list.add(_GameMaster.gamesListing.get(context).playerDirectory.get(user_id).chat_id);
-                        }
-                        res += "@";
-                        res += _GameMaster.gamesListing.get(context).playerDirectory.get(user_id).username;
-                        res += " ";
-                    }
-                    res += "\n";
-                    _GameMaster.gamesListing.get(context).start();
-
-                    String fromMessenger = _GameMaster.gamesListing.get(context).messenger.getMessage();
-                    // fromMessenger should never be null for init, otherwise logical error
-                    if (fromMessenger != null) {
-                        res += "\n";
-                        res += fromMessenger;
-                    }
-
-                    res += "\n\n";
-                    res += "To begin claiming your initial territories, enter /listFreeTerritories to get the list of available territories again." +
-                            " The list is automatically shown below. \n\n" +
-                            "__AVAILABLE TERRITORIES__";
-                    Messenger tempMSG = _GameMaster.gamesListing.get(context).messenger;
-                    tempMSG.putMessage(_GameMaster.gamesListing.get(context).BM.getFreeTerritories());
-
-                    fromMessenger = _GameMaster.gamesListing.get(context).messenger.getMessage();
-                    if (fromMessenger != null) {
-                        res += "\n";
-                        res += fromMessenger;
-                    }
-
-                    ArrayList<Integer> tempListing = new ArrayList<>();
-                    tempListing.addAll(_GameMaster.gamesListing.get(context).playerDirectory.keySet());
-                    Game game = _GameMaster.gamesListing.get(context);
-                    res += "\nIt is now player @" +
-                            game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size())).username + "'s turn";
-                    res += "\nEnter /pick <country> to select and capture your initial territories. ";
-
-                    for (Long dest : chat_reply_list) {
-                        announcement.setChatId(dest);
-                        announcement.setText("Your game " + _GameMaster.gamesListing.get(context).gameID + " is now starting. " + res);
-                        try {
-                            execute(announcement);
-                        } catch (TelegramApiException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    announcement.setText(Responses.onFollowUpJoin(in.args.get(0)));
                 }
                 else if((in.getCommand().equals("/pick") || (in.getCommand().equals("/skipClaim"))) && _GameMaster.gamesListing.get(CommandUtils.getGame(update.getMessage().getFrom().getId()).gameID).BM.getFreeTerritories().size() == 0)
                 {
                     Game thisGame = CommandUtils.getGame(update.getMessage().getFrom().getId());
-                    SendMessage announcement = new SendMessage();
-                    announcement.setChatId(update.getMessage().getChatId());
                     String out = "Initial territory claiming is complete." +
                             "\nPlayers have remaining armies to dispatch to their territories. Please select a territory to dispatch your remaining armies to and fortify. \n" +
                             "\n/reinforce <country> to select a country to dispatch one(1) army to." +
@@ -496,12 +441,6 @@ class CommandsHandler extends TelegramLongPollingBot{
                     }
 
                     announcement.setText(out);
-                    try {
-                        execute(announcement);
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
-
                     thisGame.state = GameState.CLAIMING;
 
                 }
@@ -509,8 +448,6 @@ class CommandsHandler extends TelegramLongPollingBot{
                 {
                     Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     String out = "";
-                    SendMessage announcement = new SendMessage();
-                    announcement.setChatId(update.getMessage().getChatId());
                     if(CommandUtils.isReinforcingOver(game) && game.state == GameState.CLAIMING)
                     {
                         game.state = GameState.ON_TURN;
@@ -556,12 +493,19 @@ class CommandsHandler extends TelegramLongPollingBot{
                         out = "/reinforce is done.";
                     }
                     announcement.setText(out);
-                    try {
-                        execute(announcement);
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
+
+
                 }
+                else {
+                    announcement.setText("Follow-up Message: none");
+                }
+            announcement.setChatId(update.getMessage().getChatId());
+
+            try {
+                execute(announcement);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
             }
         }
 

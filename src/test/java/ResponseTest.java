@@ -423,5 +423,81 @@ public class ResponseTest extends TestCase {
         onReinforce = Responses.onReinforce(INPUT, 0, _GameMaster.gamesListing.get("game"));
         assertEquals("You do not own this territory.", onReinforce);
 
+        INPUT.args = new ArrayList<String>(){{add("");}};
+        onReinforce = Responses.onReinforce(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        assertEquals("You did not put a country to reinforce.", onReinforce);
+
+    }
+
+    @Test
+    public void testFollowUpJoin(){
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+
+        Responses.onCreate(0, "game", "her", 123);
+        _GameMaster.gamesListing.get("game").addUser(1, "his", 123);
+
+        String onFollowUpJoin = Responses.onFollowUpJoin("game");
+        String expected = "Your game game is now starting. Order:\n";
+
+        for (int user_id : _GameMaster.gamesListing.get("game").playerDirectory.keySet()) {
+            expected += "@";
+            expected += _GameMaster.gamesListing.get("game").playerDirectory.get(user_id).username;
+            expected += "\n";
+        }
+
+        expected += "\n" +
+                "\n" +
+                "To begin claiming your initial territories, enter /listFreeTerritories to get the list of available territories again. " +
+                "The list is automatically shown below. \n" +
+                "\n" +
+                "__AVAILABLE TERRITORIES__\n" +
+                "YAKUTSK\n" +
+                "SOUTH AFRICA\n" +
+                "KAMCHATKA\n" +
+                "ONTARIO\n" +
+                "SIBERIA\n" +
+                "ALASKA\n" +
+                "NORTHERN EUROPE\n" +
+                "ARGENTINA\n" +
+                "GREAT BRITAIN\n" +
+                "WESTERN EUROPE\n" +
+                "SOUTHERN EUROPE\n" +
+                "UKRAINE\n" +
+                "WESTERN UNITED STATES\n" +
+                "EGYPT\n" +
+                "VENEZUELA\n" +
+                "NEW GUINEA\n" +
+                "JAPAN\n" +
+                "GREENLAND\n" +
+                "QUEBEC\n" +
+                "MIDDLE EAST\n" +
+                "PERU\n" +
+                "CONGO\n" +
+                "NORTH AFRICA\n" +
+                "SIAM\n" +
+                "IRKUTSK\n" +
+                "SCANDINAVIA\n" +
+                "INDONESIA\n" +
+                "CHINA\n" +
+                "NORTH WEST TERRITORY\n" +
+                "BRAZIL\n" +
+                "URAL\n" +
+                "EAST AFRICA\n" +
+                "MADAGASCAR\n" +
+                "AFGHANISTAN\n" +
+                "EASTERN AUSTRALIA\n" +
+                "CENTRAL AMERICA\n" +
+                "ALBERTA\n" +
+                "WESTERN AUSTRALIA\n" +
+                "EASTERN UNITED STATES\n" +
+                "ICELAND\n" +
+                "INDIA\n" +
+                "MONGOLIA\n" +
+                "\n";
+        expected += "It is now player @"+ CommandUtils.getFirstPlayer(_GameMaster.gamesListing.get("game").playerDirectory).username + "'s turn\n";
+        expected += "Enter /pick <country> to select and capture your initial territories. ";
+
+        assertEquals(expected, onFollowUpJoin);
     }
 }

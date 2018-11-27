@@ -2,6 +2,8 @@
 
 *///////////////////////////////////////////////////////////////////////////////*/
 
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -220,5 +222,33 @@ public class Responses {
         } else {
             return "Uh Oh! It is not your turn player #" + user_id + ", it is player #"+ game.nextTurnUserID+ "'s turn.";
         }
+    }
+
+    public static String onFollowUpJoin(String context){
+        _GameMaster.gamesListing.get(context).start();
+        String res = "Order:\n";
+        for (int user_id : _GameMaster.gamesListing.get(context).playerDirectory.keySet()) {
+            res += "@";
+            res += _GameMaster.gamesListing.get(context).playerDirectory.get(user_id).username;
+            res += "\n";
+        }
+
+        res += "\n\n";
+        res += "To begin claiming your initial territories, enter /listFreeTerritories to get the list of available territories again." +
+                " The list is automatically shown below. \n\n" +
+                "__AVAILABLE TERRITORIES__";
+        for(String each: _GameMaster.gamesListing.get(context).BM.getFreeTerritories())
+        {
+            res += "\n"+each;
+        }
+
+        ArrayList<Integer> tempListing = new ArrayList<>();
+        tempListing.addAll(_GameMaster.gamesListing.get(context).playerDirectory.keySet());
+        Game game = _GameMaster.gamesListing.get(context);
+        res += "\n\nIt is now player @" +
+                game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size())).username + "'s turn";
+        res += "\nEnter /pick <country> to select and capture your initial territories. ";
+
+        return "Your game " + _GameMaster.gamesListing.get(context).gameID + " is now starting. " + res;
     }
 }
