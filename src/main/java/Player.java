@@ -130,8 +130,6 @@ public class Player implements Observer {
         }else{
             ownedContinents += "NO CONTINENTS. ";
         }
-        System.out.println("You get " + moreArmies + " armies because you own " + ownedContinents + "Congratulations!");
-
         return moreArmies;
     }
 

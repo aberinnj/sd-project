@@ -312,12 +312,46 @@ public class Responses {
                 }
             }
         }
-
         else {
             out = "/reinforce is done.";
         }
         return out;
 
 
+    }
+
+    public static String onBeginTurn(Game game)
+    {
+        Player player = CommandUtils.getPlayer(game);
+        String out = ("Player @" +player.getUsername()+ " has begin their turn. You may: \n" +
+                "\n/tradecards to trade your cards if you have pairs" +
+                "\n/reinforce <country> to reinforce new free armies to your territory" +
+                "\n/attack <invading> <defending> <number of armies to attack with MAX.3> <number of armies to defend with MAX.2>" +
+                "\n/fortify <fortify from> <fortify neighbor> <number of armies to transfer>" +
+                "\n/buycredit <amount> to buy credit" +
+                "\n/buystuff <# of undos> <# of cards> to buy stuff with your credits" +
+                "\n/endturn to finally end your turn");
+        Turn turn = new Turn(game.BM, player, game.turn);
+        game.setCurrentTurn(turn);
+
+        System.out.println("Breakdown of free armies: ");
+            int freebies = turn.getArmiesFromCards() + turn.getFreeArmiesFromTerritories();
+            player.addArmies(freebies);
+
+            out += "\n\nYou have " + player.getNumberOfArmies() + " available armies to reinforce";
+        out += ("\nYou have " + player.getUndos() + " undo");
+        out += ("\nYou have " + player.getWallet() + " credits");
+        ArrayList<Card> cards = player.getHandListing();
+
+        out += "\nYou have " + cards.size() + " card(s)";
+        if (!cards.isEmpty())
+        {
+            for (Card c : cards) {
+                out += ("\n\t"+c.getOrigin() + ": " + c.getUnit());
+            }
+        }
+
+
+        return out;
     }
 }
