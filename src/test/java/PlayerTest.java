@@ -1,6 +1,7 @@
 import org.junit.Test;
 import junit.framework.TestCase;
 import java.util.ArrayList;
+import java.util.Stack;
 
 /*////////////////////////////////////////////////////////////////////////////////
 PlayerTest
@@ -118,6 +119,25 @@ public class PlayerTest extends TestCase{
         p1.getTerritories().add("SOUTHERN EUROPE");
         p1.getTerritories().add("UKRAINE");
         assertEquals(24, p1.getContinentsOwned(bm));
+    }
+
+    @Test
+    public void testOtherPlayerStuff() {
+        BoardManager BM = new BoardManager();
+        assertNotNull(BM.getFreeTerritories());
+        Player cooper;
+        cooper = new Player(0, 5);
+        cooper.setTerritories(BM.getFreeTerritories());
+        Stack<Card> deck = new Stack<>();
+        Card c = BM.gameDeck.draw();
+        deck.push(c);
+
+        cooper.setCardStack(deck);
+
+        assertNotNull(cooper.getUsername());
+        assertNotNull(cooper.getChat_id());
+        assertNotNull(cooper.getTotalCards());
+
     }
 
 }
