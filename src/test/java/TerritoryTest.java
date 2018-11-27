@@ -76,4 +76,14 @@ public class TerritoryTest extends TestCase{
         assertEquals("4", mainTerritory.seeArmyCount());
     }
 
+    @Test
+    public void testSetStatus() throws Exception {
+        mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"}, "UN-NAMED");
+        mainTerritory.setTerritory(true, 2, new Army(4));
+        assertEquals("4", mainTerritory.seeArmyCount());
+        mainTerritory.setStatusToNormal();
+        mainTerritory.setStatusToFallen();
+        mainTerritory.setStatusToUnderAttack();
+    }
+
 }
