@@ -82,6 +82,11 @@ class CommandsHandler extends TelegramLongPollingBot{
 
         if (update.hasMessage() && update.getMessage().hasText()){
 
+            Game tempGame = CommandUtils.getGame(update.getMessage().getFrom().getId());
+            if (tempGame != null) {
+
+            }
+
             SendMessage message = new SendMessage();
 
             message.setChatId(update.getMessage().getChatId());
