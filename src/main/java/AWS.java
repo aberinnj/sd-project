@@ -50,7 +50,7 @@ public class AWS {
     }
 
     //Function to upload saved game file to S3 bucket, fileObjKeyName = GameID
-    public void upload(String fileObjKeyName) throws InterruptedException {
+    public void upload(String fileObjKeyName) {
 
         try {
 
@@ -101,7 +101,7 @@ public class AWS {
     }
 
     //Function to download saved game file from S3 bucket
-    public void download(String gameID) throws IOException, InterruptedException {
+    public void download(String gameID) throws IOException {
         String fileObjKeyName = gameID; // Game ID is the name of the file containing a games info stored in the AWS bucket
         S3Object fullObject = null, objectPortion = null, headerOverrideObject = null;
         try {

@@ -42,7 +42,8 @@ public class CommandUtils {
         tempListing.addAll(game.playerDirectory.keySet());
         for(Integer k: tempListing)
         {
-            reinforceDone = reinforceDone && (game.playerDirectory.get(k).getNumberOfArmies()==0);
+            int armiesLeft = game.playerDirectory.get(k).getNumberOfArmies();
+            reinforceDone = reinforceDone && (armiesLeft==0);
         }
         return reinforceDone;
     }

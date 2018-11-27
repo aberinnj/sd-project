@@ -55,8 +55,12 @@ public class ResponseTest extends TestCase {
     public void testCreate(){
         _GameMaster.gamesListing = new HashMap<>();
         _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+
         String onCreate = Responses.onCreate(2, "G4m3IDs0Un1qu3", "bobby", 1234567);
         assertEquals("Creating a new game session. \nGameID: G4m3IDs0Un1qu3", onCreate);
+
+        onCreate = Responses.onCreate(2, "G4m3IDs0Un1qu3", "bobby", 1234567);
+        assertEquals("@bobby sorry! You are already playing a game.", onCreate);
     }
 
     @Test
@@ -106,6 +110,115 @@ public class ResponseTest extends TestCase {
         onJoin = Responses.onJoin(INPUT, 1, "cherry", (long)1234567);
         assertEquals("You are already in this game.", onJoin);
 
+    }
 
+    @Test
+    public void testSkipClaim(){
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        String onCreate = Responses.onCreate(0, "game", "her", 123);
+        String onJoin = Responses.onJoin(INPUT, 1, "his", (long)123);
+        String skipClaim = Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        assertEquals("her chose YAKUTSK\n" +
+                        "his chose SOUTH AFRICA\n" +
+                        "her chose KAMCHATKA\n" +
+                        "his chose ONTARIO\n" +
+                        "her chose SIBERIA\n" +
+                        "his chose ALASKA\n" +
+                        "her chose NORTHERN EUROPE\n" +
+                        "his chose ARGENTINA\n" +
+                        "her chose GREAT BRITAIN\n" +
+                        "his chose WESTERN EUROPE\n" +
+                        "her chose SOUTHERN EUROPE\n" +
+                        "his chose UKRAINE\n" +
+                        "her chose WESTERN UNITED STATES\n" +
+                        "his chose EGYPT\n" +
+                        "her chose VENEZUELA\n" +
+                        "his chose NEW GUINEA\n" +
+                        "her chose JAPAN\n" +
+                        "his chose GREENLAND\n" +
+                        "her chose QUEBEC\n" +
+                        "his chose MIDDLE EAST\n" +
+                        "her chose PERU\n" +
+                        "his chose CONGO\n" +
+                        "her chose NORTH AFRICA\n" +
+                        "his chose SIAM\n" +
+                        "her chose IRKUTSK\n" +
+                        "his chose SCANDINAVIA\n" +
+                        "her chose INDONESIA\n" +
+                        "his chose CHINA\n" +
+                        "her chose NORTH WEST TERRITORY\n" +
+                        "his chose BRAZIL\n" +
+                        "her chose URAL\n" +
+                        "his chose EAST AFRICA\n" +
+                        "her chose MADAGASCAR\n" +
+                        "his chose AFGHANISTAN\n" +
+                        "her chose EASTERN AUSTRALIA\n" +
+                        "his chose CENTRAL AMERICA\n" +
+                        "her chose ALBERTA\n" +
+                        "his chose WESTERN AUSTRALIA\n" +
+                        "her chose EASTERN UNITED STATES\n" +
+                        "his chose ICELAND\n" +
+                        "her chose INDIA\n" +
+                        "his chose MONGOLIA\n",
+                skipClaim);
+    }
+
+    @Test
+    public void testSkipReinforce(){
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        String onCreate = Responses.onCreate(0, "game", "her", 123);
+        String onJoin = Responses.onJoin(INPUT, 1, "his", (long)123);
+        String skipClaim = Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        _GameMaster.gamesListing.get("game").setPlayerList();
+
+        String skipReinforce = Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
+        assertEquals("her reinforces EASTERN AUSTRALIA\n" +
+                "his reinforces AFGHANISTAN\n" +
+                "her reinforces URAL\n" +
+                "his reinforces BRAZIL\n" +
+                "her reinforces INDONESIA\n" +
+                "his reinforces SCANDINAVIA\n" +
+                "her reinforces NORTH AFRICA\n" +
+                "his reinforces CONGO\n" +
+                "her reinforces QUEBEC\n" +
+                "his reinforces GREENLAND\n" +
+                "her reinforces VENEZUELA\n" +
+                "his reinforces EGYPT\n" +
+                "her reinforces SOUTHERN EUROPE\n" +
+                "his reinforces WESTERN EUROPE\n" +
+                "her reinforces NORTHERN EUROPE\n" +
+                "his reinforces ALASKA\n" +
+                "her reinforces KAMCHATKA\n" +
+                "his reinforces SOUTH AFRICA\n" +
+                "her reinforces INDIA\n" +
+                "his reinforces ICELAND\n" +
+                "her reinforces ALBERTA\n" +
+                "his reinforces CENTRAL AMERICA\n" +
+                "her reinforces MADAGASCAR\n" +
+                "his reinforces EAST AFRICA\n" +
+                "her reinforces NORTH WEST TERRITORY\n" +
+                "his reinforces CHINA\n" +
+                "her reinforces IRKUTSK\n" +
+                "his reinforces SIAM\n" +
+                "her reinforces PERU\n" +
+                "his reinforces MIDDLE EAST\n" +
+                "her reinforces JAPAN\n" +
+                "his reinforces NEW GUINEA\n" +
+                "her reinforces WESTERN UNITED STATES\n" +
+                "his reinforces UKRAINE\n" +
+                "her reinforces GREAT BRITAIN\n" +
+                "his reinforces ARGENTINA\n" +
+                "her reinforces SIBERIA\n" +
+                "his reinforces ONTARIO\n", skipReinforce);
     }
 }
