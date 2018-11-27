@@ -10,7 +10,7 @@ public class JSONhandlerTest extends TestCase {
     public void testJSONhandler() throws IOException {
         Game game = new Game();
         JSONhandler handler = new JSONhandler(game);
-        handler.fileName = handler.base + "/src/files//testRisk.json";
+        handler.fileName = handler.base + "/src/files//testRisk2.json";
         JsonObject junk = handler.JSONreader();
         handler.JSONwriter();
     }
@@ -36,7 +36,7 @@ public class JSONhandlerTest extends TestCase {
         assertNotNull(turn.getArmiesFromCards());
 
         JSONhandler handler = new JSONhandler(game);
-        handler.fileName = handler.base + "/src/files//testRisk.json";
+        handler.fileName = handler.base + "/src/files//testRisk2.json";
 
         handler.JSONwriter();
     }

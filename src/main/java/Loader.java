@@ -1,6 +1,7 @@
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.IOException;
 import java.util.*;
@@ -13,15 +14,16 @@ reinstantiates loaded game
 public class Loader {
 
     Game game;
+    JSONhandler JH;
 
     // New loader creates new game to later be fully instantiated using saved variables loaded from S3
     Loader(String ID) {
         this.game = new Game();
         game.setGameID(ID);
+        this.JH = new JSONhandler(game);
     }
 
     public Game LoadGame() throws IOException {
-        JSONhandler JH = new JSONhandler(game);
         JsonObject gameJson = JH.JSONreader();
         setGame(gameJson);
         setDeck(gameJson);
@@ -44,9 +46,9 @@ public class Loader {
         while (itr.hasNext())
         {
             JsonObject tempCard = (JsonObject) itr.next();
-            String territory = String.valueOf(tempCard.keySet());
-            String army = String.valueOf(tempCard.get(territory));
-            GameDeck.push(new Card(territory, army));
+            String territoryName = String.valueOf(tempCard.get("Territory"));
+            String territoryArmy = String.valueOf(tempCard.get("Unit"));
+            GameDeck.push(new Card(territoryName, territoryArmy));
         }
         game.BM.newDeck(GameDeck);
     }
@@ -74,10 +76,9 @@ public class Loader {
             JsonArray territories = (JsonArray)playerJSON.get("Territories");
             Iterator<JsonElement> teris = territories.iterator();
             while (teris.hasNext()) {
-                JsonObject tempTerriory = (JsonObject) teris.next();
-                String territoryName = String.valueOf(tempTerriory.keySet());
-                int territoryArmy = tempTerriory.get(territoryName).getAsInt();
-
+                JsonObject tempTerritory = (JsonObject) teris.next();
+                String territoryName = String.valueOf(tempTerritory.get("Territory"));
+                int territoryArmy = (tempTerritory.get("Unit")).getAsInt();
                 tempPlayer.addTerritories(territoryName);
                 game.BM.addOccupantsTo(territoryName, territoryArmy);
             }
@@ -88,8 +89,8 @@ public class Loader {
             while (cads.hasNext())
             {
                 JsonObject tempCard = (JsonObject) cads.next();
-                String territory = String.valueOf(tempCard.keySet());
-                String army = String.valueOf(tempCard.get(territory));
+                String territory = String.valueOf(tempCard.get("Territory"));
+                String army = String.valueOf(tempCard.get("Unit"));
                 Card nextCard = new Card(territory, army);
                 tempPlayer.getHand().get(nextCard.getUnit()).push(nextCard);
             }

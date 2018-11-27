@@ -105,8 +105,8 @@ public class BoardManager {
     public Deck getGameDeck() {return gameDeck;}
 
     // re-implements the deck for when loading a game
-    public void newDeck(List<Card> deck) {
-        gameDeck = (Deck) deck;
+    public void newDeck(Stack<Card> deck) {
+        gameDeck = new Deck(deck);
     }
 
     // used for initialization in constructor above
@@ -166,6 +166,7 @@ public class BoardManager {
     // Takes care of setting territories for initialization // can also be used after winning a territory
     // Note: Attacking takes an amount of armies and places them into player's placeholder Army
     public void initializeTerritory(Player p, String territory, int armyCount ){
+
         boardMap.get(territory).setTerritory(true, p.getId(), new Army(armyCount));
         boardMap.get(territory).addObserver(p);
         System.out.println(territory);
