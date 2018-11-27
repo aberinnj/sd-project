@@ -7,6 +7,7 @@ public class LoaderTest extends TestCase {
 
     @Test
     public void testLoader() throws IOException {
+        _GameMaster _GameMaster = new _GameMaster();
         Loader load = new Loader("1");
         load.JH.fileName = load.JH.base + "/src/files/testRisk.json";
         load.LoadGame();

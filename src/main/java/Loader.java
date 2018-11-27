@@ -78,9 +78,11 @@ public class Loader {
             while (teris.hasNext()) {
                 JsonObject tempTerritory = (JsonObject) teris.next();
                 String territoryName = String.valueOf(tempTerritory.get("Territory"));
-                int territoryArmy = (tempTerritory.get("Unit")).getAsInt();
+                int territoryArmy = tempTerritory.get("Unit").getAsInt();
+                territoryName = territoryName.substring(1, territoryName.length()-1);
                 tempPlayer.addTerritories(territoryName);
-                game.BM.addOccupantsTo(territoryName, territoryArmy);
+                tempPlayer.addArmies(territoryArmy);
+                game.BM.initializeTerritory(tempPlayer, territoryName, territoryArmy);
             }
 
             // While loop to add cards to hand from JSON
@@ -97,7 +99,17 @@ public class Loader {
 
             // put the tempPlayer into the games player directory
             game.playerDirectory.put(game.playerDirectory.size(), tempPlayer);
-            _GameMaster.allPlayersAndTheirGames.put(playerID, game.gameID);
+
+
+        }
+    }
+
+    public void set_GameMaster() {
+        ArrayList<Integer> tempListing = new ArrayList<>();
+        tempListing.addAll(game.playerDirectory.keySet());
+        for (int i = 0; i < game.playerDirectory.size(); i++) {
+            int tempID = game.playerDirectory.get(tempListing.get(i)).id;
+            _GameMaster.allPlayersAndTheirGames.put(tempID, String.valueOf(game.gameID));
         }
     }
 }
