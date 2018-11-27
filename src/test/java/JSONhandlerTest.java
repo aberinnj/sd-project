@@ -39,5 +39,10 @@ public class JSONhandlerTest extends TestCase {
         handler.fileName = handler.base + "/src/files//testRisk2.json";
 
         handler.JSONwriter();
+
+        CommandUtils cutils = new CommandUtils();
+        assertNotNull(cutils.getInput("Hello World"));
+        assertNotNull(cutils.getPlayer(game));
+        assertNotNull(cutils.isReinforcingOver(game));
     }
 }

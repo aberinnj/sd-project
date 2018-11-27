@@ -49,7 +49,7 @@ public class Player implements Observer {
     }
 
     // reset the hand when reloading game
-    public void setCardStack(ArrayList<Card> cardStack) {
+    public void setCardStack(Stack<Card> cardStack) {
         for(Card e: cardStack)
         {
             Hand.get(e.getUnit()).push(e);
