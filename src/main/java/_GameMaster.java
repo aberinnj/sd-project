@@ -368,43 +368,10 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                 case "/beginTurn": {
                     Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
-                    int turnNo = game.turn % game.playerDirectory.size();
-                    Player player = CommandUtils.getPlayer(game);
-                    String out = ("Player @" +player.getUsername()+ " has begin their turn. You may: \n" +
-                            "\n/tradecards to trade your cards if you have pairs" +
-                            "\n/reinforce <country> to reinforce new free armies to your territory" +
-                            "\n/attack <invading> <defending> <number of armies to attack with MAX.3> <number of armies to defend with MAX.2>" +
-                            "\n/fortify <fortify from> <fortify neighbor> <number of armies to transfer>" +
-                            "\n/buycredit <amount> to buy credit" +
-                            "\n/buystuff <# of undos> <# of cards> to buy stuff with your credits" +
-                            "\n/endturn to finally end your turn");
-                    Turn turn = new Turn(game.BM, player, game.turn);
-                    game.setCurrentTurn(turn);
-                    try {
-                        int freebies = turn.getArmiesFromCards() + turn.getFreeArmiesFromTerritories();
-                        System.out.println(freebies);
-                        player.addArmies(freebies);
-                        System.out.println(player.getNumberOfArmies());
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    out += ("\n\nYou have " + player.getNumberOfArmies() + " available armies to reinforce\n\n");
-                    out += ("\nFor attacking, you have the following able territories: \n");
-                    out += (turn.getAttackableTerritories());
-                    out += ("\n__YOU HAVE___");
-                    ArrayList<Card> cards = player.getHandListing();
-                    if (cards.isEmpty())
-                    {
-                        out += "\n\nNo Cards\n";
-                    } else {
-                        for (Card c : cards) {
-                            out += ("\n"+c.getOrigin() + ": " + c.getUnit());
-                        }
-                        out += "\n";
-                    }
-                    out += ("\n\t" + player.getUndos() + " undos");
-                    out += ("\n\t" + player.getWallet() + " credit");
-                    message.setText(out);
+                    //int turnNo = game.turn % game.playerDirectory.size();
+
+
+                    message.setText(Responses.onBeginTurn(game));
                     break;
                 }
 
