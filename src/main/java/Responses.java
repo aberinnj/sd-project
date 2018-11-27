@@ -43,7 +43,7 @@ public class Responses {
             for(String id: _GameMaster.gamesListing.keySet()){
                 if (_GameMaster.gamesListing.get(id).playerDirectory.containsKey(user_id)) {
                     res += _GameMaster.gamesListing.get(id).playerDirectory.size();
-                    res += " players(s) \t";
+                    res += " player(s) \t";
                     res += id;
                     res += "\n";
                     gamesFound = true;
@@ -79,23 +79,6 @@ public class Responses {
         }
         else {
             return "You did not provide a gameID";
-        }
-    }
-
-    public static String onGetStatus(String game){
-        if (!_GameMaster.gamesListing.containsKey(game)){
-            return "Game not found.";
-        }
-        else {
-            String res = "Status for " + game + ":\n";
-            res += _GameMaster.gamesListing.get(game).playerDirectory.size();
-            res += " player(s) \t";
-            res += game;
-            res += "\n";
-            res += "Status: ";
-            //res += _GameMaster.gamesListing.get(game).state;
-            res += "\n\n";
-            return res;
         }
     }
 

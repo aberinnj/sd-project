@@ -246,16 +246,6 @@ class CommandsHandler extends TelegramLongPollingBot{
                     break;
                 }
 
-                case "/getStatus": {
-                    if (in.getArgs().size() > 0)
-                    {
-                        message.setText(Responses.onGetStatus(in.getArgs().get(0)));
-                    } else {
-                        message.setText("You did not provide a gameID.");
-                    }
-                    break;
-                }
-
                 case "/listMyGames": {
                     int id = update.getMessage().getFrom().getId();
                     message.setText(Responses.onListMyGames(id));
