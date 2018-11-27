@@ -325,6 +325,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                         player.addUndos(undos);
                         player.addMoney( undos * 1000 * -1);
                     }
+
                     Double cards = Double.valueOf(in.getArgs().get(1));
                     if (cards * 100 < cash) {
                         for (int i = 0; i < cards; i++) {
@@ -372,7 +373,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                     Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     int turnNo = game.turn % game.playerDirectory.size();
                     Player player = CommandUtils.getPlayer(game);
-                    message.setText("Player " +player.getUsername()+ " may /tradecards /reinforce then /attack then /fortify then /buycredit then /buyshit only in that order or / then type /endturn to move to next player, ending your turn\n");
+                    String out = ("Player " +player.getUsername()+ " may /tradecards /reinforce then /attack then /fortify then /buycredit then /buyshit only in that order or / then type /endturn to move to next player, ending your turn\n");
                     Turn turn = new Turn(game.BM, player, game.turn);
                     game.setCurrentTurn(turn);
                     try {
@@ -380,16 +381,17 @@ class CommandsHandler extends TelegramLongPollingBot{
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    message.setText("You have " + player.getNumberOfArmies() + " available to place\n");
-                    message.setText(turn.getAttackableTerritories());
-                    message.setText("Your hand currently includes: ");
+                    out += ("You have " + player.getNumberOfArmies() + " available to place\n");
+                    out += (turn.getAttackableTerritories());
+                    out += ("Your hand currently includes: ");
                     ArrayList<Card> cards = player.getHandListing();
                     for (Card c: cards) {
-                        message.setText(c.getOrigin() + ": " + c.getUnit());
+                        out += (c.getOrigin() + ": " + c.getUnit());
                     }
-                    message.setText("You currently have:\n");
-                    message.setText("\t" + player.getUndos() + " undos\n");
-                    message.setText("\t" + player.getWallet() + " credit");
+                    out += ("You currently have:\n");
+                    out += ("\t" + player.getUndos() + " undos\n");
+                    out += ("\t" + player.getWallet() + " credit");
+                    message.setText(out);
                     break;
                 }
 
