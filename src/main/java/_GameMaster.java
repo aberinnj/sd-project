@@ -50,9 +50,6 @@ todo: directory is a dangerous way of mapping a user to a game. Only one game pe
 public class _GameMaster {
     static HashMap<String, Game> gamesListing;
     static HashMap<Integer, String> allPlayersAndTheirGames;
-    //static Fetcher kineticEntity;
-    final static int MIN_PLAYERS_PER_GAME = 2;
-    final static int MAX_PLAYERS_PER_GAME = 6;
 
     public static void main(String[] args) {
         gamesListing = new HashMap<>();
@@ -417,9 +414,6 @@ class CommandsHandler extends TelegramLongPollingBot{
                     ArrayList<Long> chat_reply_list = new ArrayList<>();
                     SendMessage announcement = new SendMessage();
 
-                    // add most sender of join command to the playerDirectory
-                    message.setText(Responses.onJoin(in, update.getMessage().getFrom().getId(), update.getMessage().getFrom().getUserName(), update.getMessage().getChatId()));
-
                     for (int user_id : _GameMaster.gamesListing.get(context).playerDirectory.keySet()) {
                         if (!chat_reply_list.contains(_GameMaster.gamesListing.get(context).playerDirectory.get(user_id).chat_id)) {
                             chat_reply_list.add(_GameMaster.gamesListing.get(context).playerDirectory.get(user_id).chat_id);
@@ -429,7 +423,6 @@ class CommandsHandler extends TelegramLongPollingBot{
                         res += " ";
                     }
                     res += "\n";
-
                     _GameMaster.gamesListing.get(context).start();
 
                     String fromMessenger = _GameMaster.gamesListing.get(context).messenger.getMessage();
@@ -443,7 +436,6 @@ class CommandsHandler extends TelegramLongPollingBot{
                     res += "To begin claiming your initial territories, enter /listFreeTerritories to get the list of available territories again." +
                             " The list is automatically shown below. \n\n" +
                             "__AVAILABLE TERRITORIES__";
-
                     Messenger tempMSG = _GameMaster.gamesListing.get(context).messenger;
                     tempMSG.putMessage(_GameMaster.gamesListing.get(context).BM.getFreeTerritories());
 
@@ -470,7 +462,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                         }
                     }
                 }
-                else if((in.getCommand().equals("/pick") || (in.getCommand().equals("/skipClaim")) && _GameMaster.gamesListing.get(CommandUtils.getGame(update.getMessage().getFrom().getId()).gameID).BM.getFreeTerritories().size() == 0))
+                else if((in.getCommand().equals("/pick") || (in.getCommand().equals("/skipClaim"))) && _GameMaster.gamesListing.get(CommandUtils.getGame(update.getMessage().getFrom().getId()).gameID).BM.getFreeTerritories().size() == 0)
                 {
                     Game thisGame = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     SendMessage announcement = new SendMessage();

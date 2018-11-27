@@ -186,6 +186,7 @@ public class Responses {
     public static String onReinforce(ChatInput in, Integer user_id, Game game){
         String out;
         Player player = CommandUtils.getPlayer(game);
+        System.out.println(player.getNumberOfArmies());
         if(player.getNumberOfArmies() == 0)
         {
             return "You already have dispatched all available armies";
