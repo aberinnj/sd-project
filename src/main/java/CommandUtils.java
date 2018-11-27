@@ -1,3 +1,7 @@
+import org.telegram.telegrambots.meta.api.objects.Update;
+
+import java.util.ArrayList;
+
 /*//////////////////////////////////////////////////////////////////////////////////
 Main function
 //////////////////////////////////////////////////////////////////////////////////*/
@@ -16,7 +20,30 @@ public class CommandUtils {
         return parsedInput;
     }
 
-    public static boolean validateArgumentCount(ChatInput input, int expectedArguments){
-        return input.args.size() == expectedArguments;
+
+
+    // function to get the game being communicated with
+    public static Game getGame(int user_id) {
+        String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
+        Game game = _GameMaster.gamesListing.get(gameID);
+        return game;
+    }
+
+
+    public static Player getPlayer(Game game) {
+        ArrayList<Integer> tempListing = new ArrayList<>();
+        tempListing.addAll(game.playerDirectory.keySet());
+        return game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size()));
+    }
+
+    public static Boolean isReinforcingOver(Game game){
+        boolean reinforceDone = true;
+        ArrayList<Integer> tempListing = new ArrayList<>();
+        tempListing.addAll(game.playerDirectory.keySet());
+        for(Integer k: tempListing)
+        {
+            reinforceDone = reinforceDone && (game.playerDirectory.get(k).getNumberOfArmies()==0);
+        }
+        return reinforceDone;
     }
 }
