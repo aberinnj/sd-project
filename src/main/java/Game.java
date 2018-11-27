@@ -1,19 +1,11 @@
 import java.util.*;
 
-/*
+
 enum GameState {
-    QUEUE, // the default state
-    START, // when a game gets 3 players, this is the state until functions are called (a brief window) and the state is changed again
-    INIT, // the state when the game has started
-    CLAIM, // the state when the game allows for players to claim territories
-    ARMIES, // same as CLAIM except armies instead of territories
-    TURNS, // state for running actual turns
-    WAIT, // the state when the gmae is waiting on a player
-    THINK, // the neutral state to switch from WAIT or to WAIT -- thinking
-    PAUSE, // the state when the timer is set off (future functionality)
-    END, // the state when the game has ended until functions are called (another brief window)
-    CLOSED // the final state, when all functions are called
-}*/
+    NULL,
+    CLAIMING,
+    ON_TURN
+}
 
 /*////////////////////////////////////////////////////////////////////////////////
 Game holds all each game's information and the list of players in the game
@@ -27,7 +19,7 @@ class Game extends Observable {
     int nextTurnUserID;
     int turn;
     String gameID;
-    //GameState state;
+    GameState state;
     Messenger messenger;
     Turn currentTurn;
     Deck deck;
@@ -38,6 +30,7 @@ class Game extends Observable {
         playerDirectory = new HashMap<>();
         BM = new BoardManager();
         users = new ArrayList<>();
+        state = GameState.NULL;
         turn = 0;
         nextTurnUserID = 0;
         //state = GameState.QUEUE;
@@ -96,10 +89,7 @@ class Game extends Observable {
         shufflePlayers();
         setPlayerList();
 
-        // setting the first person who must make a turn
-        ArrayList<Integer> users = new ArrayList<Integer>();
-        users.addAll(playerDirectory.keySet());
-        nextTurnUserID = playerDirectory.get(users.get(0)).id;
+        nextTurnUserID = CommandUtils.getFirstPlayer(playerDirectory).id;
     }
 
     public void addUser(Integer user_id, String username, long chat_id){

@@ -309,7 +309,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                     player.addMoney(Double.parseDouble(in.getArgs().get(0)));
                 }
 
-                // format -> /buyshit (# undos to buy) (# cards to buy)
+                // format -> /buystuff (# undos to buy) (# cards to buy)
                 case "/buystuff": {
                     Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     int turnNo = game.turn % game.playerDirectory.size();
@@ -370,24 +370,40 @@ class CommandsHandler extends TelegramLongPollingBot{
                     Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     int turnNo = game.turn % game.playerDirectory.size();
                     Player player = CommandUtils.getPlayer(game);
-                    String out = ("Player " +player.getUsername()+ " may /tradecards /reinforce then /attack then /fortify then /buycredit then /buyshit only in that order or / then type /endturn to move to next player, ending your turn\n");
+                    String out = ("Player @" +player.getUsername()+ " has begin their turn. You may: \n" +
+                            "\n/tradecards to trade your cards if you have pairs" +
+                            "\n/reinforce <country> to reinforce new free armies to your territory" +
+                            "\n/attack <invading> <defending> <number of armies to attack with MAX.3> <number of armies to defend with MAX.2>" +
+                            "\n/fortify <fortify from> <fortify neighbor> <number of armies to transfer>" +
+                            "\n/buycredit <amount> to buy credit" +
+                            "\n/buystuff <# of undos> <# of cards> to buy stuff with your credits" +
+                            "\n/endturn to finally end your turn");
                     Turn turn = new Turn(game.BM, player, game.turn);
                     game.setCurrentTurn(turn);
                     try {
-                        player.addArmies(turn.getArmiesFromCards() + turn.getFreeArmiesFromTerritories());
+                        int freebies = turn.getArmiesFromCards() + turn.getFreeArmiesFromTerritories();
+                        System.out.println(freebies);
+                        player.addArmies(freebies);
+                        System.out.println(player.getNumberOfArmies());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    out += ("You have " + player.getNumberOfArmies() + " available to place\n");
+                    out += ("\n\nYou have " + player.getNumberOfArmies() + " available armies to reinforce\n\n");
+                    out += ("\nFor attacking, you have the following able territories: \n");
                     out += (turn.getAttackableTerritories());
-                    out += ("Your hand currently includes: ");
+                    out += ("\n__YOU HAVE___");
                     ArrayList<Card> cards = player.getHandListing();
-                    for (Card c: cards) {
-                        out += (c.getOrigin() + ": " + c.getUnit());
+                    if (cards.isEmpty())
+                    {
+                        out += "\n\nNo Cards\n";
+                    } else {
+                        for (Card c : cards) {
+                            out += ("\n"+c.getOrigin() + ": " + c.getUnit());
+                        }
+                        out += "\n";
                     }
-                    out += ("You currently have:\n");
-                    out += ("\t" + player.getUndos() + " undos\n");
-                    out += ("\t" + player.getWallet() + " credit");
+                    out += ("\n\t" + player.getUndos() + " undos");
+                    out += ("\n\t" + player.getWallet() + " credit");
                     message.setText(out);
                     break;
                 }
@@ -486,27 +502,64 @@ class CommandsHandler extends TelegramLongPollingBot{
                         e.printStackTrace();
                     }
 
+                    thisGame.state = GameState.CLAIMING;
+
                 }
                 else if (in.getCommand().equals("/reinforce") || in.getCommand().equals("/skipReinforce"))
                 {
                     Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
-
-                    if(CommandUtils.isReinforcingOver(game))
+                    String out = "";
+                    SendMessage announcement = new SendMessage();
+                    announcement.setChatId(update.getMessage().getChatId());
+                    if(CommandUtils.isReinforcingOver(game) && game.state == GameState.CLAIMING)
                     {
-                        SendMessage announcement = new SendMessage();
-                        announcement.setChatId(update.getMessage().getChatId());
-                        String out = "Initial territory reinforcing is complete." +
+                        game.state = GameState.ON_TURN;
+                        out = "Initial territory reinforcing is complete." +
                                 "\nPlayers can now begin making turns\n" +
                                 "\n/beginTurn to begin your turn" +
                                 "\n/endTurn to end your turn" +
                                 "\n\nIt is now player @" + game.playerDirectory.get(0).username + "'s turn:";
 
-                        announcement.setText(out);
-                        try {
-                            execute(announcement);
-                        } catch (TelegramApiException e) {
-                            e.printStackTrace();
+                    } else if(game.state == GameState.CLAIMING){
+                        game.turn += 1;
+                        Player nextPlayer = CommandUtils.getPlayer(game);
+                        out = "\nIt is now player @" + nextPlayer.username + "'s turn";
+                        out += "\nYour territories are:";
+                        for(String i: nextPlayer.getTerritories())
+                        {
+                            out += "\n"+i;
                         }
+
+                        game.nextTurnUserID = nextPlayer.id;
+                    }
+                    else if (game.state == GameState.ON_TURN )
+                    {
+                        Player nextPlayer = CommandUtils.getPlayer(game);
+
+                        if(nextPlayer.getNumberOfArmies() == 0)
+                        {
+                            out += "\n/attack <invading> <defending> <number of armies to attack with MAX.3> <number of armies to defend with MAX.2>" +
+                                    "\n/fortify <fortify from> <fortify neighbor> <number of armies to transfer>" +
+                                    "\n/buycredit <amount> to buy credit" +
+                                    "\n/buystuff <# of undos> <# of cards> to buy stuff with your credits" +
+                                    "\n/endturn to finally end your turn";
+                        }
+                        else {
+                            out += "\nCurrently, your territories are:";
+                            for (String i : nextPlayer.getTerritories()) {
+                                out += "\n" + game.BM.getBoardMap().get(i).getArmy().getInfantryCount() + " armies -- " + i;
+                            }
+                        }
+                    }
+
+                    else {
+                        out = "/reinforce is done.";
+                    }
+                    announcement.setText(out);
+                    try {
+                        execute(announcement);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
                     }
                 }
             }

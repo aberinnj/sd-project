@@ -120,8 +120,11 @@ public class Responses {
                 msg +=  nextPlayer.username + " reinforces " + terr + "\n";
                 game.BM.strengthenTerritory(nextPlayer, terr, 1);
                 game.turn++;
+
             }
         }
+
+        game.nextTurnUserID = CommandUtils.getFirstPlayer(game.playerDirectory).id;
         return msg;
     }
 
@@ -136,7 +139,12 @@ public class Responses {
             game.BM.initializeTerritory(player, terr, 1);
             msg += (player.username + " chose " + terr + "\n");
             game.turn += 1;
+
+            Player nextNextPlayer = CommandUtils.getPlayer(game);
+            game.nextTurnUserID = nextNextPlayer.id;
         }
+
+        game.nextTurnUserID = CommandUtils.getFirstPlayer(game.playerDirectory).id;
         return msg;
     }
 
@@ -186,7 +194,6 @@ public class Responses {
     public static String onReinforce(ChatInput in, Integer user_id, Game game){
         String out;
         Player player = CommandUtils.getPlayer(game);
-        System.out.println(player.getNumberOfArmies());
         if(player.getNumberOfArmies() == 0)
         {
             return "You already have dispatched all available armies";
@@ -207,18 +214,7 @@ public class Responses {
                 out = "@"+player.username + " reinforces " + tempTerritory;
                 game.BM.strengthenTerritory(player, tempTerritory, 1);
                 out += "\n@"+player.username + " you have " + player.getNumberOfArmies() + " armies left\n";
-                game.turn += 1;
 
-                Player nextPlayer = CommandUtils.getPlayer(game);
-                out += "\nIt is now player @" + nextPlayer.username + "'s turn";
-                out += "\nYour territories are:";
-                for(String i: nextPlayer.getTerritories())
-                {
-                    System.out.println(i);
-                    out += "\n"+i;
-                }
-
-                game.nextTurnUserID = nextPlayer.id;
                 return out;
             }
         } else {

@@ -402,7 +402,7 @@ public class ResponseTest extends TestCase {
         String onJoin = Responses.onJoin(INPUT, 1, "his", (long)123);
         String skipClaim = Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
         _GameMaster.gamesListing.get("game").setPlayerList();
-
+        _GameMaster.gamesListing.get("game").state = GameState.CLAIMING;
         String onReinforce;
 
         _GameMaster.gamesListing.get("game").playerDirectory.get(0).loseArmies(19);
@@ -417,35 +417,10 @@ public class ResponseTest extends TestCase {
 
         onReinforce = Responses.onReinforce(INPUT, 0, _GameMaster.gamesListing.get("game"));
         assertEquals("@her reinforces YAKUTSK\n" +
-                "@her you have 18 armies left\n" +
-                "\n" +
-                "It is now player @his's turn\n" +
-                "Your territories are:\n" +
-                "SOUTH AFRICA\n" +
-                "ONTARIO\n" +
-                "ALASKA\n" +
-                "ARGENTINA\n" +
-                "WESTERN EUROPE\n" +
-                "UKRAINE\n" +
-                "EGYPT\n" +
-                "NEW GUINEA\n" +
-                "GREENLAND\n" +
-                "MIDDLE EAST\n" +
-                "CONGO\n" +
-                "SIAM\n" +
-                "SCANDINAVIA\n" +
-                "CHINA\n" +
-                "BRAZIL\n" +
-                "EAST AFRICA\n" +
-                "AFGHANISTAN\n" +
-                "CENTRAL AMERICA\n" +
-                "WESTERN AUSTRALIA\n" +
-                "ICELAND\n" +
-                "MONGOLIA", onReinforce);
+                "@her you have 18 armies left\n", onReinforce);
 
-        INPUT.args = new ArrayList<String>(){{add("YAKUTSK");}};
-        _GameMaster.gamesListing.get("game").playerDirectory.get(0).addArmies(19);
-        onReinforce = Responses.onReinforce(INPUT, 1, _GameMaster.gamesListing.get("game"));
+        INPUT.args = new ArrayList<String>(){{add("SOUTH AFRICA");}};
+        onReinforce = Responses.onReinforce(INPUT, 0, _GameMaster.gamesListing.get("game"));
         assertEquals("You do not own this territory.", onReinforce);
 
     }

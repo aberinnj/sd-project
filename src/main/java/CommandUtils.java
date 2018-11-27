@@ -1,6 +1,7 @@
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /*//////////////////////////////////////////////////////////////////////////////////
 Main function
@@ -34,6 +35,13 @@ public class CommandUtils {
         ArrayList<Integer> tempListing = new ArrayList<>();
         tempListing.addAll(game.playerDirectory.keySet());
         return game.playerDirectory.get(tempListing.get(game.turn % game.playerDirectory.size()));
+    }
+
+    public static Player getFirstPlayer(HashMap<Integer, Player> playerDirectory){
+        // setting the first person who must make a turn
+        ArrayList<Integer> users = new ArrayList<Integer>();
+        users.addAll(playerDirectory.keySet());
+        return playerDirectory.get(users.get(0));
     }
 
     public static Boolean isReinforcingOver(Game game){
