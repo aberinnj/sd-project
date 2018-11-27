@@ -3,6 +3,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /*////////////////////////////////////////////////////////////////////////////////
 BoardManager Class handles Territory and Continents, as well as the Deck
@@ -18,14 +19,16 @@ public class BoardManagerTest extends TestCase {
 
         assertNotNull(BM.gameDeck.draw());
 
-        List<Card> deck = (List<Card>) BM.gameDeck.draw();
+        Stack<Card> deck = new Stack<>();
+        Card c = BM.gameDeck.draw();
+        deck.push(c);
 
         BM.newDeck(deck);
         BM.gameDeck.draw();
-        assertNull(BM.gameDeck);
+        assertNull(BM.gameDeck.draw());
 
-        assertNotNull(BM.getContinentsMap("MONGOLIA"));
-        assertNotNull(BM.getFreeTerritories());
+        assertNotNull(BM.getBoardMap());
+        assertNotNull(BM.getGameDeck());
     }
 
     @Test

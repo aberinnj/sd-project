@@ -69,6 +69,7 @@ class JSONturn {
             tempPlayerJSON.addProperty("ChatID", tempPlayer.chat_id);
             tempPlayerJSON.addProperty("PlayerWallet", tempPlayer.getWallet());
             tempPlayerJSON.addProperty("Undos",tempPlayer.getUndos());
+            //tempPlayerJSON.addProperty("Armies", tempPlayer.getNumberOfArmies());
 
             JsonArray hand = createPlayerHand(tempPlayer);
             tempPlayerJSON.add("Hand", hand);
@@ -89,7 +90,8 @@ class JSONturn {
         JsonArray cards = new JsonArray();
         for (Card card: deck) {
             JsonObject temp = new JsonObject();
-            temp.addProperty(card.getOrigin(), card.getUnit());
+            temp.addProperty("Territory", card.getOrigin());
+            temp.addProperty("Unit", card.getUnit());
             cards.add(temp);
         }
         return cards;
@@ -101,7 +103,8 @@ class JSONturn {
         JsonArray hand = new JsonArray();
         for (Card card: player.getHandListing()) {
             JsonObject temp = new JsonObject();
-            temp.addProperty(card.getOrigin(), card.getUnit());
+            temp.addProperty("Territory", card.getOrigin());
+            temp.addProperty("Unit", card.getUnit());
             hand.add(temp);
         }
         return hand;
@@ -114,7 +117,8 @@ class JSONturn {
         for (String terr: t) {
             JsonObject temp = new JsonObject();
             int a = game.BM.getOccupantCount(terr);
-            temp.addProperty(terr, a);
+            temp.addProperty("Territory", terr);
+            temp.addProperty("Unit", a);
             ter.add(temp);
         }
         return ter;
