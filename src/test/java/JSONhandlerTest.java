@@ -2,7 +2,6 @@ import com.google.gson.JsonObject;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class JSONhandlerTest extends TestCase {
