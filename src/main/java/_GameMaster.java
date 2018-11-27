@@ -216,41 +216,19 @@ class CommandsHandler extends TelegramLongPollingBot{
                 // message should be formatted /attack (attack territory) (defend territory) (Number of armies to attack with) (number of armies to defend with)
                 case "/attack": {
                     Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
-                    String attacker = null;
-                    String defender = null;
-                    int i = 0; // number to keep track of the size of the country inputs
+                   message.setText(Responses.onAttack(game, in));
+                    break;
+                }
 
-                    if (game.BM.boardMap.containsKey(in.getArgs().get(0))) {
-                        attacker = in.getArgs().get(0);
-                        i = 1;
-                    }
-                    else if (game.BM.boardMap.containsKey(in.getArgs().get(0) + " " + in.getArgs().get(1))) {
-                        attacker = in.getArgs().get(0) + " " + in.getArgs().get(1);
-                        i = 2;
-                    }
-                    else if (game.BM.boardMap.containsKey(in.getArgs().get(0) + " " + in.getArgs().get(1) + " " + in.getArgs().get(2))) {
-                        attacker = in.getArgs().get(0) + " " + in.getArgs().get(1) + " " + in.getArgs().get(2);
-                        i = 3;
-                    }
+                case "/atttackWith": {
+                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
+                    message.setText(Responses.onAttackWith(game, in));
+                    break;
+                }
 
-                    if (game.BM.boardMap.containsKey(in.getArgs().get(i))) {
-                        defender = in.getArgs().get(i);
-                        i += 1;
-                    }
-                    else if (game.BM.boardMap.containsKey(in.getArgs().get(i) + " " + in.getArgs().get(i+1))) {
-                        defender = in.getArgs().get(i) + " " + in.getArgs().get(i+1);
-                        i += 2;
-                    }
-                    else if (game.BM.boardMap.containsKey(in.getArgs().get(i) + " " + in.getArgs().get(i+1) + " " + in.getArgs().get(i+2))) {
-                        defender = in.getArgs().get(i) + " " + in.getArgs().get(i+1) + " " + in.getArgs().get(i+2);
-                        i += 3;
-                    }
-
-                    int attackDie = Integer.parseInt(in.getArgs().get(i));
-                    int defenseDie = Integer.parseInt(in.getArgs().get(i+1));
-
-                    Turn turn = game.currentTurn;
-                    message.setText(turn.battle(attacker, defender, attackDie, defenseDie));
+                case "/defendWith": {
+                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
+                    message.setText(Responses.onDefendWith(game, in));
                     break;
                 }
 
@@ -362,6 +340,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                     game.turn += 1;
                     int turnNo = game.turn % game.playerDirectory.size();
                     Player player = game.playerDirectory.get(turnNo);
+                    game.nextTurnUserID = player.id;
                     message.setText("Player " +player.getUsername()+ " it is now your turn, type /beginTurn to begin your turn");
                     break;
                 }

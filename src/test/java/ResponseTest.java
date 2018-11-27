@@ -643,39 +643,93 @@ public class ResponseTest extends TestCase {
         Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
         Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
         String onBeginTurn = Responses.onBeginTurn(_GameMaster.gamesListing.get("game"));
-        assertEquals("Player @her has begin their turn. You may: \n" +
-                        "\n/tradecards to trade your cards if you have pairs" +
-                        "\n/reinforce <country> to reinforce new free armies to your territory" +
-                        "\n/attack <invading> <defending> <number of armies to attack with MAX.3> <number of armies to defend with MAX.2>" +
-                        "\n/fortify <fortify from> <fortify neighbor> <number of armies to transfer>" +
-                        "\n/buycredit <amount> to buy credit" +
-                        "\n/buystuff <# of undos> <# of cards> to buy stuff with your credits" +
-                        "\n/endturn to finally end your turn" +
-                        "\n\nYou have 7 available armies to reinforce" +
-                        "\nYou have 0 undo" +
-                        "\nYou have 0.0 credits"+
-                "\nYou have 0 card(s)", onBeginTurn);
+        assertNotNull(onBeginTurn);
 
 
         Player player = CommandUtils.getPlayer(_GameMaster.gamesListing.get("game"));
         player.getHand().get("INFANTRY").push(new Card("CHINA", "INFANTRY"));
         onBeginTurn = Responses.onBeginTurn(_GameMaster.gamesListing.get("game"));
 
-        assertEquals("Player @her has begin their turn. You may: \n" +
-                "\n/tradecards to trade your cards if you have pairs" +
-                "\n/reinforce <country> to reinforce new free armies to your territory" +
-                "\n/attack <invading> <defending> <number of armies to attack with MAX.3> <number of armies to defend with MAX.2>" +
-                "\n/fortify <fortify from> <fortify neighbor> <number of armies to transfer>" +
-                "\n/buycredit <amount> to buy credit" +
-                "\n/buystuff <# of undos> <# of cards> to buy stuff with your credits" +
-                "\n/endturn to finally end your turn" +
-                "\n\nYou have 14 available armies to reinforce" +
-                        "\nYou have 0 undo" +
-                        "\nYou have 0.0 credits"+
-                "\nYou have 1 card(s)" +
-                "\n\tCHINA: INFANTRY",
-                    onBeginTurn
-        );
+        assertNotNull(onBeginTurn);
+    }
+
+    @Test
+    public void testOnAttack(){
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        String response;
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        Responses.onCreate(0, "game", "her", 123);
+        Responses.onJoin(INPUT, 1, "his", (long)123);
+        _GameMaster.gamesListing.get("game").setPlayerList();
+
+        response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You cannot attack right now.", response);
+
+        Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
+        _GameMaster.gamesListing.get("game").state = GameState.ON_TURN;
+        String onBeginTurn = Responses.onBeginTurn(_GameMaster.gamesListing.get("game"));
+
+        INPUT.args = new ArrayList<>();
+        response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
+
+        assertEquals("To commence an attack,\n" +
+                "/attack <from>\n" +
+                "/attack <enemy>\n" +
+                "/attackWith <count max(3)>\n" +
+                "\n" +
+                "Your territories that are able to attack:\n" +
+                "KAMCHATKA: 2 armies, CAN ATTACK\n" +
+                "SIBERIA: 2 armies, CAN ATTACK\n" +
+                "NORTHERN EUROPE: 2 armies, CAN ATTACK\n" +
+                "GREAT BRITAIN: 2 armies, CAN ATTACK\n" +
+                "SOUTHERN EUROPE: 2 armies, CAN ATTACK\n" +
+                "WESTERN UNITED STATES: 2 armies, CAN ATTACK\n" +
+                "VENEZUELA: 2 armies, CAN ATTACK\n" +
+                "JAPAN: 2 armies, CAN ATTACK\n" +
+                "QUEBEC: 2 armies, CAN ATTACK\n" +
+                "PERU: 2 armies, CAN ATTACK\n" +
+                "NORTH AFRICA: 2 armies, CAN ATTACK\n" +
+                "IRKUTSK: 2 armies, CAN ATTACK\n" +
+                "INDONESIA: 2 armies, CAN ATTACK\n" +
+                "NORTH WEST TERRITORY: 2 armies, CAN ATTACK\n" +
+                "URAL: 2 armies, CAN ATTACK\n" +
+                "MADAGASCAR: 2 armies, CAN ATTACK\n" +
+                "EASTERN AUSTRALIA: 2 armies, CAN ATTACK\n" +
+                "ALBERTA: 2 armies, CAN ATTACK\n" +
+                "EASTERN UNITED STATES: 2 armies, CAN ATTACK\n", response);
+
+        INPUT.args = new ArrayList<String>(){{add("POPEYES");}};
+        response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You do not own POPEYES", response);
+
+        INPUT.args = new ArrayList<String>(){{add("PERU");}};
+        response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have commenced attacking from PERU", response);
+        assertNotNull(_GameMaster.gamesListing.get("game").context);
+        assertEquals("PERU", _GameMaster.gamesListing.get("game").context.countryFrom);
+        assertEquals(GameState.ATTACKING, _GameMaster.gamesListing.get("game").state);
+
+        response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You own this territory and cannot attack it.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("CHINA");}};
+        response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("Territory is unreachable from PERU", response);
+
+        INPUT.args = new ArrayList<String>(){{add("BRAZIL");}};
+        response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have commenced an attack on BRAZIL", response);
+
+        INPUT.args = new ArrayList<String>(){{add("CANCEL");}};
+        response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You cancelled attacking.", response);
+        assertNull(_GameMaster.gamesListing.get("game").context);
+
     }
 
 

@@ -2,6 +2,7 @@
 
 *///////////////////////////////////////////////////////////////////////////////*/
 
+import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
@@ -326,7 +327,7 @@ public class Responses {
         String out = ("Player @" +player.getUsername()+ " has begin their turn. You may: \n" +
                 "\n/tradecards to trade your cards if you have pairs" +
                 "\n/reinforce <country> to reinforce new free armies to your territory" +
-                "\n/attack <invading> <defending> <number of armies to attack with MAX.3> <number of armies to defend with MAX.2>" +
+                "\n/attack to commence an attack and learn more about related attack commands" +
                 "\n/fortify <fortify from> <fortify neighbor> <number of armies to transfer>" +
                 "\n/buycredit <amount> to buy credit" +
                 "\n/buystuff <# of undos> <# of cards> to buy stuff with your credits" +
@@ -353,5 +354,84 @@ public class Responses {
 
 
         return out;
+    }
+
+    public static String onAttack(Game game, ChatInput in) {
+        String tempTerritory = String.join(" ", in.getArgs());
+            if(game.state == GameState.ON_TURN || game.state == GameState.ATTACKING)
+            {
+
+                Player player = CommandUtils.getPlayer(game);
+                Turn turn = new Turn(game.BM, player, game.turn);
+
+                if (tempTerritory.equals("")) {
+                    game.context = new Context();
+                    return "To commence an attack," +
+                            "\n/attack <from>" +
+                            "\n/attack <enemy>" +
+                            "\n/attackWith <count max(3)>" +
+                            "\n\nYour territories that are able to attack:\n" + (turn.getAttackableTerritories());
+
+                } else
+                {
+                    if (player.getTerritories().contains(tempTerritory)
+                            && game.state == GameState.ON_TURN) {
+                        // the player owns the territory
+                        // the context is attacking from this territory
+                        game.context = new Context();
+                        game.context.countryFrom = tempTerritory;
+                        game.state = GameState.ATTACKING;
+                        return "You have commenced attacking from " + tempTerritory;
+                    } else if (player.getTerritories().contains(tempTerritory)
+                        && game.state == GameState.ATTACKING) {
+                        // the player owns the territory
+                        // the context is attacking this territory
+                        return "You own this territory and cannot attack it.";
+                    }else if (!player.getTerritories().contains(tempTerritory)
+                                && game.BM.getBoardMap().keySet().contains(tempTerritory)
+                                && game.BM.getNeighborsOf(game.context.countryFrom).contains(tempTerritory)
+                                && game.state == GameState.ATTACKING) {
+                        // the player does not own the enemy's territory
+                        // the territory exists
+                        // the territory is a neighbor of
+                        // the context is attacking an enemy territory
+                        game.context.countryTo = tempTerritory;
+                        return "You have commenced an attack on " + tempTerritory;
+                    } else if (!player.getTerritories().contains(tempTerritory)
+                            && game.BM.getBoardMap().keySet().contains(tempTerritory)
+                            && !game.BM.getNeighborsOf(game.context.countryFrom).contains(tempTerritory)
+                            && game.state == GameState.ATTACKING) {
+                        // the player does not own the enemy's territory
+                        // the territory exists
+                        // the territory is NOT a neighbor of
+                        // the context is attacking an enemy territory
+                        return "Territory is unreachable from " + game.context.countryFrom;
+                    } else if (tempTerritory.toLowerCase().equals("cancel")) {
+                        game.context = null;
+                        return "You cancelled attacking.";
+                    } else {
+                        return "You do not own " + tempTerritory;
+                    }
+                }
+            }
+            else {
+                return "You cannot attack right now.";
+            }
+    }
+
+    public static String onAttackWith(Game game, ChatInput in){
+        return "";
+    }
+
+    public static String onDefendWith(Game game, ChatInput in){
+        return "";
+    }
+
+    public static String onFollowUpResult(Game game) {
+        if(game.state == GameState.RESULT)
+        {
+            // display follow up results for attacking
+        }
+        return "";
     }
 }
