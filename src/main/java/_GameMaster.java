@@ -427,74 +427,12 @@ class CommandsHandler extends TelegramLongPollingBot{
                 }
                 else if((in.getCommand().equals("/pick") || (in.getCommand().equals("/skipClaim"))) && _GameMaster.gamesListing.get(CommandUtils.getGame(update.getMessage().getFrom().getId()).gameID).BM.getFreeTerritories().size() == 0)
                 {
-                    Game thisGame = CommandUtils.getGame(update.getMessage().getFrom().getId());
-                    String out = "Initial territory claiming is complete." +
-                            "\nPlayers have remaining armies to dispatch to their territories. Please select a territory to dispatch your remaining armies to and fortify. \n" +
-                            "\n/reinforce <country> to select a country to dispatch one(1) army to." +
-                            "\n/listMyTerritories to view your territories and their status. (not implemented yet)" +
-                            "\n\nIt is now player @" + thisGame.playerDirectory.get(0).username + "'s turn:" +
-                            "\nYour territories you can reinforce";
-
-                    for(String k: thisGame.playerDirectory.get(0).getTerritories())
-                    {
-                        out += "\n"+k;
-                    }
-
-                    announcement.setText(out);
-                    thisGame.state = GameState.CLAIMING;
+                   announcement.setText(Responses.onFollowUpInitPick(CommandUtils.getGame(update.getMessage().getFrom().getId())));
 
                 }
                 else if (in.getCommand().equals("/reinforce") || in.getCommand().equals("/skipReinforce"))
                 {
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
-                    String out = "";
-                    if(CommandUtils.isReinforcingOver(game) && game.state == GameState.CLAIMING)
-                    {
-                        game.state = GameState.ON_TURN;
-                        out = "Initial territory reinforcing is complete." +
-                                "\nPlayers can now begin making turns\n" +
-                                "\n/beginTurn to begin your turn" +
-                                "\n/endTurn to end your turn" +
-                                "\n\nIt is now player @" + game.playerDirectory.get(0).username + "'s turn:";
-
-                    } else if(game.state == GameState.CLAIMING){
-                        game.turn += 1;
-                        Player nextPlayer = CommandUtils.getPlayer(game);
-                        out = "\nIt is now player @" + nextPlayer.username + "'s turn";
-                        out += "\nYour territories are:";
-                        for(String i: nextPlayer.getTerritories())
-                        {
-                            out += "\n"+i;
-                        }
-
-                        game.nextTurnUserID = nextPlayer.id;
-                    }
-                    else if (game.state == GameState.ON_TURN )
-                    {
-                        Player nextPlayer = CommandUtils.getPlayer(game);
-
-                        if(nextPlayer.getNumberOfArmies() == 0)
-                        {
-                            out += "\n/attack <invading> <defending> <number of armies to attack with MAX.3> <number of armies to defend with MAX.2>" +
-                                    "\n/fortify <fortify from> <fortify neighbor> <number of armies to transfer>" +
-                                    "\n/buycredit <amount> to buy credit" +
-                                    "\n/buystuff <# of undos> <# of cards> to buy stuff with your credits" +
-                                    "\n/endturn to finally end your turn";
-                        }
-                        else {
-                            out += "\nCurrently, your territories are:";
-                            for (String i : nextPlayer.getTerritories()) {
-                                out += "\n" + game.BM.getBoardMap().get(i).getArmy().getInfantryCount() + " armies -- " + i;
-                            }
-                        }
-                    }
-
-                    else {
-                        out = "/reinforce is done.";
-                    }
-                    announcement.setText(out);
-
-
+                    announcement.setText(Responses.onFollowUpReinforce(CommandUtils.getGame(update.getMessage().getFrom().getId())));
                 }
                 else {
                     announcement.setText("Follow-up Message: none");

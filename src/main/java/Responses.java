@@ -251,4 +251,73 @@ public class Responses {
 
         return "Your game " + _GameMaster.gamesListing.get(context).gameID + " is now starting. " + res;
     }
+
+    public static String onFollowUpInitPick(Game thisGame){
+        String out = "Initial territory claiming is complete." +
+                "\nPlayers have remaining armies to dispatch to their territories. Please select a territory to dispatch your remaining armies to and fortify. \n" +
+                "\n/reinforce <country> to select a country to dispatch one(1) army to." +
+                "\n/listMyTerritories to view your territories and their status. (not implemented yet)" +
+                "\n\nIt is now player @" + thisGame.playerDirectory.get(0).username + "'s turn:" +
+                "\nYour territories you can reinforce";
+
+
+        for(String k: thisGame.playerDirectory.get(0).getTerritories())
+        {
+            out += "\n"+k;
+        }
+
+        thisGame.state = GameState.CLAIMING;
+        return out;
+    }
+
+    public static String onFollowUpReinforce(Game game){
+        String out = "";
+        if(CommandUtils.isReinforcingOver(game) && game.state == GameState.CLAIMING)
+        {
+            game.state = GameState.ON_TURN;
+            out = "Initial territory reinforcing is complete." +
+                    "\nPlayers can now begin making turns\n" +
+                    "\n/beginTurn to begin your turn" +
+                    "\n/endTurn to end your turn" +
+                    "\n\nIt is now player @" + game.playerDirectory.get(0).username + "'s turn:";
+
+        } else if(game.state == GameState.CLAIMING){
+            game.turn += 1;
+            Player nextPlayer = CommandUtils.getPlayer(game);
+            out = "\nIt is now player @" + nextPlayer.username + "'s turn";
+            out += "\nYour territories are:";
+            for(String i: nextPlayer.getTerritories())
+            {
+                out += "\n"+i;
+            }
+
+            game.nextTurnUserID = nextPlayer.id;
+        }
+        else if (game.state == GameState.ON_TURN )
+        {
+            Player nextPlayer = CommandUtils.getPlayer(game);
+
+            if(nextPlayer.getNumberOfArmies() == 0)
+            {
+                out += "\n/attack <invading> <defending> <number of armies to attack with MAX.3> <number of armies to defend with MAX.2>" +
+                        "\n/fortify <fortify from> <fortify neighbor> <number of armies to transfer>" +
+                        "\n/buycredit <amount> to buy credit" +
+                        "\n/buystuff <# of undos> <# of cards> to buy stuff with your credits" +
+                        "\n/endturn to finally end your turn";
+            }
+            else {
+                out += "\nCurrently, your territories are:";
+                for (String i : nextPlayer.getTerritories()) {
+                    out += "\n" + game.BM.getBoardMap().get(i).getArmy().getInfantryCount() + " armies -- " + i;
+                }
+            }
+        }
+
+        else {
+            out = "/reinforce is done.";
+        }
+        return out;
+
+
+    }
 }
