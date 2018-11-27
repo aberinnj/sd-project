@@ -25,6 +25,7 @@ class Game extends Observable {
     ArrayList<Integer> users;
     //ArrayList<Integer> turnPattern;
     ArrayList<Player> turnPattern;
+    int nextTurnUserID;
     int turn;
     String gameID;
     //GameState state;
@@ -40,6 +41,7 @@ class Game extends Observable {
         users = new ArrayList<>();
         turnPattern = new ArrayList<>();
         turn = 0;
+        nextTurnUserID = 0;
         //state = GameState.QUEUE;
     }
 
@@ -95,6 +97,11 @@ class Game extends Observable {
     public void start() {
         shufflePlayers();
         setPlayerList();
+
+        // setting the first person who must make a turn
+        ArrayList<Integer> users = new ArrayList<Integer>();
+        users.addAll(playerDirectory.keySet());
+        nextTurnUserID = playerDirectory.get(users.get(0)).id;
     }
 
     public void addUser(Integer user_id, String username, long chat_id){
