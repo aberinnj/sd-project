@@ -312,7 +312,6 @@ public class Responses {
                 }
             }
         }
-
         else {
             out = "/reinforce is done.";
         }
@@ -339,22 +338,19 @@ public class Responses {
             int freebies = turn.getArmiesFromCards() + turn.getFreeArmiesFromTerritories();
             player.addArmies(freebies);
 
-        out += ("\n\nYou have " + player.getNumberOfArmies() + " available armies to reinforce\n\n");
-        out += ("\nFor attacking, you have the following able territories: \n");
-        out += (turn.getAttackableTerritories());
-        out += ("\n__YOU HAVE___");
+            out += "\n\nYou have " + player.getNumberOfArmies() + " available armies to reinforce";
+        out += ("\nYou have " + player.getUndos() + " undo");
+        out += ("\nYou have " + player.getWallet() + " credits");
         ArrayList<Card> cards = player.getHandListing();
-        if (cards.isEmpty())
+
+        out += "\nYou have " + cards.size() + " card(s)";
+        if (!cards.isEmpty())
         {
-            out += "\n\nNo Cards\n";
-        } else {
             for (Card c : cards) {
-                out += ("\n"+c.getOrigin() + ": " + c.getUnit());
+                out += ("\n\t"+c.getOrigin() + ": " + c.getUnit());
             }
-            out += "\n";
         }
-        out += ("\n\t" + player.getUndos() + " undos");
-        out += ("\n\t" + player.getWallet() + " credit");
+
 
         return out;
     }

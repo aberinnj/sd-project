@@ -369,12 +369,9 @@ class CommandsHandler extends TelegramLongPollingBot{
                 case "/beginTurn": {
                     Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     //int turnNo = game.turn % game.playerDirectory.size();
-
-
                     message.setText(Responses.onBeginTurn(game));
                     break;
                 }
-
                 default:
                     message.setText("Command " + in.getCommand() + " not found.\n\n" + Responses.onHelp());
                     break;

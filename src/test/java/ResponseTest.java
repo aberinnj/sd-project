@@ -644,43 +644,17 @@ public class ResponseTest extends TestCase {
         Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
         String onBeginTurn = Responses.onBeginTurn(_GameMaster.gamesListing.get("game"));
         assertEquals("Player @her has begin their turn. You may: \n" +
-                "\n/tradecards to trade your cards if you have pairs" +
-                "\n/reinforce <country> to reinforce new free armies to your territory" +
-                "\n/attack <invading> <defending> <number of armies to attack with MAX.3> <number of armies to defend with MAX.2>" +
-                "\n/fortify <fortify from> <fortify neighbor> <number of armies to transfer>" +
-                "\n/buycredit <amount> to buy credit" +
-                "\n/buystuff <# of undos> <# of cards> to buy stuff with your credits" +
-                "\n/endturn to finally end your turn" +
-                "\n\nYou have 7 available armies to reinforce\n" +
-                "\n" +
-                "\n" +
-                "For attacking, you have the following able territories: \n" +
-                "KAMCHATKA: 2 armies, CAN ATTACK\n" +
-                "SIBERIA: 2 armies, CAN ATTACK\n" +
-                "NORTHERN EUROPE: 2 armies, CAN ATTACK\n" +
-                "GREAT BRITAIN: 2 armies, CAN ATTACK\n" +
-                "SOUTHERN EUROPE: 2 armies, CAN ATTACK\n" +
-                "WESTERN UNITED STATES: 2 armies, CAN ATTACK\n" +
-                "VENEZUELA: 2 armies, CAN ATTACK\n" +
-                "JAPAN: 2 armies, CAN ATTACK\n" +
-                "QUEBEC: 2 armies, CAN ATTACK\n" +
-                "PERU: 2 armies, CAN ATTACK\n" +
-                "NORTH AFRICA: 2 armies, CAN ATTACK\n" +
-                "IRKUTSK: 2 armies, CAN ATTACK\n" +
-                "INDONESIA: 2 armies, CAN ATTACK\n" +
-                "NORTH WEST TERRITORY: 2 armies, CAN ATTACK\n" +
-                "URAL: 2 armies, CAN ATTACK\n" +
-                "MADAGASCAR: 2 armies, CAN ATTACK\n" +
-                "EASTERN AUSTRALIA: 2 armies, CAN ATTACK\n" +
-                "ALBERTA: 2 armies, CAN ATTACK\n" +
-                "EASTERN UNITED STATES: 2 armies, CAN ATTACK\n" +
-                "\n" +
-                "__YOU HAVE___\n" +
-                "\n" +
-                "No Cards\n" +
-                "\n" +
-                "\t0 undos\n" +
-                "\t0.0 credit", onBeginTurn);
+                        "\n/tradecards to trade your cards if you have pairs" +
+                        "\n/reinforce <country> to reinforce new free armies to your territory" +
+                        "\n/attack <invading> <defending> <number of armies to attack with MAX.3> <number of armies to defend with MAX.2>" +
+                        "\n/fortify <fortify from> <fortify neighbor> <number of armies to transfer>" +
+                        "\n/buycredit <amount> to buy credit" +
+                        "\n/buystuff <# of undos> <# of cards> to buy stuff with your credits" +
+                        "\n/endturn to finally end your turn" +
+                        "\n\nYou have 7 available armies to reinforce" +
+                        "\nYou have 0 undo" +
+                        "\nYou have 0.0 credits"+
+                "\nYou have 0 card(s)", onBeginTurn);
 
 
         Player player = CommandUtils.getPlayer(_GameMaster.gamesListing.get("game"));
@@ -695,35 +669,13 @@ public class ResponseTest extends TestCase {
                 "\n/buycredit <amount> to buy credit" +
                 "\n/buystuff <# of undos> <# of cards> to buy stuff with your credits" +
                 "\n/endturn to finally end your turn" +
-                "\n\nYou have 14 available armies to reinforce\n" +
-                "\n" +
-                "\n" +
-                "For attacking, you have the following able territories: \n" +
-                "KAMCHATKA: 2 armies, CAN ATTACK\n" +
-                "SIBERIA: 2 armies, CAN ATTACK\n" +
-                "NORTHERN EUROPE: 2 armies, CAN ATTACK\n" +
-                "GREAT BRITAIN: 2 armies, CAN ATTACK\n" +
-                "SOUTHERN EUROPE: 2 armies, CAN ATTACK\n" +
-                "WESTERN UNITED STATES: 2 armies, CAN ATTACK\n" +
-                "VENEZUELA: 2 armies, CAN ATTACK\n" +
-                "JAPAN: 2 armies, CAN ATTACK\n" +
-                "QUEBEC: 2 armies, CAN ATTACK\n" +
-                "PERU: 2 armies, CAN ATTACK\n" +
-                "NORTH AFRICA: 2 armies, CAN ATTACK\n" +
-                "IRKUTSK: 2 armies, CAN ATTACK\n" +
-                "INDONESIA: 2 armies, CAN ATTACK\n" +
-                "NORTH WEST TERRITORY: 2 armies, CAN ATTACK\n" +
-                "URAL: 2 armies, CAN ATTACK\n" +
-                "MADAGASCAR: 2 armies, CAN ATTACK\n" +
-                "EASTERN AUSTRALIA: 2 armies, CAN ATTACK\n" +
-                "ALBERTA: 2 armies, CAN ATTACK\n" +
-                "EASTERN UNITED STATES: 2 armies, CAN ATTACK\n" +
-                "\n" +
-                "__YOU HAVE___" +
-                "\nCHINA: INFANTRY"+
-                "\n\n" +
-                "\t0 undos\n" +
-                "\t0.0 credit", onBeginTurn);
+                "\n\nYou have 14 available armies to reinforce" +
+                        "\nYou have 0 undo" +
+                        "\nYou have 0.0 credits"+
+                "\nYou have 1 card(s)" +
+                "\n\tCHINA: INFANTRY",
+                    onBeginTurn
+        );
     }
 
 
