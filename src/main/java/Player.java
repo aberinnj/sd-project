@@ -1,14 +1,14 @@
 import java.util.*;
 import java.util.Observer;
 
-
+/*
 enum PlayerState {
     QUEUE, // the default state
     REINFORCE, // player is able to reinforce territories
     ATTACK, // player can attack other players
     FORTIFY, // player can move their own armies
     PURCHASE  // player can but undos and whatnot
-}
+}*/
 
 
 
@@ -23,7 +23,7 @@ public class Player implements Observer {
     int id;
     String username;
     long chat_id;
-    PlayerState state;
+    //PlayerState state;
 
     Army placeholder;
     List<String> territories = new ArrayList<>();
@@ -41,7 +41,7 @@ public class Player implements Observer {
         Hand.put("WILD", new Stack<Card>());
         this.username = username;
         this.chat_id = chat_id; // send messages to this chat_id.
-        this.state = PlayerState.QUEUE;
+        //this.state = PlayerState.QUEUE;
     }
 
     public void setTerritories(List<String> territories) {

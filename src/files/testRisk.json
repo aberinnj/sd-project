@@ -1,0 +1,138 @@
+{
+  "Turn": 0,
+  "Deck": [
+    {
+      "SOUTHERN EUROPE": "CAVALRY"
+    },
+    {
+      "IRKUTSK": "ARTILLERY"
+    },
+    {
+      "AFGHANISTAN": "INFANTRY"
+    },
+    {
+      "WILD": "WILD"
+    },
+    {
+      "WESTERN EUROPE": "ARTILLERY"
+    },
+    {
+      "ONTARIO": "CAVALRY"
+    },
+    {
+      "BRAZIL": "ARTILLERY"
+    },
+    {
+      "YAKUTSK": "INFANTRY"
+    },
+    {
+      "WESTERN UNITED STATES": "INFANTRY"
+    },
+    {
+      "EASTERN UNITED STATES": "CAVALRY"
+    },
+    {
+      "WILD": "WILD"
+    },
+    {
+      "ALBERTA": "INFANTRY"
+    },
+    {
+      "EGYPT": "INFANTRY"
+    },
+    {
+      "PERU": "CAVALRY"
+    },
+    {
+      "INDONESIA": "CAVALRY"
+    },
+    {
+      "EAST AFRICA": "CAVALRY"
+    },
+    {
+      "INDIA": "ARTILLERY"
+    },
+    {
+      "KAMCHATKA": "CAVALRY"
+    },
+    {
+      "GREAT BRITAIN": "ARTILLERY"
+    },
+    {
+      "GREENLAND": "ARTILLERY"
+    },
+    {
+      "UKRAINE": "ARTILLERY"
+    },
+    {
+      "ICELAND": "CAVALRY"
+    },
+    {
+      "SCANDINAVIA": "INFANTRY"
+    },
+    {
+      "ALASKA": "INFANTRY"
+    },
+    {
+      "VENEZUELA": "INFANTRY"
+    },
+    {
+      "NEW GUINEA": "CAVALRY"
+    },
+    {
+      "MADAGASCAR": "INFANTRY"
+    },
+    {
+      "URAL": "CAVALRY"
+    },
+    {
+      "SOUTH AFRICA": "ARTILLERY"
+    },
+    {
+      "EASTERN AUSTRALIA": "INFANTRY"
+    },
+    {
+      "MIDDLE EAST": "CAVALRY"
+    },
+    {
+      "NORTH AFRICA": "CAVALRY"
+    },
+    {
+      "SIAM": "INFANTRY"
+    },
+    {
+      "QUEBEC": "ARTILLERY"
+    },
+    {
+      "MONGOLIA": "INFANTRY"
+    },
+    {
+      "CONGO": "ARTILLERY"
+    },
+    {
+      "SIBERIA": "ARTILLERY"
+    },
+    {
+      "WESTERN AUSTRALIA": "ARTILLERY"
+    },
+    {
+      "NORTHERN EUROPE": "INFANTRY"
+    },
+    {
+      "JAPAN": "CAVALRY"
+    },
+    {
+      "ARGENTINA": "INFANTRY"
+    },
+    {
+      "NORTH WEST TERRITORY": "CAVALRY"
+    },
+    {
+      "CHINA": "ARTILLERY"
+    },
+    {
+      "CENTRAL AMERICA": "ARTILLERY"
+    }
+  ],
+  "Players": []
+}

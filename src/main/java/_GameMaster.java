@@ -18,6 +18,7 @@ import twitter4j.TwitterException;
 /*////////////////////////////////////////////////////////////////////////////////
 Provides window and clean space for calling necessary functions
 *///////////////////////////////////////////////////////////////////////////////*/
+/*
 class Fetcher implements Observer {
 
     @Override
@@ -39,7 +40,7 @@ class Fetcher implements Observer {
 
         }
     }
-}
+}*/
 
 /*////////////////////////////////////////////////////////////////////////////////
 _GameMaster is the BOT that handles all chat commands and game hosting/handling
@@ -49,13 +50,13 @@ todo: directory is a dangerous way of mapping a user to a game. Only one game pe
 public class _GameMaster {
     static HashMap<String, Game> gamesListing;
     static HashMap<Integer, String> allPlayersAndTheirGames;
-    static Fetcher kineticEntity;
+    //static Fetcher kineticEntity;
     final static int MIN_PLAYERS_PER_GAME = 2;
     final static int MAX_PLAYERS_PER_GAME = 6;
 
     public static void main(String[] args) {
         gamesListing = new HashMap<>();
-        kineticEntity = new Fetcher();
+        //kineticEntity = new Fetcher();
         allPlayersAndTheirGames = new HashMap<>();
 
         // Telegram
@@ -313,6 +314,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                     if(_GameMaster.allPlayersAndTheirGames.containsKey(user_id))
                     {
                         String gameID = _GameMaster.allPlayersAndTheirGames.get(user_id);
+                            /*
                             if(_GameMaster.gamesListing.get(gameID).state == GameState.QUEUE || _GameMaster.gamesListing.get(gameID).state == GameState.INIT )
                             {
                                 message.setText("The game has not yet started.");
@@ -324,7 +326,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                             }
                             else{
                                 message.setText("There is no territory to claim.");
-                            }
+                            }*/
 
                     }else{
                         message.setText("You are not playing a game.");
