@@ -67,9 +67,10 @@ public class Responses {
             } else if (_GameMaster.gamesListing.get(context).playerDirectory.containsKey(user_id)) {
                 return "You are already in this game.";
             }
-            else if (_GameMaster.gamesListing.get(context).state != GameState.QUEUE) {
-                return "This game is no longer accepting players.";
-            } else {
+            //else if (_GameMaster.gamesListing.get(context).state != GameState.QUEUE) {
+            //    return "This game is no longer accepting players.";
+            //}
+            else {
                 _GameMaster.allPlayersAndTheirGames.put(user_id, context);
                 _GameMaster.gamesListing.get(context).addUser(user_id, username, chat_id);
 
@@ -92,7 +93,7 @@ public class Responses {
             res += game;
             res += "\n";
             res += "Status: ";
-            res += _GameMaster.gamesListing.get(game).state;
+            //res += _GameMaster.gamesListing.get(game).state;
             res += "\n\n";
             return res;
         }
@@ -106,7 +107,7 @@ public class Responses {
 
             _GameMaster.allPlayersAndTheirGames.put(user_id, gameID);
 
-            _GameMaster.gamesListing.get(gameID).addObserver(_GameMaster.kineticEntity);
+            //_GameMaster.gamesListing.get(gameID).addObserver(_GameMaster.kineticEntity);
             return "Creating a new game session. \nGameID: " + gameID;
     }
 

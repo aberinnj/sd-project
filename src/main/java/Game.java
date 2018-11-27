@@ -1,5 +1,6 @@
 import java.util.*;
 
+/*
 enum GameState {
     QUEUE, // the default state
     START, // when a game gets 3 players, this is the state until functions are called (a brief window) and the state is changed again
@@ -12,7 +13,7 @@ enum GameState {
     PAUSE, // the state when the timer is set off (future functionality)
     END, // the state when the game has ended until functions are called (another brief window)
     CLOSED // the final state, when all functions are called
-}
+}*/
 
 /*////////////////////////////////////////////////////////////////////////////////
 Game holds all each game's information and the list of players in the game
@@ -27,7 +28,7 @@ class Game extends Observable {
     int nextTurnUserID;
     int turn;
     String gameID;
-    GameState state;
+    //GameState state;
     Messenger messenger;
     Turn currentTurn;
     Deck deck;
@@ -41,7 +42,7 @@ class Game extends Observable {
         turnPattern = new ArrayList<>();
         turn = 0;
         nextTurnUserID = 0;
-        state = GameState.QUEUE;
+        //state = GameState.QUEUE;
     }
 
     //funciton to reset the game ID if reloading
@@ -110,16 +111,16 @@ class Game extends Observable {
         // Create new player to add to the list of players for the game
         playerDirectory.put(playerDirectory.size(), new Player(user_id, username, chat_id, 0));
         users.add(user_id);
-
+        /*
         if(playerDirectory.size() == _GameMaster.MIN_PLAYERS_PER_GAME)
         {
             state = GameState.START;
             setChanged();
             notifyObservers();
-        }
-
+        }*/
     }
 
+    /*
     public void beginTurns() {
         state = GameState.TURNS;
         setChanged();
@@ -130,7 +131,7 @@ class Game extends Observable {
         state = GameState.ARMIES;
         setChanged();
         notifyObservers();
-    }
+    }*/
 
     public void setTurnPattern(int i, int roll) {
         turnPattern.set(i, playerDirectory.get(roll));

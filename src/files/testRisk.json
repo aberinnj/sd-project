@@ -1,0 +1,152 @@
+{
+  "Turn": 0,
+  "Deck": [
+    {
+      "WILD": "WILD"
+    },
+    {
+      "SOUTH AFRICA": "ARTILLERY"
+    },
+    {
+      "WESTERN AUSTRALIA": "ARTILLERY"
+    },
+    {
+      "EASTERN UNITED STATES": "CAVALRY"
+    },
+    {
+      "SIBERIA": "ARTILLERY"
+    },
+    {
+      "WESTERN UNITED STATES": "INFANTRY"
+    },
+    {
+      "ONTARIO": "CAVALRY"
+    },
+    {
+      "CONGO": "ARTILLERY"
+    },
+    {
+      "VENEZUELA": "INFANTRY"
+    },
+    {
+      "YAKUTSK": "INFANTRY"
+    },
+    {
+      "QUEBEC": "ARTILLERY"
+    },
+    {
+      "GREENLAND": "ARTILLERY"
+    },
+    {
+      "WESTERN EUROPE": "ARTILLERY"
+    },
+    {
+      "SOUTHERN EUROPE": "CAVALRY"
+    },
+    {
+      "NORTH WEST TERRITORY": "CAVALRY"
+    },
+    {
+      "URAL": "CAVALRY"
+    },
+    {
+      "CENTRAL AMERICA": "ARTILLERY"
+    },
+    {
+      "GREAT BRITAIN": "ARTILLERY"
+    },
+    {
+      "JAPAN": "CAVALRY"
+    },
+    {
+      "PERU": "CAVALRY"
+    },
+    {
+      "UKRAINE": "ARTILLERY"
+    },
+    {
+      "BRAZIL": "ARTILLERY"
+    },
+    {
+      "EGYPT": "INFANTRY"
+    },
+    {
+      "KAMCHATKA": "CAVALRY"
+    },
+    {
+      "ALBERTA": "INFANTRY"
+    },
+    {
+      "ICELAND": "CAVALRY"
+    },
+    {
+      "INDONESIA": "CAVALRY"
+    },
+    {
+      "EASTERN AUSTRALIA": "INFANTRY"
+    },
+    {
+      "MIDDLE EAST": "CAVALRY"
+    },
+    {
+      "INDIA": "ARTILLERY"
+    },
+    {
+      "IRKUTSK": "ARTILLERY"
+    },
+    {
+      "ARGENTINA": "INFANTRY"
+    },
+    {
+      "SCANDINAVIA": "INFANTRY"
+    },
+    {
+      "ALASKA": "INFANTRY"
+    },
+    {
+      "EAST AFRICA": "CAVALRY"
+    },
+    {
+      "MONGOLIA": "INFANTRY"
+    },
+    {
+      "NORTH AFRICA": "CAVALRY"
+    },
+    {
+      "SIAM": "INFANTRY"
+    },
+    {
+      "NEW GUINEA": "CAVALRY"
+    },
+    {
+      "CHINA": "ARTILLERY"
+    },
+    {
+      "AFGHANISTAN": "INFANTRY"
+    },
+    {
+      "MADAGASCAR": "INFANTRY"
+    },
+    {
+      "WILD": "WILD"
+    },
+    {
+      "NORTHERN EUROPE": "INFANTRY"
+    }
+  ],
+  "Players": [
+    {
+      "PlayerID": 1,
+      "PlayerName": "testDude",
+      "ChatID": 231251561,
+      "PlayerWallet": 0.0,
+      "Undos": 0,
+      "Hand": [],
+      "Territories": [
+        {
+          "MONGOLIA": 1
+        }
+      ]
+    }
+  ]
+}

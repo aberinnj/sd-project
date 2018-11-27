@@ -8,25 +8,22 @@ import com.google.gson.stream.JsonWriter;
 public class JSONhandler {
 
     Gson gson;
-    BoardManager bm = null;
-    Writer file;
-    JsonWriter jw;
+    BoardManager bm;
     Game game;
     String fileName;
     String base;
 
-    JSONhandler(Game game) throws IOException {
+    JSONhandler(Game game) {
         this.bm = game.BM;
         this.game = game;
         this.base = System.getProperty("user.dir");
         this.fileName = base + "/src/files//Risk.json";
-        this.file = new FileWriter(fileName, false);
-        this.jw = new JsonWriter(file);
         this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
     public void write(JsonObject newTurnJSON) throws IOException {
-        Writer writer = new FileWriter(fileName);
+        Writer writer = new FileWriter(fileName, false);
+        // JsonWriter jw = new JsonWriter(file);
         gson.toJson(newTurnJSON, writer);
         writer.flush();
         writer.close();
@@ -35,7 +32,7 @@ public class JSONhandler {
     public JsonObject JSONreader() throws FileNotFoundException {
         JsonParser parser = new JsonParser();
         JsonElement obj = parser.parse(new FileReader(fileName));
-         JsonObject jsonObject = obj.getAsJsonObject();
+        JsonObject jsonObject = obj.getAsJsonObject();
         return jsonObject;
     }
 

@@ -1,0 +1,138 @@
+{
+  "Turn": 0,
+  "Deck": [
+    {
+      "NORTHERN EUROPE": "INFANTRY"
+    },
+    {
+      "ARGENTINA": "INFANTRY"
+    },
+    {
+      "VENEZUELA": "INFANTRY"
+    },
+    {
+      "MADAGASCAR": "INFANTRY"
+    },
+    {
+      "KAMCHATKA": "CAVALRY"
+    },
+    {
+      "EASTERN UNITED STATES": "CAVALRY"
+    },
+    {
+      "NORTH WEST TERRITORY": "CAVALRY"
+    },
+    {
+      "PERU": "CAVALRY"
+    },
+    {
+      "CHINA": "ARTILLERY"
+    },
+    {
+      "INDONESIA": "CAVALRY"
+    },
+    {
+      "BRAZIL": "ARTILLERY"
+    },
+    {
+      "SIAM": "INFANTRY"
+    },
+    {
+      "URAL": "CAVALRY"
+    },
+    {
+      "CENTRAL AMERICA": "ARTILLERY"
+    },
+    {
+      "EAST AFRICA": "CAVALRY"
+    },
+    {
+      "WESTERN EUROPE": "ARTILLERY"
+    },
+    {
+      "WESTERN AUSTRALIA": "ARTILLERY"
+    },
+    {
+      "UKRAINE": "ARTILLERY"
+    },
+    {
+      "GREAT BRITAIN": "ARTILLERY"
+    },
+    {
+      "NORTH AFRICA": "CAVALRY"
+    },
+    {
+      "CONGO": "ARTILLERY"
+    },
+    {
+      "SIBERIA": "ARTILLERY"
+    },
+    {
+      "INDIA": "ARTILLERY"
+    },
+    {
+      "SOUTHERN EUROPE": "CAVALRY"
+    },
+    {
+      "SCANDINAVIA": "INFANTRY"
+    },
+    {
+      "QUEBEC": "ARTILLERY"
+    },
+    {
+      "AFGHANISTAN": "INFANTRY"
+    },
+    {
+      "WILD": "WILD"
+    },
+    {
+      "IRKUTSK": "ARTILLERY"
+    },
+    {
+      "ALASKA": "INFANTRY"
+    },
+    {
+      "ICELAND": "CAVALRY"
+    },
+    {
+      "ALBERTA": "INFANTRY"
+    },
+    {
+      "GREENLAND": "ARTILLERY"
+    },
+    {
+      "MONGOLIA": "INFANTRY"
+    },
+    {
+      "YAKUTSK": "INFANTRY"
+    },
+    {
+      "ONTARIO": "CAVALRY"
+    },
+    {
+      "WILD": "WILD"
+    },
+    {
+      "WESTERN UNITED STATES": "INFANTRY"
+    },
+    {
+      "EASTERN AUSTRALIA": "INFANTRY"
+    },
+    {
+      "EGYPT": "INFANTRY"
+    },
+    {
+      "JAPAN": "CAVALRY"
+    },
+    {
+      "MIDDLE EAST": "CAVALRY"
+    },
+    {
+      "SOUTH AFRICA": "ARTILLERY"
+    },
+    {
+      "NEW GUINEA": "CAVALRY"
+    }
+  ],
+  "Players": []
+}
