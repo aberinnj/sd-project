@@ -9,6 +9,7 @@ todo: make changes to current_turn, UPDATE JH.JSON_writer
 *//////////////////////////////////////////////////////////////////////*/
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -19,6 +20,12 @@ class Props{
     Props() throws IOException
     {
         this.configPath = System.getProperty("user.dir") +  "/secrets_TeamOne.prop";
+        this.props.load(new FileInputStream(configPath));
+    }
+
+    // function for reseting the path for testing
+    public void resetConfigPath(String in) throws IOException {
+        this.configPath = in;
         this.props.load(new FileInputStream(configPath));
     }
 
