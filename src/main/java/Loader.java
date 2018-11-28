@@ -25,7 +25,6 @@ public class Loader {
 
     public Game LoadGame() throws IOException {
         JsonObject gameJson = JH.JSONreader();
-        System.out.println(gameJson.get("gameID"));
         setGame(gameJson);
         setDeck(gameJson);
         setPlayers(gameJson);

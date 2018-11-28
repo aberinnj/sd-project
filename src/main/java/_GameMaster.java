@@ -16,45 +16,22 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import twitter4j.TwitterException;
 
 /*////////////////////////////////////////////////////////////////////////////////
-Provides window and clean space for calling necessary functions
-*///////////////////////////////////////////////////////////////////////////////*/
-/*
-class Fetcher implements Observer {
-
-    @Override
-    public void update(Observable obs, Object arg)
-    {
-        Game thisGame = (Game) obs;
-        if(thisGame.state != GameState.QUEUE && thisGame.state == GameState.START)
-        {
-            // brief window here
-        }
-        else if(thisGame.state == GameState.INIT)
-        {
-            System.out.print("Initializing... ");
-            thisGame.start();
-        }
-        else if(thisGame.state == GameState.CLAIM)
-        {
-            System.out.println("\nClaiming Territories... ");
-
-        }
-    }
-}*/
-
-/*////////////////////////////////////////////////////////////////////////////////
 _GameMaster is the BOT that handles all chat commands and game hosting/handling
-todo: make sure only one instance is currently running
-todo: directory is a dangerous way of mapping a user to a game. Only one game per person for now
 *///////////////////////////////////////////////////////////////////////////////*/
 public class _GameMaster {
     static HashMap<String, Game> gamesListing;
     static HashMap<Integer, String> allPlayersAndTheirGames;
+    static Props props;
 
     public static void main(String[] args) {
         gamesListing = new HashMap<>();
         //kineticEntity = new Fetcher();
         allPlayersAndTheirGames = new HashMap<>();
+        try {
+            props = new Props();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Telegram
         ApiContextInitializer.init();
@@ -381,26 +358,14 @@ class CommandsHandler extends TelegramLongPollingBot{
 
     @Override
     public String getBotUsername(){
-        try {
-            Props k = new Props();
-            return k.getBot_name();
-        } catch(IOException e)
-        {
-            e.printStackTrace();
-            return "";
-        }
+        return _GameMaster.props.getBot_name();
+
     }
 
     @Override
     public String getBotToken(){
-        try {
-            Props k = new Props();
-            return k.getBot_apiToken();
-        } catch(IOException e)
-        {
-            e.printStackTrace();
-            return "";
-        }
+        return _GameMaster.props.getBot_apiToken();
+
     }
 
 }
