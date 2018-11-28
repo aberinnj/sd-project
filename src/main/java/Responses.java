@@ -427,6 +427,10 @@ public class Responses {
         return "";
     }
 
+    public static String onFollowUpAttack(Game game) {
+        return "";
+    }
+
     public static String onFollowUpResult(Game game) {
         if(game.state == GameState.RESULT)
         {

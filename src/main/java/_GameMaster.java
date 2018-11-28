@@ -88,6 +88,9 @@ class CommandsHandler extends TelegramLongPollingBot{
 
             ChatInput in = new ChatInput(CommandUtils.getInput(update.getMessage().getText()));
 
+            Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
+
+
             switch(in.getCommand())
             {
                 case "/start": {
@@ -130,7 +133,6 @@ class CommandsHandler extends TelegramLongPollingBot{
                     AWS aws = null;
                     try {
                         aws = new AWS();
-                        Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                         aws.upload(game.gameID);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -146,7 +148,7 @@ class CommandsHandler extends TelegramLongPollingBot{
                         // create new loader & game using the input gameID
                         Loader loader = new Loader(in.getArgs().get(0));
                         _GameMaster.gamesListing.put(in.getArgs().get(0), loader.LoadGame());
-                        message.setText("Turn undid");
+                        message.setText("Undo successful");
                         break;
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -215,26 +217,22 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                 // message should be formatted /attack (attack territory) (defend territory) (Number of armies to attack with) (number of armies to defend with)
                 case "/attack": {
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                    message.setText(Responses.onAttack(game, in));
                     break;
                 }
 
                 case "/atttackWith": {
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     message.setText(Responses.onAttackWith(game, in));
                     break;
                 }
 
                 case "/defendWith": {
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     message.setText(Responses.onDefendWith(game, in));
                     break;
                 }
 
                 // message should be formatted /fortify (move from) (move to) (Num armies)
                 case "/fortify": {
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     String from = null;
                     String to = null;
                     int i = 0; // number to keep track of the size of the country inputs
@@ -273,23 +271,20 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                 // assumes it is your turn, checks your hand for three matching cards, pops them from your hand and gives you the armies
                 case "/tradecards": {
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     Player player = CommandUtils.getPlayer(game);
                     Turn turn = game.currentTurn;
-
+                    break;
                 }
 
                 // message format -> /buycredit (credit amount)
                 case "/buycredit": {
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
-                    int turnNo = game.turn % game.playerDirectory.size();
-                    Player player = game.playerDirectory.get(turnNo);
+                    Player player = CommandUtils.getPlayer(game);
                     player.addMoney(Double.parseDouble(in.getArgs().get(0)));
+                    break;
                 }
 
                 // format -> /buystuff (# undos to buy) (# cards to buy)
                 case "/buystuff": {
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     int turnNo = game.turn % game.playerDirectory.size();
                     Player player = game.playerDirectory.get(turnNo);
 
@@ -312,13 +307,8 @@ class CommandsHandler extends TelegramLongPollingBot{
                 }
 
                 case "/endturn": {
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     Turn turn = game.currentTurn;
-                    try {
                         turn.earnCards();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
 
                     // Write game to save game file
                     try {
@@ -346,7 +336,6 @@ class CommandsHandler extends TelegramLongPollingBot{
                 }
 
                 case "/beginTurn": {
-                    Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     //int turnNo = game.turn % game.playerDirectory.size();
                     message.setText(Responses.onBeginTurn(game));
                     break;
