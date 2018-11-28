@@ -3,7 +3,7 @@ import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /*////////////////////////////////////////////////////////////////////////////////
-_Starter Class starts a _Starter by initializing GameManager and runs a game
+_GameStarter Class starts a _GameStarter by initializing GameManager and runs a game
 *///////////////////////////////////////////////////////////////////////////////*/
 public class TerritoryTest extends TestCase{
     private Territory mainTerritory;
@@ -74,6 +74,16 @@ public class TerritoryTest extends TestCase{
         mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"}, "UN-NAMED");
         mainTerritory.setTerritory(true, 2, new Army(4));
         assertEquals("4", mainTerritory.seeArmyCount());
+    }
+
+    @Test
+    public void testSetStatus() throws Exception {
+        mainTerritory = new Territory(new String[]{"INDIA", "CHINA", "INDONESIA"}, "UN-NAMED");
+        mainTerritory.setTerritory(true, 2, new Army(4));
+        assertEquals("4", mainTerritory.seeArmyCount());
+        mainTerritory.setStatusToNormal();
+        mainTerritory.setStatusToFallen();
+        mainTerritory.setStatusToUnderAttack();
     }
 
 }

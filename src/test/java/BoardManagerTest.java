@@ -1,16 +1,36 @@
+
 import junit.framework.TestCase;
 import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Stack;
 
 /*////////////////////////////////////////////////////////////////////////////////
 BoardManager Class handles Territory and Continents, as well as the Deck
 *///////////////////////////////////////////////////////////////////////////////*/
 public class BoardManagerTest extends TestCase {
     private BoardManager bm;
+
+    @Test
+    public void testBoardManagerDeck() {
+        BoardManager BM = new BoardManager();
+        assertEquals(BM.boardMap, BM.getBoardMap());
+        assertEquals(BM.gameDeck, BM.getGameDeck());
+
+        assertNotNull(BM.gameDeck.draw());
+
+        Stack<Card> deck = new Stack<>();
+        Card c = BM.gameDeck.draw();
+        deck.push(c);
+
+        BM.newDeck(deck);
+        BM.gameDeck.draw();
+        assertNull(BM.gameDeck.draw());
+
+        assertNotNull(BM.getBoardMap());
+        assertNotNull(BM.getGameDeck());
+    }
+
     @Test
     public void testBoardManager() {
         bm = new BoardManager();
@@ -18,102 +38,6 @@ public class BoardManagerTest extends TestCase {
         assertTrue(bm.getFreeTerritories().size() > 0);
         assertEquals(42, bm.getBoardMap().keySet().size());
         assertEquals(44, bm.getGameDeck().GameDeck.size());
-    }
-
-    @Test
-    public void testQueryTerritory(){
-        ByteArrayInputStream in = new ByteArrayInputStream((
-                "FAILURE\nALBERTA\nINDIA\nBRAZIL\nPERU\nALASKA\nALBERTA\nVENEZUELA\nARGENTINA\nJAPAN\nPERU\nINDIA\nALBERTA\nBRAZIL\nALASKA"
-                ).getBytes());
-        System.setIn(in);
-        Scanner scanner = new Scanner(System.in);
-
-        BoardManager bm = new BoardManager();
-        Player p1 = new Player(2, 25);
-        bm.initializeTerritory(p1, "ALBERTA", 1);
-        bm.initializeTerritory(p1, "INDIA", 25);
-        bm.initializeTerritory(p1, "BRAZIL", 2);
-        bm.initializeTerritory(p1, "VENEZUELA", 1);
-        bm.initializeTerritory(p1, "PERU", 2);
-        bm.initializeTerritory(p1, "ARGENTINA", 2);
-        bm.initializeTerritory(p1, "NORTH AFRICA", 5);
-        bm.initializeTerritory(p1, "MONGOLIA", 1);
-        bm.initializeTerritory(p1, "KAMCHATKA", 1);
-
-
-        Player p2 = new Player(0, 25);
-        bm.initializeTerritory(p2, "ALASKA", 25);
-        bm.initializeTerritory(p2, "NORTH WEST TERRITORY", 21);
-        bm.initializeTerritory(p2, "JAPAN", 25);
-
-
-        // Testing NULLs (queryTerritory returns null for invalid inputs) for ALL query types
-
-        //Error territory not found
-        assertNull(bm.queryTerritory(scanner, "", "FAILS-ANYWAY", p2, "ORIGIN IS ONLY FOR FORTIFY AND ATTACK"));
-        //Error: territory not owned - ALBERTA is P1's
-        assertNull(bm.queryTerritory(scanner, "", "STRENGTHEN", p2, ""));
-        //INDIA is P1's
-        assertNull(bm.queryTerritory(scanner, "", "ATTACK_FROM", p2, ""));
-        //BRAZIL is P1's
-        assertNull(bm.queryTerritory(scanner, "", "FORTIFY_FROM", p2, ""));
-        //PERU is P1's
-        assertNull(bm.queryTerritory(scanner, "", "FORTIFY", p2, ""));
-        //Error: Territory already occupied - ALASKA already claimed
-        assertNull(bm.queryTerritory(scanner, "", "INITIALIZE", p1, ""));
-        //Error: Not a valid territory to attack from - ALBERTA only has 1 army
-        assertNull(bm.queryTerritory(scanner, "", "ATTACK_FROM", p1, ""));
-        //Error: Not a valid territory to attack from - VENEZUELA only has 1 army
-        assertNull(bm.queryTerritory(scanner, "", "FORTIFY_FROM", p1, ""));
-        //Error: Territory has no adjacent enemies - ARGENTINA
-        assertNull(bm.queryTerritory(scanner, "", "ATTACK_FROM", p1, ""));
-        //Error: Territory has no adjacent friendly territories -- JAPAN is surrounded by enemies
-        assertNull(bm.queryTerritory(scanner, "", "FORTIFY_FROM", p2, ""));
-        //Error: Not an enemy territory - PERU
-        assertNull(bm.queryTerritory(scanner, "", "ATTACK", p1, "BRAZIL"));
-        //Error: Not adjacent - INDIA
-        assertNull(bm.queryTerritory(scanner, "", "ATTACK", p2, "ALASKA"));
-        //Error: Not adjacent - ALBERTA
-        assertNull(bm.queryTerritory(scanner, "", "FORTIFY", p1, "PERU"));
-        // NOT NULL - BRAZIL is adj to PERU
-        assertNotNull(bm.queryTerritory(scanner, "", "FORTIFY", p1 , "PERU"));
-        assertNull(bm.queryTerritory(scanner, "", "UNKNOWN-FAILURE", p2 , "PERU"));
-
-        System.setIn(System.in);
-
-    }
-
-    @Test
-    public void testQueryCount() {
-        ByteArrayInputStream in = new ByteArrayInputStream((
-                "NaN\n3\n4\n2\n4\n1\n4\n2\n1\n2\n"
-        ).getBytes());
-        System.setIn(in);
-        Scanner scanner = new Scanner(System.in);
-
-
-        BoardManager bm = new BoardManager();
-        Player p = new Player(2, 3);
-        bm.initializeTerritory(p, "ALASKA", 1);
-        bm.initializeTerritory(p, "ALBERTA", 5);
-        bm.initializeTerritory(p, "INDIA", 3);
-        bm.initializeTerritory(p, "JAPAN", 2);
-        //Error, cannot convert to number
-        assertEquals(0, bm.queryCount(scanner, "", "ATTACK", p, ""));
-        //Error, not enough armies
-        assertEquals(0, bm.queryCount(scanner, "", "ATTACK", p, "INDIA"));
-        // Warning defaulted to 3
-        assertEquals(3, bm.queryCount(scanner, "", "ATTACK", p, "ALBERTA"));
-        //Error, not enough armies
-        assertEquals(0, bm.queryCount(scanner, "", "DEFEND", p, "ALASKA"));
-        // Warning defaulted to 2
-        assertEquals(2, bm.queryCount(scanner, "", "DEFEND", p, "ALBERTA"));
-        // Error, Not enough for fortifying
-        assertEquals(0, bm.queryCount(scanner, "", "FORTIFY", p, "ALASKA"));
-        assertEquals(4, bm.queryCount(scanner, "", "FORTIFY", p, "ALBERTA"));
-        assertEquals(2, bm.queryCount(scanner, "", "ATTACK", p, "INDIA"));
-        assertEquals(1, bm.queryCount(scanner, "", "DEFEND", p, "ALASKA"));
-        assertEquals(0, bm.queryCount(scanner, "", "DEFAULTED-TO-ZERO", p, "ALBERTA"));
     }
 
     // Not meant for CodeCoverage but to assure that there are no errors in board-data
