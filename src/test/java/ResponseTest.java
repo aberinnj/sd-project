@@ -684,24 +684,69 @@ public class ResponseTest extends TestCase {
                 "\n" +
                 "Your territories that are able to attack:\n" +
                 "KAMCHATKA: 2 armies, CAN ATTACK\n" +
+                "\tALASKA, 2 enemy armies\n" +
+                "\tMONGOLIA, 1 enemy armies\n" +
                 "SIBERIA: 2 armies, CAN ATTACK\n" +
+                "\tCHINA, 2 enemy armies\n" +
+                "\tMONGOLIA, 1 enemy armies\n" +
                 "NORTHERN EUROPE: 2 armies, CAN ATTACK\n" +
+                "\tSCANDINAVIA, 2 enemy armies\n" +
+                "\tUKRAINE, 2 enemy armies\n" +
+                "\tWESTERN EUROPE, 2 enemy armies\n" +
                 "GREAT BRITAIN: 2 armies, CAN ATTACK\n" +
+                "\tICELAND, 2 enemy armies\n" +
+                "\tSCANDINAVIA, 2 enemy armies\n" +
+                "\tWESTERN EUROPE, 2 enemy armies\n" +
                 "SOUTHERN EUROPE: 2 armies, CAN ATTACK\n" +
+                "\tWESTERN EUROPE, 2 enemy armies\n" +
+                "\tUKRAINE, 2 enemy armies\n" +
+                "\tMIDDLE EAST, 2 enemy armies\n" +
+                "\tEGYPT, 2 enemy armies\n" +
                 "WESTERN UNITED STATES: 2 armies, CAN ATTACK\n" +
+                "\tONTARIO, 2 enemy armies\n" +
+                "\tCENTRAL AMERICA, 2 enemy armies\n" +
                 "VENEZUELA: 2 armies, CAN ATTACK\n" +
+                "\tCENTRAL AMERICA, 2 enemy armies\n" +
+                "\tBRAZIL, 2 enemy armies\n" +
                 "JAPAN: 2 armies, CAN ATTACK\n" +
+                "\tMONGOLIA, 1 enemy armies\n" +
                 "QUEBEC: 2 armies, CAN ATTACK\n" +
+                "\tONTARIO, 2 enemy armies\n" +
+                "\tGREENLAND, 2 enemy armies\n" +
                 "PERU: 2 armies, CAN ATTACK\n" +
+                "\tBRAZIL, 2 enemy armies\n" +
+                "\tARGENTINA, 2 enemy armies\n" +
                 "NORTH AFRICA: 2 armies, CAN ATTACK\n" +
+                "\tBRAZIL, 2 enemy armies\n" +
+                "\tEGYPT, 2 enemy armies\n" +
+                "\tEAST AFRICA, 2 enemy armies\n" +
+                "\tCONGO, 2 enemy armies\n" +
                 "IRKUTSK: 2 armies, CAN ATTACK\n" +
+                "\tMONGOLIA, 1 enemy armies\n" +
                 "INDONESIA: 2 armies, CAN ATTACK\n" +
+                "\tSIAM, 2 enemy armies\n" +
+                "\tNEW GUINEA, 2 enemy armies\n" +
+                "\tWESTERN AUSTRALIA, 2 enemy armies\n" +
                 "NORTH WEST TERRITORY: 2 armies, CAN ATTACK\n" +
+                "\tALASKA, 2 enemy armies\n" +
+                "\tONTARIO, 2 enemy armies\n" +
+                "\tGREENLAND, 2 enemy armies\n" +
                 "URAL: 2 armies, CAN ATTACK\n" +
+                "\tUKRAINE, 2 enemy armies\n" +
+                "\tCHINA, 2 enemy armies\n" +
+                "\tAFGHANISTAN, 2 enemy armies\n" +
                 "MADAGASCAR: 2 armies, CAN ATTACK\n" +
+                "\tSOUTH AFRICA, 1 enemy armies\n" +
+                "\tEAST AFRICA, 2 enemy armies\n" +
                 "EASTERN AUSTRALIA: 2 armies, CAN ATTACK\n" +
+                "\tWESTERN AUSTRALIA, 2 enemy armies\n" +
+                "\tNEW GUINEA, 2 enemy armies\n" +
                 "ALBERTA: 2 armies, CAN ATTACK\n" +
-                "EASTERN UNITED STATES: 2 armies, CAN ATTACK\n", response);
+                "\tALASKA, 2 enemy armies\n" +
+                "\tONTARIO, 2 enemy armies\n" +
+                "EASTERN UNITED STATES: 2 armies, CAN ATTACK\n" +
+                "\tONTARIO, 2 enemy armies\n" +
+                "\tCENTRAL AMERICA, 2 enemy armies\n", response);
 
         INPUT.args = new ArrayList<String>(){{add("POPEYES");}};
         response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
