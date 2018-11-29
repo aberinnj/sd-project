@@ -12,7 +12,7 @@ public class LoaderTest extends TestCase {
         _GameMaster _GameMaster = new _GameMaster();
         Loader load = new Loader("1");
         load.JH.fileName = load.JH.base + "/src/files/testRisk.json";
-        load.LoadGame();
+        load.loadGame();
     }
 
     @Test
@@ -68,10 +68,10 @@ public class LoaderTest extends TestCase {
         // UNDO
         INPUT.args = new ArrayList<String>(){{add("game");}};
 
-        Loader loader = new Loader(INPUT.getArgs().get(0));
-        loader.JH.fileName = loader.JH.base + "/src/files/testUndo.json";
+        _GameMaster.gamesListing.get("game").gameLoader = new Loader(INPUT.getArgs().get(0));
+        _GameMaster.gamesListing.get("game").gameLoader.JH.fileName = _GameMaster.gamesListing.get("game").gameLoader.JH.base + "/src/files/testUndo.json";
         try {
-            _GameMaster.gamesListing.put(INPUT.getArgs().get(0), loader.LoadGame());
+            _GameMaster.gamesListing.put(INPUT.getArgs().get(0), _GameMaster.gamesListing.get("game").gameLoader.loadGame());
         } catch(IOException e)
         {
             e.printStackTrace();

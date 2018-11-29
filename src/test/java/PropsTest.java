@@ -9,24 +9,23 @@ public class PropsTest extends TestCase {
     @Test
     public void testProps() throws IOException {
 
-        Props props = new Props();
-        props.resetConfigPath(System.getProperty("user.dir") +  "/secrets_TeamOne_demo.prop");
+        Props props = new Props(System.getProperty("user.dir") +  "/src/files/secrets_example.prop");
 
-        assertEquals("", props.getTwitter_apiKey());
+        assertEquals("KEY3", props.getTwitter_apiKey());
 
-        assertEquals("",props.getTwitter_accessToken());
+        assertEquals("KEY5",props.getTwitter_accessToken());
 
-        assertEquals("",props.getTwitter_apiSecretKey());
+        assertEquals("KEY4",props.getTwitter_apiSecretKey());
 
-        assertEquals("",props.getTwitter_accessTokenSecret());
+        assertEquals("KEY6",props.getTwitter_accessTokenSecret());
 
-        assertEquals("",props.getAws_access_key_id());
+        assertEquals("KEY1",props.getAws_access_key_id());
 
-        assertEquals("",props.getAws_secret_access_key());
+        assertEquals("KEY2",props.getAws_secret_access_key());
 
-        assertEquals("",props.getBot_name());
+        assertEquals("KEY8",props.getBot_name());
 
-        assertEquals("",props.getBot_apiToken());
+        assertEquals("KEY7",props.getBot_apiToken());
 
     }
 

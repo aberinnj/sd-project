@@ -32,8 +32,6 @@ public class JSONhandler {
     public JsonObject JSONreader() throws FileNotFoundException {
         JsonParser parser = new JsonParser();
         JsonElement obj = parser.parse(new FileReader(fileName));
-        System.out.println(fileName);
-        System.out.println(obj.isJsonNull());
         JsonObject jsonObject = obj.getAsJsonObject();
         return jsonObject;
     }

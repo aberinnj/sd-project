@@ -23,9 +23,10 @@ class Props{
         this.props.load(new FileInputStream(configPath));
     }
 
-    // function for reseting the path for testing
-    public void resetConfigPath(String in) throws IOException {
-        this.configPath = in;
+
+    Props(String src) throws IOException
+    {
+        this.configPath = src;
         this.props.load(new FileInputStream(configPath));
     }
 

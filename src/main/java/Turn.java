@@ -182,7 +182,7 @@ public class Turn {
             out += country + ": " + BM.getOccupantCount(country) + " armies, CAN ATTACK\n";
             for(String enemy: BM.getAllAdjacentEnemyTerritories(player.getId(), country))
             {
-                // System.out.println("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies");
+                out += "\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies\n";
                 //messenger.putMessage("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies\n");
             }
         }

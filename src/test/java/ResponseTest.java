@@ -1,8 +1,16 @@
 import junit.framework.TestCase;
 import org.junit.Test;
+import org.mockito.Mockito;
+import twitter4j.TwitterException;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ResponseTest extends TestCase {
     @Test
@@ -669,39 +677,93 @@ public class ResponseTest extends TestCase {
         response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
         assertEquals("You cannot attack right now.", response);
 
+        // the two lines below should not be done/used outside response
+        _GameMaster.gamesListing.get("game").context = new Context();
+        _GameMaster.gamesListing.get("game").context.countryTo = "BRAZIL";
+        response = Responses.onFollowUpAttack(_GameMaster.gamesListing.get("game"));
+        assertEquals("Uh Oh! Somehow, no one owns the territory! This is unexpected.\n" +
+                "Either the game is being tested and some objects are not yet initialized" +
+                "\nOR this has been called before players get to pick a territory or a country to attack/fortify.", response);
+
         Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
         Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
         _GameMaster.gamesListing.get("game").state = GameState.ON_TURN;
-        String onBeginTurn = Responses.onBeginTurn(_GameMaster.gamesListing.get("game"));
+        Responses.onBeginTurn(_GameMaster.gamesListing.get("game"));
 
         INPUT.args = new ArrayList<>();
         response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
 
         assertEquals("To commence an attack,\n" +
+                "/attack for help, or to reset\n"+
                 "/attack <from>\n" +
                 "/attack <enemy>\n" +
                 "/attackWith <count max(3)>\n" +
                 "\n" +
                 "Your territories that are able to attack:\n" +
                 "KAMCHATKA: 2 armies, CAN ATTACK\n" +
+                "\tALASKA, 2 enemy armies\n" +
+                "\tMONGOLIA, 1 enemy armies\n" +
                 "SIBERIA: 2 armies, CAN ATTACK\n" +
+                "\tCHINA, 2 enemy armies\n" +
+                "\tMONGOLIA, 1 enemy armies\n" +
                 "NORTHERN EUROPE: 2 armies, CAN ATTACK\n" +
+                "\tSCANDINAVIA, 2 enemy armies\n" +
+                "\tUKRAINE, 2 enemy armies\n" +
+                "\tWESTERN EUROPE, 2 enemy armies\n" +
                 "GREAT BRITAIN: 2 armies, CAN ATTACK\n" +
+                "\tICELAND, 2 enemy armies\n" +
+                "\tSCANDINAVIA, 2 enemy armies\n" +
+                "\tWESTERN EUROPE, 2 enemy armies\n" +
                 "SOUTHERN EUROPE: 2 armies, CAN ATTACK\n" +
+                "\tWESTERN EUROPE, 2 enemy armies\n" +
+                "\tUKRAINE, 2 enemy armies\n" +
+                "\tMIDDLE EAST, 2 enemy armies\n" +
+                "\tEGYPT, 2 enemy armies\n" +
                 "WESTERN UNITED STATES: 2 armies, CAN ATTACK\n" +
+                "\tONTARIO, 2 enemy armies\n" +
+                "\tCENTRAL AMERICA, 2 enemy armies\n" +
                 "VENEZUELA: 2 armies, CAN ATTACK\n" +
+                "\tCENTRAL AMERICA, 2 enemy armies\n" +
+                "\tBRAZIL, 2 enemy armies\n" +
                 "JAPAN: 2 armies, CAN ATTACK\n" +
+                "\tMONGOLIA, 1 enemy armies\n" +
                 "QUEBEC: 2 armies, CAN ATTACK\n" +
+                "\tONTARIO, 2 enemy armies\n" +
+                "\tGREENLAND, 2 enemy armies\n" +
                 "PERU: 2 armies, CAN ATTACK\n" +
+                "\tBRAZIL, 2 enemy armies\n" +
+                "\tARGENTINA, 2 enemy armies\n" +
                 "NORTH AFRICA: 2 armies, CAN ATTACK\n" +
+                "\tBRAZIL, 2 enemy armies\n" +
+                "\tEGYPT, 2 enemy armies\n" +
+                "\tEAST AFRICA, 2 enemy armies\n" +
+                "\tCONGO, 2 enemy armies\n" +
                 "IRKUTSK: 2 armies, CAN ATTACK\n" +
+                "\tMONGOLIA, 1 enemy armies\n" +
                 "INDONESIA: 2 armies, CAN ATTACK\n" +
+                "\tSIAM, 2 enemy armies\n" +
+                "\tNEW GUINEA, 2 enemy armies\n" +
+                "\tWESTERN AUSTRALIA, 2 enemy armies\n" +
                 "NORTH WEST TERRITORY: 2 armies, CAN ATTACK\n" +
+                "\tALASKA, 2 enemy armies\n" +
+                "\tONTARIO, 2 enemy armies\n" +
+                "\tGREENLAND, 2 enemy armies\n" +
                 "URAL: 2 armies, CAN ATTACK\n" +
+                "\tUKRAINE, 2 enemy armies\n" +
+                "\tCHINA, 2 enemy armies\n" +
+                "\tAFGHANISTAN, 2 enemy armies\n" +
                 "MADAGASCAR: 2 armies, CAN ATTACK\n" +
+                "\tSOUTH AFRICA, 1 enemy armies\n" +
+                "\tEAST AFRICA, 2 enemy armies\n" +
                 "EASTERN AUSTRALIA: 2 armies, CAN ATTACK\n" +
+                "\tWESTERN AUSTRALIA, 2 enemy armies\n" +
+                "\tNEW GUINEA, 2 enemy armies\n" +
                 "ALBERTA: 2 armies, CAN ATTACK\n" +
-                "EASTERN UNITED STATES: 2 armies, CAN ATTACK\n", response);
+                "\tALASKA, 2 enemy armies\n" +
+                "\tONTARIO, 2 enemy armies\n" +
+                "EASTERN UNITED STATES: 2 armies, CAN ATTACK\n" +
+                "\tONTARIO, 2 enemy armies\n" +
+                "\tCENTRAL AMERICA, 2 enemy armies\n", response);
 
         INPUT.args = new ArrayList<String>(){{add("POPEYES");}};
         response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
@@ -724,14 +786,319 @@ public class ResponseTest extends TestCase {
         INPUT.args = new ArrayList<String>(){{add("BRAZIL");}};
         response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
         assertEquals("You have commenced an attack on BRAZIL", response);
+        assertEquals("BRAZIL", _GameMaster.gamesListing.get("game").context.countryTo);
+
+        response = Responses.onFollowUpAttack(_GameMaster.gamesListing.get("game"));
+        assertEquals("@his Your territory BRAZIL is under attack!\n/defendWith <amount MAX.2> to defend it.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("4");}};
+        response = Responses.onAttackWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You can only attack with 1-3 armies.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("0");}};
+        response = Responses.onAttackWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You can only attack with 1-3 armies.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("3");}};
+        response = Responses.onAttackWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have decided to attack BRAZIL from PERU with 3 armies.", response);
+        assertEquals(GameState.DEFENDING, _GameMaster.gamesListing.get("game").state);
+
+        INPUT.args = new ArrayList<String>(){{add("3");}};
+        response = Responses.onDefendWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You can only defend with 1-2 armies.", response);
 
         INPUT.args = new ArrayList<String>(){{add("CANCEL");}};
         response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
         assertEquals("You cancelled attacking.", response);
         assertNull(_GameMaster.gamesListing.get("game").context);
 
+
+        INPUT.args = new ArrayList<String>(){{add("PERU");}};
+        Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
+        INPUT.args = new ArrayList<String>(){{add("BRAZIL");}};
+        Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
+
+        INPUT.args = new ArrayList<String>(){{add("3");}};
+        response = Responses.onAttackWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have decided to attack BRAZIL from PERU with 3 armies.", response);
+        assertEquals(GameState.DEFENDING, _GameMaster.gamesListing.get("game").state);
+
+        INPUT.args = new ArrayList<String>(){{add("1");}};
+        response = Responses.onDefendWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have decided to defend BRAZIL with 1 armies.", response);
+
+        response = Responses.onFollowUpResult(_GameMaster.gamesListing.get("game"));
+        assertEquals(GameState.ON_TURN, _GameMaster.gamesListing.get("game").state);
+        assertNull( _GameMaster.gamesListing.get("game").context);
+
+        INPUT.args = new ArrayList<String>(){{add("3");}};
+        response = Responses.onAttackWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have not specified where to attack from and which enemy to attack yet.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("3");}};
+        response = Responses.onDefendWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You are not under attack.", response);
+    }
+
+    @Test
+    public void testBuyCredits(){
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        Responses.onCreate(0, "game", "her", 123);
+        Responses.onJoin(INPUT, 1, "his", (long)123);
+        _GameMaster.gamesListing.get("game").setPlayerList();
+        Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
+
+        INPUT.args = new ArrayList<String>(){{add("1200");}};
+        String onBuyCredits = Responses.onBuyCredit(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You bought 1200 credits and now have a total of 1200.0 credits", onBuyCredits);
+
+        INPUT.args = new ArrayList<String>(){{add("1300");}};
+        onBuyCredits = Responses.onBuyCredit(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You bought 1300 credits and now have a total of 2500.0 credits", onBuyCredits);
+
+        INPUT.args = new ArrayList<String>(){{add("");}};
+        onBuyCredits = Responses.onBuyCredit(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You did not provide the amount of credits you want to buy." +
+                "\n/buycredits <amount>", onBuyCredits);
+
+    }
+
+    @Test
+    public void testOnBuyStuff(){
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        Responses.onCreate(0, "game", "her", 123);
+        Responses.onJoin(INPUT, 1, "his", (long)123);
+        _GameMaster.gamesListing.get("game").setPlayerList();
+        Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
+
+        INPUT.args = new ArrayList<String>(){{add("2");}};
+        String response = Responses.onBuyStuff(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("Uh Oh! You either did not provide the amount of cards or the amount of undos.\n/buystuff <undos> <cards>", response);
+
+        INPUT.args = new ArrayList<String>(){{add("2"); add("10");}};
+        response = Responses.onBuyStuff(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You do not have enough credits to buy 2 undos (1000 each). \nYou currently have 0.0 credits.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("2200");}};
+        Responses.onBuyCredit(_GameMaster.gamesListing.get("game"), INPUT);
+
+        INPUT.args = new ArrayList<String>(){{add("2"); add("10");}};
+        response = Responses.onBuyStuff(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You successfully bought 2 undos\nYou do not have enough credits to buy 10 cards (100 each). \nYou currently have 200.0 credits.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("0"); add("2");}};
+        response = Responses.onBuyStuff(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You successfully bought 0 undos\nYou successfully bought 2 cards.", response);
     }
 
 
+    @Test
+    public void testOnFortify(){
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        Responses.onCreate(0, "game", "her", 123);
+        Responses.onJoin(INPUT, 1, "his", (long)123);
+        _GameMaster.gamesListing.get("game").setPlayerList();
+
+        Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
+
+
+        INPUT.args = new ArrayList<String>(){{add("EASTERN UNITED STATES");}};
+        String response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You cannot fortify right now.",response);
+
+
+        _GameMaster.gamesListing.get("game").state = GameState.ON_TURN;
+
+        INPUT.args = new ArrayList<String>(){{add("");}};
+         response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("To fortify," +
+                "\n/fortify for help, or to reset"+
+                "\n/fortify <from>" +
+                        "\n/fortify <neighbor territory>" +
+                        "\n/fortify <transferCount>" +
+                        "\n\nYour territories:"+
+                "\nYAKUTSK\n" +
+                "KAMCHATKA\n" +
+                "SIBERIA\n" +
+                "NORTHERN EUROPE\n" +
+                "GREAT BRITAIN\n" +
+                "SOUTHERN EUROPE\n" +
+                "WESTERN UNITED STATES\n" +
+                "VENEZUELA\n" +
+                "JAPAN\n" +
+                "QUEBEC\n" +
+                "PERU\n" +
+                "NORTH AFRICA\n" +
+                "IRKUTSK\n" +
+                "INDONESIA\n" +
+                "NORTH WEST TERRITORY\n" +
+                "URAL\n" +
+                "MADAGASCAR\n" +
+                "EASTERN AUSTRALIA\n" +
+                "ALBERTA\n" +
+                "EASTERN UNITED STATES\n" +
+                "INDIA", response);
+
+        INPUT.args = new ArrayList<String>(){{add("EASTERN UNITED STATES");}};
+        response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have selected to fortify from EASTERN UNITED STATES",response);
+
+        INPUT.args = new ArrayList<String>(){{add("WESTERN UNITED STATES");}};
+        response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have selected to fortify WESTERN UNITED STATES",response);
+
+        INPUT.args = new ArrayList<String>(){{add("NORTH WEST TERRITORY");}};
+        response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("Territory is unreachable from EASTERN UNITED STATES",response);
+
+        INPUT.args = new ArrayList<String>(){{add("BRAZIL");}};
+        response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You do not own BRAZIL",response);
+
+        INPUT.args = new ArrayList<String>(){{add("ALOHA");}};
+        response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("Territory ALOHA not found.",response);
+
+        INPUT.args = new ArrayList<String>(){{add("20");}};
+        response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You cannot transfer 20 armies.\nYou only have 2 armies in EASTERN UNITED STATES", response);
+
+    }
+
+
+    @Test
+    public void testEndTurn() throws TwitterException {
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        Responses.onCreate(0, "game", "her", 123);
+        Responses.onJoin(INPUT, 1, "his", (long)123);
+        _GameMaster.gamesListing.get("game").setPlayerList();
+
+        Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
+
+        Player player = CommandUtils.getPlayer(_GameMaster.gamesListing.get("game"));
+        // line below is done by /beginTurn
+        _GameMaster.gamesListing.get("game").currentTurn = new Turn(
+                _GameMaster.gamesListing.get("game").BM,
+                player,
+                _GameMaster.gamesListing.get("game").turn);
+
+        Twitter thisTwitter = Mockito.mock(Twitter.class);
+        when(Twitter.broadcastToTwitter(_GameMaster.gamesListing.get("game").currentTurn, player)).thenReturn("\nTurn Summary: Turn(80):Player 0 captured no territories this turn.");
+
+        String response = Responses.onEndTurn(_GameMaster.gamesListing.get("game"), thisTwitter);
+        assertEquals("\nTurn Summary: Turn(80):Player 0 captured no territories this turn.\nPlayer @his it is now your turn, type /beginTurn to begin your turn", response);
+
+    }
+
+    @Test
+    public void testOnLoad() throws IOException {
+
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        Responses.onCreate(0, "game", "her", 123);
+
+        ArrayList<String> games = new ArrayList<String>(){{
+            add("game1");
+            add("game2");
+        }};
+
+        AWS aws = mock(AWS.class);
+        when(aws.listObjects()).thenReturn(games);
+        when(aws.getFileName()).thenReturn(System.getProperty("user.dir") + "/src/files/testUndo.json");
+
+        INPUT.args = new ArrayList<String>(){{add("");}};
+        String response = Responses.onLoad(_GameMaster.gamesListing.get("game"), aws, INPUT);
+        assertEquals("You have opted to load a game but did not provide a gameID:\n/load <gameID> to load a game\nAvailable games to load:\n"+
+                "game1\ngame2\n", response);
+
+
+        File file = new File(aws.getFileName());
+        assertTrue(file.exists());
+
+        when(aws.download("game")).thenReturn(true);
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+        response = Responses.onLoad(_GameMaster.gamesListing.get("game"), aws, INPUT);
+        assertEquals("Game loaded, it is now the 80 turn", response);
+
+        when(aws.download("game")).thenReturn(false);
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+        response = Responses.onLoad(_GameMaster.gamesListing.get("game"), aws, INPUT);
+        assertEquals("Game could not be downloaded from AWS.", response);
+
+    }
+
+    @Test
+    public void testOnUndo() throws IOException{
+        ChatInput INPUT = new ChatInput();
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        Responses.onCreate(0, "game", "her", 1234567);
+        Responses.onJoin(INPUT,1 , "his", (long)1234567 );
+        _GameMaster.gamesListing.get("game").setPlayerList();
+        Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        Responses.onSkipReinforce( _GameMaster.gamesListing.get("game"));
+
+
+        // MAKE CHANGES but these are not saved
+        INPUT.args = new ArrayList<String>(){{add("YAKUTSK");}};
+        Responses.onBeginTurn(_GameMaster.gamesListing.get("game"));
+        Responses.onReinforce(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        Responses.onReinforce(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        Responses.onReinforce(INPUT, 0, _GameMaster.gamesListing.get("game"));
+
+        int remaining_armies = _GameMaster.gamesListing.get("game").playerDirectory.get(0).getNumberOfArmies();
+        assertEquals(4, _GameMaster.gamesListing.get("game").BM.getOccupantCount("YAKUTSK"));
+        assertEquals(4, remaining_armies);
+
+        AWS aws = mock(AWS.class);
+        when(aws.getFileName()).thenReturn(System.getProperty("user.dir") + "/src/files/testUndo.json");
+        when(aws.download("game")).thenReturn(true);
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+        String response = Responses.onUndo(_GameMaster.gamesListing.get("game"), aws);
+        assertEquals("Undo successful", response);
+
+        // UNDO results check
+        remaining_armies = _GameMaster.gamesListing.get("game").playerDirectory.get(0).getNumberOfArmies();
+        assertEquals(1, _GameMaster.gamesListing.get("game").BM.getOccupantCount("YAKUTSK"));
+        assertEquals(0, remaining_armies);
+
+        when(aws.download("game")).thenReturn(false);
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+        response = Responses.onUndo(_GameMaster.gamesListing.get("game"), aws);
+        assertEquals("Game could not be downloaded from AWS.", response);
+
+
+
+
+    }
 
 }

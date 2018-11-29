@@ -18,16 +18,15 @@ public class AWS {
     static String base;
     AmazonS3 s3Client;
     private String fileName;
-    Props props = new Props();
     private String bucketName = "risk-game-team-one";
 
-    AWS() throws IOException {
+    AWS(){
 
         base = System.getProperty("user.dir");
         this.fileName = base + "/src/files/Risk.json";
 
         // s3Client = AmazonS3ClientBuilder.defaultClient();
-        BasicAWSCredentials awsCreds = new BasicAWSCredentials(props.getAws_access_key_id(), props.getAws_secret_access_key());
+        BasicAWSCredentials awsCreds = new BasicAWSCredentials(_GameMaster.props.getAws_access_key_id(), _GameMaster.props.getAws_secret_access_key());
 
         s3Client = AmazonS3ClientBuilder.standard()
                 .withRegion("us-east-1")
@@ -36,6 +35,11 @@ public class AWS {
                 .build();
 
 
+    }
+
+    public String getFileName()
+    {
+        return fileName;
     }
 
     // list available game objects;
@@ -101,7 +105,7 @@ public class AWS {
     }
 
     //Function to download saved game file from S3 bucket
-    public void download(String gameID) throws IOException {
+    public boolean download(String gameID) throws IOException {
         String fileObjKeyName = gameID; // Game ID is the name of the file containing a games info stored in the AWS bucket
         S3Object fullObject = null, objectPortion = null, headerOverrideObject = null;
         try {
@@ -118,16 +122,19 @@ public class AWS {
             File targetFile = new File(fileName);
             // save stream to file
             FileUtils.copyInputStreamToFile(stream, targetFile);
+            return true;
         }
         catch(AmazonServiceException e) {
             // The call was transmitted successfully, but Amazon S3 couldn't process
             // it, so it returned an error response.
             e.printStackTrace();
+            return false;
         }
         catch(SdkClientException e) {
             // Amazon S3 couldn't be contacted for a response, or the client
             // couldn't parse the response from Amazon S3.
             e.printStackTrace();
+            return false;
         }
         finally {
             // To ensure that the network connection doesn't remain open, close any open input streams.
