@@ -1008,10 +1008,10 @@ public class ResponseTest extends TestCase {
                 _GameMaster.gamesListing.get("game").turn);
 
         Twitter thisTwitter = Mockito.mock(Twitter.class);
-        when(Twitter.broadcastToTwitter(_GameMaster.gamesListing.get("game").currentTurn, player)).thenReturn("\nTurn Summary: Turn0:Player 0 captured no territories this turn.");
+        when(Twitter.broadcastToTwitter(_GameMaster.gamesListing.get("game").currentTurn, player)).thenReturn("\nTurn Summary: Turn(80):Player 0 captured no territories this turn.");
 
         String response = Responses.onEndTurn(_GameMaster.gamesListing.get("game"), thisTwitter);
-        assertEquals("\nTurn Summary: Turn0:Player 0 captured no territories this turn.\nPlayer @his it is now your turn, type /beginTurn to begin your turn", response);
+        assertEquals("\nTurn Summary: Turn(80):Player 0 captured no territories this turn.\nPlayer @his it is now your turn, type /beginTurn to begin your turn", response);
 
     }
 

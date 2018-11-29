@@ -65,6 +65,8 @@ public class UpdateHandlerTest extends TestCase {
 
         response = UpdateHandler.commandReader(input, id, chat_id, username);
         assertEquals("You have successfully joined.", response);
+        response = UpdateHandler.commandsFollowUp(input, id, chat_id, username);
+        assertNotNull(response);
         assertTrue(_GameMaster.gamesListing.get(gameID).playerDirectory.containsKey(1));
         assertTrue(_GameMaster.gamesListing.get(gameID).playerDirectory.containsKey(0));
 
@@ -79,6 +81,7 @@ public class UpdateHandlerTest extends TestCase {
         response = UpdateHandler.commandReader(input, id, chat_id, username);
         assertNotNull(response);
 
+
         // STARTING GAME
         input.command = "/skipClaim";
         input.args = new ArrayList<>();
@@ -91,11 +94,13 @@ public class UpdateHandlerTest extends TestCase {
         response = UpdateHandler.commandReader(input, id, chat_id, username);
         assertNotNull(response);
 
+
         // STARTING GAME
         input.command = "/listMyGames";
         input.args = new ArrayList<>();
         response = UpdateHandler.commandReader(input, id, chat_id, username);
         assertNotNull(response);
+
 
         // STARTING GAME
         input.command = "/reinforce";
@@ -106,7 +111,73 @@ public class UpdateHandlerTest extends TestCase {
         response = UpdateHandler.commandReader(input, id, chat_id, username);
         assertNotNull(response);
 
-        input.command = "/skipReinforce";
+
+        input.command = "/beginTurn";
+        input.args = new ArrayList<>();
+        input.args.add("YAKUTSK");
+        user = 0;
+        username = "ClydeFreshKnowsHowToTest";
+        response = UpdateHandler.commandReader(input, id, chat_id, username);
+        assertNotNull(response);
+
+
+        input.command = "/attack";
+        input.args = new ArrayList<>();
+        input.args.add("YAKUTSK");
+        user = 0;
+        username = "ClydeFreshKnowsHowToTest";
+        response = UpdateHandler.commandReader(input, id, chat_id, username);
+        assertNotNull(response);
+
+        input.command = "/attackWith";
+        input.args = new ArrayList<>();
+        input.args.add("2");
+        user = 0;
+        username = "ClydeFreshKnowsHowToTest";
+        response = UpdateHandler.commandReader(input, id, chat_id, username);
+        assertNotNull(response);
+
+        input.command = "/defendWith";
+        input.args = new ArrayList<>();
+        input.args.add("2");
+        user = 0;
+        username = "ClydeFreshKnowsHowToTest";
+        response = UpdateHandler.commandReader(input, id, chat_id, username);
+        assertNotNull(response);
+
+
+        input.command = "/fortify";
+        input.args = new ArrayList<>();
+        input.args.add("HOME");
+        user = 0;
+        username = "ClydeFreshKnowsHowToTest";
+        response = UpdateHandler.commandReader(input, id, chat_id, username);
+        assertNotNull(response);
+
+
+        input.command = "/trade";
+        input.args = new ArrayList<>();
+        input.args.add("2");
+        user = 0;
+        username = "ClydeFreshKnowsHowToTest";
+        response = UpdateHandler.commandReader(input, id, chat_id, username);
+        assertNotNull(response);
+
+
+        input.command = "/buyStuff";
+        input.args = new ArrayList<>();
+        input.args.add("2");
+        input.args.add("5");
+        user = 0;
+        username = "ClydeFreshKnowsHowToTest";
+        response = UpdateHandler.commandReader(input, id, chat_id, username);
+        assertNotNull(response);
+
+        input.command = "/buyCredit";
+        input.args = new ArrayList<>();
+        input.args.add("2000");
+        user = 0;
+        username = "ClydeFreshKnowsHowToTest";
         response = UpdateHandler.commandReader(input, id, chat_id, username);
         assertNotNull(response);
 
