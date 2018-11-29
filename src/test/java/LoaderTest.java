@@ -11,7 +11,5 @@ public class LoaderTest extends TestCase {
         Loader load = new Loader("1");
         load.JH.fileName = load.JH.base + "/src/files/testRisk.json";
         load.LoadGame();
-
-
     }
 }

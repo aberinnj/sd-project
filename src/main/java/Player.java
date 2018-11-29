@@ -99,6 +99,11 @@ public class Player implements Observer {
     // get wallet contents
     public Double getWallet() { return wallet; }
 
+    public void transferCredit(Double add, Player to) {
+        addMoney(add * -1);
+        to.addMoney(add);
+    }
+
     // get continents
     public int getContinentsOwned(BoardManager bm){
         int moreArmies= 0;
