@@ -8,7 +8,9 @@ public class Card {
     Card(String o, String u)
     {
         this.origin = o;
+        assert(origin == o);
         this.unit = u;
+        assert(unit == u);
     }
     public String getOrigin(){
         return origin;

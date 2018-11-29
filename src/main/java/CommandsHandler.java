@@ -1,4 +1,5 @@
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -13,7 +14,7 @@ Bot is a proxy for games and players, it forwards output and input to respective
 entities
 
 *///////////////////////////////////////////////////////////////////////////////*/
-class CommandsHandler extends TelegramLongPollingBot{
+public class CommandsHandler extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived (Update update){
