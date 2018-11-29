@@ -26,4 +26,13 @@ public class TelegramTest extends TestCase {
         Mockito.verify(bot).onUpdateReceived(update1);
     }
 
+    @Test
+    public void testOnUpdateReceived2() throws Exception {
+        CommandsHandler bot = Mockito.mock(CommandsHandler.class);
+        Mockito.doCallRealMethod().when(bot).onUpdateReceived(any());
+        Update update1 = new Update();
+        bot.onUpdateReceived(update1);
+        Mockito.verify(bot).onUpdateReceived(update1);
+    }
+
 }
