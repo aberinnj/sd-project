@@ -824,6 +824,9 @@ public class ResponseTest extends TestCase {
         response = Responses.onDefendWith(_GameMaster.gamesListing.get("game"), INPUT);
         assertEquals("You have decided to defend BRAZIL with 1 armies.", response);
 
+        response = Responses.onFollowUpResult(_GameMaster.gamesListing.get("game"));
+        assertEquals(GameState.ON_TURN, _GameMaster.gamesListing.get("game").state);
+        assertNull( _GameMaster.gamesListing.get("game").context);
 
         INPUT.args = new ArrayList<String>(){{add("3");}};
         response = Responses.onAttackWith(_GameMaster.gamesListing.get("game"), INPUT);
@@ -1001,7 +1004,7 @@ public class ResponseTest extends TestCase {
                 _GameMaster.gamesListing.get("game").turn);
 
         Twitter thisTwitter = Mockito.mock(Twitter.class);
-        when(thisTwitter.broadcastToTwitter(_GameMaster.gamesListing.get("game").currentTurn, player)).thenReturn("\nTurn Summary: Turn0:Player 0 captured no territories this turn.");
+        when(Twitter.broadcastToTwitter(_GameMaster.gamesListing.get("game").currentTurn, player)).thenReturn("\nTurn Summary: Turn0:Player 0 captured no territories this turn.");
 
         String response = Responses.onEndTurn(_GameMaster.gamesListing.get("game"), thisTwitter);
         assertEquals("\nTurn Summary: Turn0:Player 0 captured no territories this turn.\nPlayer @his it is now your turn, type /beginTurn to begin your turn", response);

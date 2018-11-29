@@ -8,7 +8,7 @@ import java.io.IOException;
 public class Twitter {
 
     TwitterFactory tf;
-    twitter4j.Twitter twitter;
+    static twitter4j.Twitter twitter;
 
     Twitter() {
 
@@ -25,7 +25,7 @@ public class Twitter {
     }
 
 
-    public String broadcastToTwitter(Turn k, Player p) throws TwitterException
+    public static String broadcastToTwitter(Turn k, Player p) throws TwitterException
     {
         int gains = 0;
         String result = "Turn("+ k.turnId + "):Player " + p.getId() + " captured ";
@@ -36,17 +36,21 @@ public class Twitter {
                 gains++;
             }
         }
-        result += gains;
-        if(gains == 1)
+
+        if(gains == 1) {
+            result += gains;
             result += " territory.";
-        else
+        }
+        else if (gains > 1) {
+            result += gains;
             result += " territories.";
+        }
 
         if (gains > 0) {
-            twitter.updateStatus(result);
-            return status + result;
+            Status res = twitter.updateStatus(result);
+            return status + res.getText();
         }
-        return status + result + " no territories this turn.";
+        return status + result + "no territories this turn.";
     }
 
 }
