@@ -56,6 +56,9 @@ public class UpdateHandlerTest extends TestCase {
                 "GameID: "+gameID, response);
         assertTrue(_GameMaster.gamesListing.containsKey(gameID));
 
+        response = UpdateHandler.commandsFollowUp(input, id, chat_id, username);
+        assertNotNull(response);
+
         // JOINING
         input.command = "/join";
         input.args = new ArrayList<>();
@@ -87,6 +90,11 @@ public class UpdateHandlerTest extends TestCase {
         input.args = new ArrayList<>();
         response = UpdateHandler.commandReader(input, id, chat_id, username);
         assertNotNull(response);
+
+        response = UpdateHandler.commandsFollowUp(input, id, chat_id, username);
+        assertNotNull(response);
+
+
 
         // STARTING GAME
         input.command = "/listAllGames";
@@ -164,7 +172,7 @@ public class UpdateHandlerTest extends TestCase {
         assertNotNull(response);
 
 
-        input.command = "/buyStuff";
+        input.command = "/buystuff";
         input.args = new ArrayList<>();
         input.args.add("2");
         input.args.add("5");
@@ -173,12 +181,42 @@ public class UpdateHandlerTest extends TestCase {
         response = UpdateHandler.commandReader(input, id, chat_id, username);
         assertNotNull(response);
 
-        input.command = "/buyCredit";
+        input.command = "/buycredit";
         input.args = new ArrayList<>();
         input.args.add("2000");
         user = 0;
         username = "ClydeFreshKnowsHowToTest";
         response = UpdateHandler.commandReader(input, id, chat_id, username);
+        assertNotNull(response);
+
+
+
+    }
+
+    @Test
+    public void testMore(){
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        Responses.onCreate(0, "game", "her", 123);
+        Responses.onJoin(INPUT, 1, "his", (long)123);
+        _GameMaster.gamesListing.get("game").setPlayerList();
+
+        Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+
+        ChatInput input = new ChatInput();
+        input.command = "/skipReinforce";
+        input.args = new ArrayList<>();
+        input.args.add("");
+        int id = 1;
+        long chat_id = 123;
+        String username = "her";
+        String response = UpdateHandler.commandReader(input, id, chat_id, username);
+        assertNotNull(response);
+        response = UpdateHandler.commandsFollowUp(input, id, chat_id, username);
         assertNotNull(response);
 
 
