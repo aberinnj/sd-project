@@ -18,7 +18,6 @@ public class AWS {
     static String base;
     AmazonS3 s3Client;
     private String fileName;
-    Props props = new Props();
     private String bucketName = "risk-game-team-one";
 
     AWS() throws IOException {
@@ -27,7 +26,7 @@ public class AWS {
         this.fileName = base + "/src/files/Risk.json";
 
         // s3Client = AmazonS3ClientBuilder.defaultClient();
-        BasicAWSCredentials awsCreds = new BasicAWSCredentials(props.getAws_access_key_id(), props.getAws_secret_access_key());
+        BasicAWSCredentials awsCreds = new BasicAWSCredentials(_GameMaster.props.getAws_access_key_id(), _GameMaster.props.getAws_secret_access_key());
 
         s3Client = AmazonS3ClientBuilder.standard()
                 .withRegion("us-east-1")

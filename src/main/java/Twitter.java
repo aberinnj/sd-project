@@ -13,21 +13,15 @@ public class Twitter {
     Twitter() {
 
         ConfigurationBuilder cb = new ConfigurationBuilder();
-        try {
-            Props props = new Props();
-
             cb.setDebugEnabled(true)
-                    .setOAuthConsumerKey(props.getTwitter_apiKey())
-                    .setOAuthConsumerSecret(props.getTwitter_apiSecretKey())
-                    .setOAuthAccessToken(props.getTwitter_accessToken())
-                    .setOAuthAccessTokenSecret(props.getTwitter_accessTokenSecret());
+                    .setOAuthConsumerKey(_GameMaster.props.getTwitter_apiKey())
+                    .setOAuthConsumerSecret(_GameMaster.props.getTwitter_apiSecretKey())
+                    .setOAuthAccessToken(_GameMaster.props.getTwitter_accessToken())
+                    .setOAuthAccessTokenSecret(_GameMaster.props.getTwitter_accessTokenSecret());
 
             // twitter setup
             tf = new TwitterFactory(cb.build());
             twitter = tf.getInstance();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 

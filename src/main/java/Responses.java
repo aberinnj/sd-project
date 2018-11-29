@@ -420,17 +420,56 @@ public class Responses {
     }
 
     public static String onAttackWith(Game game, ChatInput in){
-        return "";
+        if(game.state == GameState.ATTACKING && !game.context.countryFrom.equals("") && !game.context.countryTo.equals(""))
+        {
+            // assuming value is a number for now
+            int k = Integer.parseInt(in.getArgs().get(0));
+            if(k < 0 || k > 3)
+            {
+                return "You can only attack with 1-3 armies. ";
+            }
+            else {
+                game.context.count1 = k;
+                return "You have decided to attack " + game.context.countryTo + " from " + game.context.countryFrom + " with " + game.context.count1 + " armies. ";
+            }
+        } else {
+            return "You have not specified where to attack from and which enemy to attack yet.";
+        }
     }
 
     public static String onDefendWith(Game game, ChatInput in){
+
+        if(game.state == GameState.ATTACKING && !game.context.countryFrom.equals("") && !game.context.countryTo.equals("") && game.context.count1 != 0)
+        {
+            // assuming value is a number for now
+            game.context.count2 = Integer.parseInt(in.getArgs().get(0));
+            game.state = GameState.RESULT;
+
+            // assuming value is a number for now
+            int k = Integer.parseInt(in.getArgs().get(0));
+            if(k < 0 || k > 2)
+            {
+                return "You can only defend with 1-2 armies. ";
+            }
+            else {
+                game.context.count1 = k;
+                return "You have decided to attack " + game.context.countryTo + " from " + game.context.countryFrom + " with " + game.context.count1 + " armies. ";
+            }
+        }
+        return "";
+    }
+
+    public static String onFollowUpAttack(Game game) {
+        // shows up for when one of a player's territories get attacked (observer)
         return "";
     }
 
     public static String onFollowUpResult(Game game) {
         if(game.state == GameState.RESULT)
         {
-            // display follow up results for attacking
+            Player p = CommandUtils.getPlayer(game);
+            Turn k = new Turn(game.BM, p, game.turn);
+            k.battle(game.context.countryFrom, game.context.countryTo, game.context.count1, game.context.count2);
         }
         return "";
     }

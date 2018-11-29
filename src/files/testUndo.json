@@ -1,0 +1,372 @@
+{
+  "gameID": "game",
+  "Turn": 80,
+  "Deck": [
+    {
+      "Territory": "ALBERTA",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "KAMCHATKA",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "ALASKA",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "YAKUTSK",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "MADAGASCAR",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "NORTHERN EUROPE",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "WESTERN AUSTRALIA",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "BRAZIL",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "QUEBEC",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "URAL",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "INDONESIA",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "EASTERN UNITED STATES",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "SIBERIA",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "CONGO",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "UKRAINE",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "IRKUTSK",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "NEW GUINEA",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "NORTH AFRICA",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "SCANDINAVIA",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "ARGENTINA",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "GREAT BRITAIN",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "SIAM",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "EGYPT",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "CHINA",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "PERU",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "MONGOLIA",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "SOUTHERN EUROPE",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "WESTERN UNITED STATES",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "EAST AFRICA",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "WILD",
+      "Unit": "WILD"
+    },
+    {
+      "Territory": "SOUTH AFRICA",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "NORTH WEST TERRITORY",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "WESTERN EUROPE",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "INDIA",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "MIDDLE EAST",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "ICELAND",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "ONTARIO",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "GREENLAND",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "JAPAN",
+      "Unit": "CAVALRY"
+    },
+    {
+      "Territory": "VENEZUELA",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "CENTRAL AMERICA",
+      "Unit": "ARTILLERY"
+    },
+    {
+      "Territory": "AFGHANISTAN",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "EASTERN AUSTRALIA",
+      "Unit": "INFANTRY"
+    },
+    {
+      "Territory": "WILD",
+      "Unit": "WILD"
+    }
+  ],
+  "Players": [
+    {
+      "PlayerID": 0,
+      "PlayerName": "bonnie",
+      "ChatID": 1234567,
+      "PlayerWallet": 0.0,
+      "Undos": 0,
+      "Hand": [],
+      "Territories": [
+        {
+          "Territory": "YAKUTSK",
+          "Unit": 1
+        },
+        {
+          "Territory": "KAMCHATKA",
+          "Unit": 2
+        },
+        {
+          "Territory": "SIBERIA",
+          "Unit": 2
+        },
+        {
+          "Territory": "NORTHERN EUROPE",
+          "Unit": 2
+        },
+        {
+          "Territory": "GREAT BRITAIN",
+          "Unit": 2
+        },
+        {
+          "Territory": "SOUTHERN EUROPE",
+          "Unit": 2
+        },
+        {
+          "Territory": "WESTERN UNITED STATES",
+          "Unit": 2
+        },
+        {
+          "Territory": "VENEZUELA",
+          "Unit": 2
+        },
+        {
+          "Territory": "JAPAN",
+          "Unit": 2
+        },
+        {
+          "Territory": "QUEBEC",
+          "Unit": 2
+        },
+        {
+          "Territory": "PERU",
+          "Unit": 2
+        },
+        {
+          "Territory": "NORTH AFRICA",
+          "Unit": 2
+        },
+        {
+          "Territory": "IRKUTSK",
+          "Unit": 2
+        },
+        {
+          "Territory": "INDONESIA",
+          "Unit": 2
+        },
+        {
+          "Territory": "NORTH WEST TERRITORY",
+          "Unit": 2
+        },
+        {
+          "Territory": "URAL",
+          "Unit": 2
+        },
+        {
+          "Territory": "MADAGASCAR",
+          "Unit": 2
+        },
+        {
+          "Territory": "EASTERN AUSTRALIA",
+          "Unit": 2
+        },
+        {
+          "Territory": "ALBERTA",
+          "Unit": 2
+        },
+        {
+          "Territory": "EASTERN UNITED STATES",
+          "Unit": 2
+        },
+        {
+          "Territory": "INDIA",
+          "Unit": 1
+        }
+      ]
+    },
+    {
+      "PlayerID": 1,
+      "PlayerName": "clyde",
+      "ChatID": 1234567,
+      "PlayerWallet": 0.0,
+      "Undos": 0,
+      "Hand": [],
+      "Territories": [
+        {
+          "Territory": "SOUTH AFRICA",
+          "Unit": 1
+        },
+        {
+          "Territory": "ONTARIO",
+          "Unit": 2
+        },
+        {
+          "Territory": "ALASKA",
+          "Unit": 2
+        },
+        {
+          "Territory": "ARGENTINA",
+          "Unit": 2
+        },
+        {
+          "Territory": "WESTERN EUROPE",
+          "Unit": 2
+        },
+        {
+          "Territory": "UKRAINE",
+          "Unit": 2
+        },
+        {
+          "Territory": "EGYPT",
+          "Unit": 2
+        },
+        {
+          "Territory": "NEW GUINEA",
+          "Unit": 2
+        },
+        {
+          "Territory": "GREENLAND",
+          "Unit": 2
+        },
+        {
+          "Territory": "MIDDLE EAST",
+          "Unit": 2
+        },
+        {
+          "Territory": "CONGO",
+          "Unit": 2
+        },
+        {
+          "Territory": "SIAM",
+          "Unit": 2
+        },
+        {
+          "Territory": "SCANDINAVIA",
+          "Unit": 2
+        },
+        {
+          "Territory": "CHINA",
+          "Unit": 2
+        },
+        {
+          "Territory": "BRAZIL",
+          "Unit": 2
+        },
+        {
+          "Territory": "EAST AFRICA",
+          "Unit": 2
+        },
+        {
+          "Territory": "AFGHANISTAN",
+          "Unit": 2
+        },
+        {
+          "Territory": "CENTRAL AMERICA",
+          "Unit": 2
+        },
+        {
+          "Territory": "WESTERN AUSTRALIA",
+          "Unit": 2
+        },
+        {
+          "Territory": "ICELAND",
+          "Unit": 2
+        },
+        {
+          "Territory": "MONGOLIA",
+          "Unit": 1
+        }
+      ]
+    }
+  ]
+}

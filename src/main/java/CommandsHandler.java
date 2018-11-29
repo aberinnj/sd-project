@@ -260,11 +260,7 @@ public class CommandsHandler extends TelegramLongPollingBot {
                 case "/endturn": {
                     Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
                     Turn turn = game.currentTurn;
-                    try {
-                        turn.earnCards();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    turn.earnCards();
 
                     // Write game to save game file
                     try {

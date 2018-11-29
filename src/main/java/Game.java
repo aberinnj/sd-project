@@ -61,7 +61,7 @@ class Game extends Observable {
 
     // function to reset the turn if reloading
     public void setTurn(int turn) {
-        turn = turn;
+        this.turn = turn;
     }
 
     // telegram style, gives each players the appropriate number of armies on init

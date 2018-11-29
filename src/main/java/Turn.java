@@ -23,7 +23,7 @@ public class Turn {
 
     // Passes if a new territory is added to player's territories
     // Fails if there's no new territory added to player's territories
-    public boolean isPlayerEligibleToEarnCardsThisTurn() throws InterruptedException {
+    public boolean isPlayerEligibleToEarnCardsThisTurn() {
         for(String k : player.getTerritories()) {
             if( !previousTerritories.contains(k)) {
                 //System.out.println("Player is eligible to earn a card for claiming a new Territory: claimed "+ k +".");
@@ -35,7 +35,7 @@ public class Turn {
     }
 
     // earnCards draw a card and adds the card to the Player's hand
-    public void earnCards() throws InterruptedException {
+    public void earnCards(){
         Card c;
         if(isPlayerEligibleToEarnCardsThisTurn()) {
             c = BM.getGameDeck().draw();
@@ -182,7 +182,7 @@ public class Turn {
             out += country + ": " + BM.getOccupantCount(country) + " armies, CAN ATTACK\n";
             for(String enemy: BM.getAllAdjacentEnemyTerritories(player.getId(), country))
             {
-                // System.out.println("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies");
+                out += "\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies\n";
                 //messenger.putMessage("\t"+enemy + ", " + BM.getOccupantCount(enemy) +" enemy armies\n");
             }
         }

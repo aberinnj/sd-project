@@ -1,6 +1,7 @@
 import org.junit.Test;
 import junit.framework.TestCase;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -123,20 +124,30 @@ public class PlayerTest extends TestCase{
 
     @Test
     public void testOtherPlayerStuff() {
-        BoardManager BM = new BoardManager();
-        assertNotNull(BM.getFreeTerritories());
-        Player cooper;
-        cooper = new Player(0, 5);
-        cooper.setTerritories(BM.getFreeTerritories());
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        Responses.onCreate(2, "game", "bobby", 1234567);
+        Responses.onJoin(INPUT, 1, "dobby", (long)123);
+
+        Game game = CommandUtils.getGame(2);
+        game.setPlayerList();
+
+        Player player = CommandUtils.getPlayer(game);
+
         Stack<Card> deck = new Stack<>();
-        Card c = BM.gameDeck.draw();
+        Card c = game.BM.gameDeck.draw();
         deck.push(c);
 
-        cooper.setCardStack(deck);
+        player.setCardStack(deck);
 
-        assertNotNull(cooper.getUsername());
-        assertNotNull(cooper.getChat_id());
-        assertNotNull(cooper.getTotalCards());
+        assertEquals("bobby", player.getUsername());
+        assertEquals(1234567, player.getChat_id());
+        assertEquals(1, player.getTotalCards());
 
     }
 
