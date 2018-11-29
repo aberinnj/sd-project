@@ -1055,4 +1055,50 @@ public class ResponseTest extends TestCase {
 
     }
 
+    @Test
+    public void testOnUndo() throws IOException{
+        ChatInput INPUT = new ChatInput();
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        Responses.onCreate(0, "game", "her", 1234567);
+        Responses.onJoin(INPUT,1 , "his", (long)1234567 );
+        _GameMaster.gamesListing.get("game").setPlayerList();
+        Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        Responses.onSkipReinforce( _GameMaster.gamesListing.get("game"));
+
+
+        // MAKE CHANGES but these are not saved
+        INPUT.args = new ArrayList<String>(){{add("YAKUTSK");}};
+        Responses.onBeginTurn(_GameMaster.gamesListing.get("game"));
+        Responses.onReinforce(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        Responses.onReinforce(INPUT, 0, _GameMaster.gamesListing.get("game"));
+        Responses.onReinforce(INPUT, 0, _GameMaster.gamesListing.get("game"));
+
+        int remaining_armies = _GameMaster.gamesListing.get("game").playerDirectory.get(0).getNumberOfArmies();
+        assertEquals(4, _GameMaster.gamesListing.get("game").BM.getOccupantCount("YAKUTSK"));
+        assertEquals(4, remaining_armies);
+
+        AWS aws = mock(AWS.class);
+        when(aws.getFileName()).thenReturn(System.getProperty("user.dir") + "/src/files/testUndo.json");
+        when(aws.download("game")).thenReturn(true);
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+        String response = Responses.onUndo(_GameMaster.gamesListing.get("game"), aws);
+        assertEquals("Undo successful", response);
+
+        // UNDO results check
+        remaining_armies = _GameMaster.gamesListing.get("game").playerDirectory.get(0).getNumberOfArmies();
+        assertEquals(1, _GameMaster.gamesListing.get("game").BM.getOccupantCount("YAKUTSK"));
+        assertEquals(0, remaining_armies);
+
+        when(aws.download("game")).thenReturn(false);
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+        response = Responses.onUndo(_GameMaster.gamesListing.get("game"), aws);
+        assertEquals("Game could not be downloaded from AWS.", response);
+
+
+
+
+    }
+
 }

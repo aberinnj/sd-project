@@ -68,7 +68,7 @@ public class CommandsHandler extends TelegramLongPollingBot {
 
                 case "/undo": {
                     AWS aws = new AWS();
-                    message.setText(Responses.onUndo(aws, in));
+                    message.setText(Responses.onUndo(game, aws));
                     break;
                 }
                 case "/join": {

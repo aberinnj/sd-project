@@ -626,7 +626,7 @@ public class Responses {
             e.printStackTrace();
         }
         try {
-            result += tw.broadcastToTwitter(game.currentTurn, game.currentTurn.player);
+            result += Twitter.broadcastToTwitter(game.currentTurn, game.currentTurn.player);
         } catch (TwitterException e) {
             e.printStackTrace();
         }
@@ -676,17 +676,26 @@ public class Responses {
         }
     }
 
-    public static String onUndo(AWS aws, ChatInput in)
+    public static String onUndo(Game game, AWS aws)
     {
+        // compared to load, undo is used during gameplay, hence there are players
         try {
-            aws.download(in.getArgs().get(0));
-            // create new loader & game using the input gameID
-            Loader loader = new Loader(in.getArgs().get(0));
-            _GameMaster.gamesListing.put(in.getArgs().get(0), loader.loadGame());
+            if(!aws.download(game.gameID))
+            {
+                return "Game could not be downloaded from AWS.";
+            }else {
+                aws.download(game.gameID);
+                // create new loader & game using the input gameID
+                game.gameLoader = new Loader(game.gameID);
+                _GameMaster.gamesListing.get("game").gameLoader.JH.fileName = aws.getFileName();
+                _GameMaster.gamesListing.put(game.gameID, game.gameLoader.loadGame());
+                return "Undo successful";
+            }
         } catch(IOException e)
         {
             e.printStackTrace();
+            return "Undo unsuccessful";
         }
-        return "Undo successful";
+
     }
 }
