@@ -8,7 +8,7 @@ target
 
 # API - windows
 src/keys/twitter_api.json
-*.prop
+secrets_TeamOne.prop
 
 # API - linux
 ./src/keys/twitter_api.json

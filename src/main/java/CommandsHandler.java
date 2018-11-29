@@ -9,130 +9,120 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-/*////////////////////////////////////////////////////////////////////////////////
-Bot is a proxy for games and players, it forwards output and input to respective
-entities
 
-*///////////////////////////////////////////////////////////////////////////////*/
-public class CommandsHandler extends TelegramLongPollingBot {
+class UpdateHandler {
 
-    @Override
-    public void onUpdateReceived (Update update){
+    private UpdateHandler(){}
 
-        if (update.hasMessage() && update.getMessage().hasText()){
+    public static String commandReader(ChatInput in, int id, long chat_id, String username) {
 
-            SendMessage message = new SendMessage();
+        String response = "";
 
-            message.setChatId(update.getMessage().getChatId());
-
-            ChatInput in = new ChatInput(CommandUtils.getInput(update.getMessage().getText()));
-
-            Game game = CommandUtils.getGame(update.getMessage().getFrom().getId());
+            Game game = CommandUtils.getGame(id);
 
 
-            switch(in.getCommand())
-            {
+            switch (in.getCommand()) {
                 case "/start": {
-                    message.setText(Responses.onStart());
+                    response += (Responses.onStart());
                     break;
                 }
                 case "/listAllGames": {
-                    message.setText(Responses.onListAllGames());
+                    response += (Responses.onListAllGames());
                     break;
                 }
                 case "/skipReinforce": {
                     // THESE ARE FOR TESTING, REMOVE IF NEED BE
-                    message.setText(Responses.onSkipReinforce(CommandUtils.getGame(update.getMessage().getFrom().getId())));
+                    response += (Responses.onSkipReinforce(CommandUtils.getGame(id)));
                     break;
 
                 }
 
                 case "/skipClaim": {
                     // THESE ARE FOR TESTING, REMOVE IF NEED BE
-                    message.setText(Responses.onSkipClaim(CommandUtils.getGame(update.getMessage().getFrom().getId())));
+                    response += (Responses.onSkipClaim(CommandUtils.getGame(id)));
                     break;
                 }
 
                 case "/load": {
                     AWS aws = new AWS();
-                    message.setText(Responses.onLoad(game, aws, in));
+                    response += (Responses.onLoad(game, aws, in));
                     break;
                 }
 
                 case "/save": {
                     AWS aws = new AWS();
                     aws.upload(game.gameID);
-                    message.setText("your game has been saved");
+                    response += ("your game has been saved");
                     break;
                 }
 
                 case "/undo": {
                     AWS aws = new AWS();
-                    message.setText(Responses.onUndo(game, aws));
+                    response += (Responses.onUndo(game, aws));
                     break;
                 }
                 case "/join": {
-                    message.setText(Responses.onJoin(in, update.getMessage().getFrom().getId(), update.getMessage().getFrom().getUserName(), update.getMessage().getChatId()));
+                    response += (Responses.onJoin(in, id, username, chat_id));
                     break;
                 }
 
                 case "/listMyGames": {
-                    message.setText(Responses.onListMyGames(update.getMessage().getFrom().getId()));
+                    response += (Responses.onListMyGames(id));
                     break;
                 }
 
                 case "/create": {
-                    message.setText(Responses.onCreate(
-                            update.getMessage().getFrom().getId(),
+                    response += (Responses.onCreate(
+                            id,
                             "risk-game-" + UUID.randomUUID().toString(),
-                            update.getMessage().getFrom().getUserName(),
-                            update.getMessage().getChatId())
+                            username,
+                            chat_id)
                     );
                     break;
                 }
 
                 case "/help": {
-                    message.setText(Responses.onHelp());
+                    response = (Responses.onHelp());
                     break;
                 }
 
                 // function to pick territory, there may be a way to message a player directly and in turn order given a player's user_id and turn number
                 case "/pick": {
-                    message.setText(Responses.onPick(
+                    response += (Responses.onPick(
                             in,
-                            update.getMessage().getFrom().getId(),
-                            CommandUtils.getGame(update.getMessage().getFrom().getId())));
+                            id,
+                            CommandUtils.getGame(id)));
                     break;
                 }
 
                 case "/reinforce": {
-                    message.setText(Responses.onReinforce(
+                    response += (Responses.onReinforce(
                             in,
-                            update.getMessage().getFrom().getId(),
-                            CommandUtils.getGame(update.getMessage().getFrom().getId())));
+                            id,
+                            CommandUtils.getGame(id)));
 
                     break;
                 }
 
                 // message should be formatted /attack (attack territory) (defend territory) (Number of armies to attack with) (number of armies to defend with)
                 case "/attack": {
-                    message.setText(Responses.onAttack(game, in));
+                    response += (Responses.onAttack(game, in));
                     break;
                 }
 
-                case "/atttackWith": {
-                    message.setText(Responses.onAttackWith(game, in));
+                case "/attackWith": {
+                    response += (Responses.onAttackWith(game, in));
                     break;
                 }
 
                 case "/defendWith": {
-                    message.setText(Responses.onDefendWith(game, in));
+                    response += (Responses.onDefendWith(game, in));
                     break;
                 }
 
                 // message should be formatted /fortify (move from) (move to) (Num armies)
                 case "/fortify": {
-                    message.setText(Responses.onFortify(game, in));
+                    response += (Responses.onFortify(game, in));
                     break;
                 }
 
@@ -140,72 +130,104 @@ public class CommandsHandler extends TelegramLongPollingBot {
                 case "/trade": {
                     Player player = CommandUtils.getPlayer(game);
                     Turn turn = game.currentTurn;
+                    response += "You don't trade.";
                     break;
                 }
 
                 // message format -> /buycredit (credit amount)
                 case "/buycredit": {
-                    message.setText(Responses.onBuyCredit(game, in));
+                    response += (Responses.onBuyCredit(game, in));
                     break;
                 }
 
                 // format -> /buystuff (# undos to buy) (# cards to buy)
                 case "/buystuff": {
-                    message.setText(Responses.onBuyStuff(game, in));
+                    response += (Responses.onBuyStuff(game, in));
                     break;
                 }
 
                 case "/endturn": {
                     Twitter tw = new Twitter();
-                    message.setText(Responses.onEndTurn(game, tw));
+                    response += (Responses.onEndTurn(game, tw));
+                    break;
                 }
 
                 case "/beginTurn": {
                     //int turnNo = game.turn % game.playerDirectory.size();
-                    message.setText(Responses.onBeginTurn(game));
+                    response += (Responses.onBeginTurn(game));
                     break;
                 }
                 default:
-                    message.setText("Command " + in.getCommand() + " not found.\n\n" + Responses.onHelp());
+                    response += ("Command " + in.getCommand() + " not found.\n\n" + Responses.onHelp());
                     break;
             }
+        return response;
+    }
 
+
+    public static String commandsFollowUp(ChatInput in, int id, long chat_id, String username){
+
+
+        if (in.getCommand().equals("/join") && _GameMaster.gamesListing.containsKey(in.args.get(0)) && _GameMaster.gamesListing.get(in.args.get(0)).playerDirectory.size() == 2 && in.args.size() > 0) {
+            return(Responses.onFollowUpJoin(in.args.get(0)));
+        }
+        else if((in.getCommand().equals("/pick") || (in.getCommand().equals("/skipClaim")))
+                && _GameMaster.gamesListing.get(CommandUtils.getGame(id).gameID).BM.getFreeTerritories().size() == 0)
+        {
+            return(Responses.onFollowUpInitPick(CommandUtils.getGame(id)));
+
+        }
+        else if (in.getCommand().equals("/reinforce") || in.getCommand().equals("/skipReinforce"))
+        {
+            return(Responses.onFollowUpReinforce(CommandUtils.getGame(id)));
+        }
+        else if (CommandUtils.getGame(id).state == GameState.ATTACKING
+                && (CommandUtils.getGame(id)).context != null
+                && (CommandUtils.getGame(id)).context.count2 != 0)
+        {
+            return(Responses.onFollowUpAttack(CommandUtils.getGame(id)));
+        } else if (CommandUtils.getGame(id).state == GameState.RESULT)
+        {
+            // means game.context has all the values needed
+            return(Responses.onFollowUpResult(CommandUtils.getGame(id)));
+        }
+        else {
+            return("Follow-up Message: none");
+        }
+    }
+}
+
+/*////////////////////////////////////////////////////////////////////////////////
+Where updates (messages) from telegram are received
+*///////////////////////////////////////////////////////////////////////////////*/
+public class CommandsHandler extends TelegramLongPollingBot {
+
+    @Override
+    public void onUpdateReceived (Update update){
+            // INITIAL MESSAGE
+        if (update.hasMessage() && update.getMessage().hasText()) {
+
+            // parse
+            ChatInput in = new ChatInput(CommandUtils.getInput(update.getMessage().getText()));
+            // get necessary data
+            int user_id = update.getMessage().getFrom().getId();
+            long chat_id = update.getMessage().getChatId();
+            String username = update.getMessage().getFrom().getUserName();
+
+
+            SendMessage message = new SendMessage();
+            message.setText(UpdateHandler.commandReader(in, user_id, chat_id, username));
+            message.setChatId(update.getMessage().getChatId());
             try{
                 execute(message);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
 
-
-            // follow up messages
+            // FOLLOW UP MESSAGE
             SendMessage announcement = new SendMessage();
-            if (in.getCommand().equals("/join") && _GameMaster.gamesListing.containsKey(in.args.get(0)) && _GameMaster.gamesListing.get(in.args.get(0)).playerDirectory.size() == 2 && in.args.size() > 0) {
-                announcement.setText(Responses.onFollowUpJoin(in.args.get(0)));
-            }
-            else if((in.getCommand().equals("/pick") || (in.getCommand().equals("/skipClaim"))) && _GameMaster.gamesListing.get(CommandUtils.getGame(update.getMessage().getFrom().getId()).gameID).BM.getFreeTerritories().size() == 0)
-            {
-                announcement.setText(Responses.onFollowUpInitPick(CommandUtils.getGame(update.getMessage().getFrom().getId())));
-
-            }
-            else if (in.getCommand().equals("/reinforce") || in.getCommand().equals("/skipReinforce"))
-            {
-                announcement.setText(Responses.onFollowUpReinforce(CommandUtils.getGame(update.getMessage().getFrom().getId())));
-            }
-            else if (CommandUtils.getGame(update.getMessage().getFrom().getId()).state == GameState.ATTACKING
-                    && (CommandUtils.getGame(update.getMessage().getFrom().getId())).context != null
-                    && (CommandUtils.getGame(update.getMessage().getFrom().getId())).context.count2 != 0)
-            {
-                announcement.setText(Responses.onFollowUpAttack(CommandUtils.getGame(update.getMessage().getFrom().getId())));
-            } else if (CommandUtils.getGame(update.getMessage().getFrom().getId()).state == GameState.RESULT)
-            {
-                // means game.context has all the values needed
-                announcement.setText(Responses.onFollowUpResult(CommandUtils.getGame(update.getMessage().getFrom().getId())));
-            }
-            else {
-                announcement.setText("Follow-up Message: none");
-            }
+            announcement.setText(UpdateHandler.commandsFollowUp(in, user_id, chat_id, username));
             announcement.setChatId(update.getMessage().getChatId());
-
             try {
                 execute(announcement);
             } catch (TelegramApiException e) {
@@ -216,13 +238,13 @@ public class CommandsHandler extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername(){
-        return _GameMaster.props.getBot_name();
+        return(_GameMaster.props.getBot_name());
 
     }
 
     @Override
     public String getBotToken(){
-        return _GameMaster.props.getBot_apiToken();
+        return(_GameMaster.props.getBot_apiToken());
 
     }
 
