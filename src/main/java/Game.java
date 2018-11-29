@@ -6,6 +6,7 @@ enum GameState {
     CLAIMING,
     ON_TURN,
     ATTACKING,
+    DEFENDING,
     RESULT
 
 }
@@ -112,32 +113,10 @@ class Game extends Observable {
 
     public void addUser(Integer user_id, String username, long chat_id){
 
-        //playerDirectory.put(user_id, new User(user_id, username, chat_id));
-
-        // Create new player to add to the list of players for the game
         playerDirectory.put(playerDirectory.size(), new Player(user_id, username, chat_id, 0));
         users.add(user_id);
-        /*
-        if(playerDirectory.size() == _GameMaster.MIN_PLAYERS_PER_GAME)
-        {
-            state = GameState.START;
-            setChanged();
-            notifyObservers();
-        }*/
-    }
 
-    /*
-    public void beginTurns() {
-        state = GameState.TURNS;
-        setChanged();
-        notifyObservers();
     }
-
-    public void beginDistribute() {
-        state = GameState.ARMIES;
-        setChanged();
-        notifyObservers();
-    }*/
 
 
     public void setCurrentTurn(Turn turn) { this.currentTurn = turn;}

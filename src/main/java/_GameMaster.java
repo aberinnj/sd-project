@@ -255,32 +255,14 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                 // message format -> /buycredit (credit amount)
                 case "/buycredit": {
-                    Player player = CommandUtils.getPlayer(game);
-                    player.addMoney(Double.parseDouble(in.getArgs().get(0)));
+                    message.setText(Responses.onBuyCredit(game, in));
                     break;
                 }
 
                 // format -> /buystuff (# undos to buy) (# cards to buy)
                 case "/buystuff": {
-                    int turnNo = game.turn % game.playerDirectory.size();
-                    Player player = game.playerDirectory.get(turnNo);
-
-                    Double cash = player.getWallet();
-
-                    int undos = Integer.parseInt(in.getArgs().get(0));
-                    if (undos * 1000 < cash) {
-                        player.addUndos(undos);
-                        player.addMoney( undos * 1000 * -1);
-                    }
-
-                    Double cards = Double.valueOf(in.getArgs().get(1));
-                    if (cards * 100 < cash) {
-                        for (int i = 0; i < cards; i++) {
-                            Card c = game.BM.getGameDeck().draw();
-                            if(c != null) player.getHand().get(c.getUnit()).push(c);
-                        }
-                        player.addMoney( cards * 100 * -1);
-                    }
+                    message.setText(Responses.onBuyStuff(game, in));
+                    break;
                 }
 
                 case "/endturn": {
@@ -342,6 +324,16 @@ class CommandsHandler extends TelegramLongPollingBot{
                 else if (in.getCommand().equals("/reinforce") || in.getCommand().equals("/skipReinforce"))
                 {
                     announcement.setText(Responses.onFollowUpReinforce(CommandUtils.getGame(update.getMessage().getFrom().getId())));
+                }
+                else if (CommandUtils.getGame(update.getMessage().getFrom().getId()).state == GameState.ATTACKING
+                        && (CommandUtils.getGame(update.getMessage().getFrom().getId())).context != null
+                        && (CommandUtils.getGame(update.getMessage().getFrom().getId())).context.count2 != 0)
+                {
+                    announcement.setText(Responses.onFollowUpAttack(CommandUtils.getGame(update.getMessage().getFrom().getId())));
+                } else if (CommandUtils.getGame(update.getMessage().getFrom().getId()).state == GameState.RESULT)
+                {
+                    // means game.context has all the values needed
+                    announcement.setText(Responses.onFollowUpResult(CommandUtils.getGame(update.getMessage().getFrom().getId())));
                 }
                 else {
                     announcement.setText("Follow-up Message: none");

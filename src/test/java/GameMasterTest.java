@@ -18,6 +18,7 @@ public class GameMasterTest extends TestCase{
         assertEquals("KEY7", item);
         item = ch.getBotUsername();
         assertEquals("KEY8", item);
+        assertNotNull(item);
 
     }
 }
