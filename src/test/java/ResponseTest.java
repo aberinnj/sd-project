@@ -1,8 +1,12 @@
 import junit.framework.TestCase;
 import org.junit.Test;
+import org.mockito.Mockito;
+import twitter4j.TwitterException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static org.mockito.Mockito.when;
 
 public class ResponseTest extends TestCase {
     @Test
@@ -686,6 +690,7 @@ public class ResponseTest extends TestCase {
         response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
 
         assertEquals("To commence an attack,\n" +
+                "/attack for help, or to reset\n"+
                 "/attack <from>\n" +
                 "/attack <enemy>\n" +
                 "/attackWith <count max(3)>\n" +
@@ -893,5 +898,114 @@ public class ResponseTest extends TestCase {
     }
 
 
+    @Test
+    public void testOnFortify(){
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        Responses.onCreate(0, "game", "her", 123);
+        Responses.onJoin(INPUT, 1, "his", (long)123);
+        _GameMaster.gamesListing.get("game").setPlayerList();
+
+        Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
+
+
+        INPUT.args = new ArrayList<String>(){{add("EASTERN UNITED STATES");}};
+        String response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You cannot fortify right now.",response);
+
+
+        _GameMaster.gamesListing.get("game").state = GameState.ON_TURN;
+
+        INPUT.args = new ArrayList<String>(){{add("");}};
+         response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("To fortify," +
+                "\n/fortify for help, or to reset"+
+                "\n/fortify <from>" +
+                        "\n/fortify <neighbor territory>" +
+                        "\n/fortify <transferCount>" +
+                        "\n\nYour territories:"+
+                "\nYAKUTSK\n" +
+                "KAMCHATKA\n" +
+                "SIBERIA\n" +
+                "NORTHERN EUROPE\n" +
+                "GREAT BRITAIN\n" +
+                "SOUTHERN EUROPE\n" +
+                "WESTERN UNITED STATES\n" +
+                "VENEZUELA\n" +
+                "JAPAN\n" +
+                "QUEBEC\n" +
+                "PERU\n" +
+                "NORTH AFRICA\n" +
+                "IRKUTSK\n" +
+                "INDONESIA\n" +
+                "NORTH WEST TERRITORY\n" +
+                "URAL\n" +
+                "MADAGASCAR\n" +
+                "EASTERN AUSTRALIA\n" +
+                "ALBERTA\n" +
+                "EASTERN UNITED STATES\n" +
+                "INDIA", response);
+
+        INPUT.args = new ArrayList<String>(){{add("EASTERN UNITED STATES");}};
+        response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have selected to fortify from EASTERN UNITED STATES",response);
+
+        INPUT.args = new ArrayList<String>(){{add("WESTERN UNITED STATES");}};
+        response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have selected to fortify WESTERN UNITED STATES",response);
+
+        INPUT.args = new ArrayList<String>(){{add("NORTH WEST TERRITORY");}};
+        response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("Territory is unreachable from EASTERN UNITED STATES",response);
+
+        INPUT.args = new ArrayList<String>(){{add("BRAZIL");}};
+        response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You do not own BRAZIL",response);
+
+        INPUT.args = new ArrayList<String>(){{add("ALOHA");}};
+        response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("Territory ALOHA not found.",response);
+
+        INPUT.args = new ArrayList<String>(){{add("20");}};
+        response = Responses.onFortify(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You cannot transfer 20 armies.\nYou only have 2 armies in EASTERN UNITED STATES", response);
+
+    }
+
+
+    @Test
+    public void testEndTurn() throws TwitterException {
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        Responses.onCreate(0, "game", "her", 123);
+        Responses.onJoin(INPUT, 1, "his", (long)123);
+        _GameMaster.gamesListing.get("game").setPlayerList();
+
+        Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
+
+        Player player = CommandUtils.getPlayer(_GameMaster.gamesListing.get("game"));
+        // line below is done by /beginTurn
+        _GameMaster.gamesListing.get("game").currentTurn = new Turn(
+                _GameMaster.gamesListing.get("game").BM,
+                player,
+                _GameMaster.gamesListing.get("game").turn);
+
+        Twitter thisTwitter = Mockito.mock(Twitter.class);
+        when(thisTwitter.broadcastToTwitter(_GameMaster.gamesListing.get("game").currentTurn, player)).thenReturn("\nTurn Summary: Turn0:Player 0 captured no territories this turn.");
+
+        String response = Responses.onEndTurn(_GameMaster.gamesListing.get("game"), thisTwitter);
+        assertEquals("\nTurn Summary: Turn0:Player 0 captured no territories this turn.\nPlayer @his it is now your turn, type /beginTurn to begin your turn", response);
+
+    }
 
 }

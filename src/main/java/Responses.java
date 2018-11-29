@@ -4,7 +4,9 @@
 
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import twitter4j.TwitterException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -324,6 +326,7 @@ public class Responses {
     public static String onBeginTurn(Game game)
     {
         Player player = CommandUtils.getPlayer(game);
+        game.currentTurn = new Turn(game.BM, player, game.turn);
         String out = ("Player @" +player.getUsername()+ " has begin their turn. You may: \n" +
                 "\n/tradecards to trade your cards if you have pairs" +
                 "\n/reinforce <country> to reinforce new free armies to your territory" +
@@ -367,6 +370,7 @@ public class Responses {
                 if (tempTerritory.equals("")) {
                     game.context = new Context();
                     return "To commence an attack," +
+                            "\n/attack for help, or to reset"+
                             "\n/attack <from>" +
                             "\n/attack <enemy>" +
                             "\n/attackWith <count max(3)>" +
@@ -541,5 +545,145 @@ public class Responses {
             }
         }
 
+    }
+
+
+    public static String onFortify(Game game, ChatInput in){
+
+        String tempTerritory = String.join(" ", in.getArgs());
+        if(game.state == GameState.ON_TURN)
+        {
+
+            Player player = CommandUtils.getPlayer(game);
+
+            if (tempTerritory.equals("")) {
+                game.context = new Context();
+                String res = "";
+                for(String terr: player.getTerritories())
+                {
+                    res += "\n"+terr;
+                }
+                return "To fortify," +
+                        "\n/fortify for help, or to reset"+
+                        "\n/fortify <from>" +
+                        "\n/fortify <neighbor territory>" +
+                        "\n/fortify <transferCount>" +
+                        "\n\nYour territories:" + res;
+
+            } else
+            {
+                if (player.getTerritories().contains(tempTerritory)
+                        && game.context != null
+                        && !game.context.countryFrom.equals("")
+                        && game.BM.getNeighborsOf(game.context.countryFrom).contains(tempTerritory)) {
+                    game.context.countryTo = tempTerritory;
+                    return "You have selected to fortify " + tempTerritory;
+                }else if (player.getTerritories().contains(tempTerritory)
+                        && game.context != null
+                        && !game.context.countryFrom.equals("")
+                        && !game.context.countryTo.equals("")
+                        && !game.BM.getNeighborsOf(game.context.countryFrom).contains(tempTerritory)) {
+                    return "Territory is unreachable from " + game.context.countryFrom;
+                } else if(player.getTerritories().contains(tempTerritory)) {
+                game.context = new Context();
+                game.context.countryFrom = tempTerritory;
+                return "You have selected to fortify from " + tempTerritory;
+            } else if (!game.context.countryFrom.equals("") && !game.context.countryTo.equals("") && !game.BM.getBoardMap().keySet().contains(tempTerritory)) {
+                    int k = -1;
+                    try {
+                        k = Integer.parseInt(tempTerritory);
+                    } catch(NumberFormatException e){
+                        return "Territory " + tempTerritory + " not found.";
+                    }
+                    if(k < game.BM.getOccupantCount(game.context.countryFrom) && k >= 0) {
+                        game.BM.fortifyTerritory(game.context.countryFrom, game.context.countryTo, k);
+                        return "You have fortified successfully with " + tempTerritory + " armies.";
+                    } else {
+                        return "You cannot transfer " + k + " armies.\nYou only have " + game.BM.getOccupantCount(game.context.countryFrom) + " armies in " + game.context.countryFrom;
+                    }
+                } else {
+                    return "You do not own " + tempTerritory;
+                }
+            }
+        }
+        else {
+            return "You cannot fortify right now.";
+        }
+
+    }
+
+
+    public static String onEndTurn(Game game, Twitter tw)
+    {
+        Turn turn = game.currentTurn;
+        turn.earnCards();
+
+        String result = "";
+
+        // Write game to save game file
+        try {
+            JSONhandler JSONhandler = new JSONhandler(game);
+            JSONhandler.JSONwriter();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            result += tw.broadcastToTwitter(game.currentTurn, game.currentTurn.player);
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+
+        // move to next turn
+        game.turn += 1;
+        int turnNo = game.turn % game.playerDirectory.size();
+        Player player = game.playerDirectory.get(turnNo);
+        game.nextTurnUserID = player.id;
+        return result+"\nPlayer @" +player.getUsername()+ " it is now your turn, type /beginTurn to begin your turn";
+
+    }
+
+
+    public static String onLoad(Game game, AWS aws, ChatInput in)
+    {
+        String response;
+        if(in.getArgs().isEmpty() || in.getArgs().get(0).equals(""))
+        {
+            ArrayList<String> games = aws.listObjects();
+            response = "You have opted to load a game but did not provide a gameID:\n/load <gameID> to load a game\nAvailable games to load:\n";
+            for (String g: games) {
+                response += g + "\n";
+            }
+            return response;
+        }
+        else {
+
+            try {
+                aws.download(in.getArgs().get(0));
+                Loader loader = new Loader(in.getArgs().get(0));
+                _GameMaster.gamesListing.put(in.getArgs().get(0), loader.LoadGame());
+
+                int turn = _GameMaster.gamesListing.get(in.getArgs().get(0)).turn;
+                return "Game loaded, it is now the " + turn + " turn";
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+                return "Game could not be found";
+            }
+            // create new loader & game using the input gameID
+        }
+    }
+
+    public static String onUndo(AWS aws, ChatInput in)
+    {
+        try {
+            aws.download(in.getArgs().get(0));
+            // create new loader & game using the input gameID
+            Loader loader = new Loader(in.getArgs().get(0));
+            _GameMaster.gamesListing.put(in.getArgs().get(0), loader.LoadGame());
+        } catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+        return "Undo successful";
     }
 }

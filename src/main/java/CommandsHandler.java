@@ -52,62 +52,22 @@ class CommandsHandler extends TelegramLongPollingBot{
                     break;
                 }
 
-                case "/listGamesS3": {
-                    AWS aws = null;
-                    try {
-                        aws = new AWS();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    ArrayList<String> games = aws.listObjects();
-                    message.setText("Available games to load: \n");
-                    for (String g: games) {
-                        message.setText(g + "\n");
-                    }
+                case "/load": {
+                    AWS aws = new AWS();
+                    message.setText(Responses.onLoad(game, aws, in));
                     break;
                 }
 
-                case "/saveGame": {
-                    AWS aws = null;
-                    try {
-                        aws = new AWS();
-                        aws.upload(game.gameID);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                case "/save": {
+                    AWS aws = new AWS();
+                    aws.upload(game.gameID);
                     message.setText("your game has been saved");
                     break;
                 }
 
                 case "/undo": {
-                    try {
-                        AWS aws = new AWS();
-                        aws.download(in.getArgs().get(0));
-                        // create new loader & game using the input gameID
-                        Loader loader = new Loader(in.getArgs().get(0));
-                        _GameMaster.gamesListing.put(in.getArgs().get(0), loader.LoadGame());
-                        message.setText("Undo successful");
-                        break;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                }
-
-                // format -> /loadGame (gameID)
-                case "/loadGame": {
-                    try {
-                        AWS aws = new AWS();
-                        aws.download(in.getArgs().get(0));
-                        // create new loader & game using the input gameID
-                        Loader loader = new Loader(in.getArgs().get(0));
-                        _GameMaster.gamesListing.put(in.getArgs().get(0), loader.LoadGame());
-                        int turn = _GameMaster.gamesListing.get(in.getArgs().get(0)).turn;
-                        message.setText("Game loaded, it is now the " + turn + " turn");
-                        break;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    AWS aws = new AWS();
+                    message.setText(Responses.onUndo(aws, in));
                     break;
                 }
                 case "/join": {
@@ -171,44 +131,12 @@ class CommandsHandler extends TelegramLongPollingBot{
 
                 // message should be formatted /fortify (move from) (move to) (Num armies)
                 case "/fortify": {
-                    String from = null;
-                    String to = null;
-                    int i = 0; // number to keep track of the size of the country inputs
-
-                    if (game.BM.boardMap.containsKey(in.getArgs().get(0))) {
-                        from = in.getArgs().get(0);
-                        i = 1;
-                    }
-                    else if (game.BM.boardMap.containsKey(in.getArgs().get(0) + " " + in.getArgs().get(1))) {
-                        from = in.getArgs().get(0) + " " + in.getArgs().get(1);
-                        i = 2;
-                    }
-                    else if (game.BM.boardMap.containsKey(in.getArgs().get(0) + " " + in.getArgs().get(1) + " " + in.getArgs().get(2))) {
-                        from = in.getArgs().get(0) + " " + in.getArgs().get(1) + " " + in.getArgs().get(2);
-                        i = 3;
-                    }
-
-                    if (game.BM.boardMap.containsKey(in.getArgs().get(i))) {
-                        to = in.getArgs().get(i);
-                        i += 1;
-                    }
-                    else if (game.BM.boardMap.containsKey(in.getArgs().get(i) + " " + in.getArgs().get(i+1))) {
-                        to = in.getArgs().get(i) + " " + in.getArgs().get(i+1);
-                        i += 2;
-                    }
-                    else if (game.BM.boardMap.containsKey(in.getArgs().get(i) + " " + in.getArgs().get(i+1) + " " + in.getArgs().get(i+2))) {
-                        to = in.getArgs().get(i) + " " + in.getArgs().get(i+1) + " " + in.getArgs().get(i+2);
-                        i += 3;
-                    }
-
-                    int turnNo = game.turn % game.playerDirectory.size();
-                    Player player = game.playerDirectory.get(turnNo);
-                    int transfer = Integer.parseInt(in.getArgs().get(i));
-                    game.BM.fortifyTerritory(from,to,transfer);
+                    message.setText(Responses.onFortify(game, in));
+                    break;
                 }
 
                 // assumes it is your turn, checks your hand for three matching cards, pops them from your hand and gives you the armies
-                case "/tradecards": {
+                case "/trade": {
                     Player player = CommandUtils.getPlayer(game);
                     Turn turn = game.currentTurn;
                     break;
@@ -227,32 +155,8 @@ class CommandsHandler extends TelegramLongPollingBot{
                 }
 
                 case "/endturn": {
-                    Turn turn = game.currentTurn;
-                    turn.earnCards();
-
-                    // Write game to save game file
-                    try {
-                        JSONhandler JSONhandler = new JSONhandler(game);
-                        JSONhandler.JSONwriter();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    // broadcast to Twitter
                     Twitter tw = new Twitter();
-                    try {
-                        tw.broadcastToTwitter(game.currentTurn, game.currentTurn.player);
-                    } catch (TwitterException e) {
-                        e.printStackTrace();
-                    }
-
-                    // move to next turn
-                    game.turn += 1;
-                    int turnNo = game.turn % game.playerDirectory.size();
-                    Player player = game.playerDirectory.get(turnNo);
-                    game.nextTurnUserID = player.id;
-                    message.setText("Player " +player.getUsername()+ " it is now your turn, type /beginTurn to begin your turn");
-                    break;
+                    message.setText(Responses.onEndTurn(game, tw));
                 }
 
                 case "/beginTurn": {

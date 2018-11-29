@@ -2,6 +2,7 @@
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -24,6 +25,8 @@ public class TelegramTest extends TestCase {
         Update update1 = new Update();
         bot.onUpdateReceived(update1);
         Mockito.verify(bot).onUpdateReceived(update1);
+
+
     }
 
     @Test

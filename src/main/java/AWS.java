@@ -20,7 +20,7 @@ public class AWS {
     private String fileName;
     private String bucketName = "risk-game-team-one";
 
-    AWS() throws IOException {
+    AWS(){
 
         base = System.getProperty("user.dir");
         this.fileName = base + "/src/files/Risk.json";

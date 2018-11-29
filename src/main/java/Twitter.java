@@ -25,10 +25,11 @@ public class Twitter {
     }
 
 
-    public void broadcastToTwitter(Turn k, Player p) throws TwitterException
+    public String broadcastToTwitter(Turn k, Player p) throws TwitterException
     {
         int gains = 0;
         String result = "Turn("+ k.turnId + "):Player " + p.getId() + " captured ";
+        String status = "\nTurn Summary: ";
         for(String terr: p.getTerritories())
         {
             if (!k.previousTerritories.contains(terr)) {
@@ -41,12 +42,11 @@ public class Twitter {
         else
             result += " territories.";
 
-        System.out.println("\nTurn Summary: ");
         if (gains > 0) {
-            Status status = twitter.updateStatus(result);
-            System.out.println(status.getText());
-        } else
-            System.out.println(result + "no territories this turn.");
+            twitter.updateStatus(result);
+            return status + result;
+        }
+        return status + result + " no territories this turn.";
     }
 
 }
