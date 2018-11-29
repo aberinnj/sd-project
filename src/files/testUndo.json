@@ -99,8 +99,8 @@
       "Unit": "INFANTRY"
     },
     {
-      "Territory": "CONGO",
-      "Unit": "ARTILLERY"
+      "Territory": "PERU",
+      "Unit": "CAVALRY"
     },
     {
       "Territory": "ONTARIO",
@@ -119,7 +119,11 @@
       "Unit": "INFANTRY"
     },
     {
-      "Territory": "WESTERN AUSTRALIA",
+      "Territory": "WILD",
+      "Unit": "WILD"
+    },
+    {
+      "Territory": "SOUTH AFRICA",
       "Unit": "ARTILLERY"
     },
     {
@@ -127,8 +131,8 @@
       "Unit": "ARTILLERY"
     },
     {
-      "Territory": "AFGHANISTAN",
-      "Unit": "INFANTRY"
+      "Territory": "MIDDLE EAST",
+      "Unit": "CAVALRY"
     },
     {
       "Territory": "YAKUTSK",

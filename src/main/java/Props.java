@@ -30,12 +30,6 @@ class Props{
         this.props.load(new FileInputStream(configPath));
     }
 
-    // function for reseting the path for testing
-    public void resetConfigPath(String in) throws IOException {
-        this.configPath = in;
-        this.props.load(new FileInputStream(configPath));
-    }
-
     public String getTwitter_apiKey() { return props.getProperty("twitter_apiKey"); }
 
     public String getTwitter_accessToken() { return props.getProperty("twitter_accessToken"); }
