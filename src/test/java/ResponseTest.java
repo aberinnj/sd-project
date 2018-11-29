@@ -669,10 +669,18 @@ public class ResponseTest extends TestCase {
         response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
         assertEquals("You cannot attack right now.", response);
 
+        // the two lines below should not be done/used outside response
+        _GameMaster.gamesListing.get("game").context = new Context();
+        _GameMaster.gamesListing.get("game").context.countryTo = "BRAZIL";
+        response = Responses.onFollowUpAttack(_GameMaster.gamesListing.get("game"));
+        assertEquals("Uh Oh! Somehow, no one owns the territory! This is unexpected.\n" +
+                "Either the game is being tested and some objects are not yet initialized" +
+                "\nOR this has been called before players get to pick a territory or a country to attack/fortify.", response);
+
         Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
         Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
         _GameMaster.gamesListing.get("game").state = GameState.ON_TURN;
-        String onBeginTurn = Responses.onBeginTurn(_GameMaster.gamesListing.get("game"));
+        Responses.onBeginTurn(_GameMaster.gamesListing.get("game"));
 
         INPUT.args = new ArrayList<>();
         response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
@@ -769,12 +777,119 @@ public class ResponseTest extends TestCase {
         INPUT.args = new ArrayList<String>(){{add("BRAZIL");}};
         response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
         assertEquals("You have commenced an attack on BRAZIL", response);
+        assertEquals("BRAZIL", _GameMaster.gamesListing.get("game").context.countryTo);
+
+        response = Responses.onFollowUpAttack(_GameMaster.gamesListing.get("game"));
+        assertEquals("@his Your territory BRAZIL is under attack!\n/defendWith <amount MAX.2> to defend it.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("4");}};
+        response = Responses.onAttackWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You can only attack with 1-3 armies.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("0");}};
+        response = Responses.onAttackWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You can only attack with 1-3 armies.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("3");}};
+        response = Responses.onAttackWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have decided to attack BRAZIL from PERU with 3 armies.", response);
+        assertEquals(GameState.DEFENDING, _GameMaster.gamesListing.get("game").state);
+
+        INPUT.args = new ArrayList<String>(){{add("3");}};
+        response = Responses.onDefendWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You can only defend with 1-2 armies.", response);
 
         INPUT.args = new ArrayList<String>(){{add("CANCEL");}};
         response = Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
         assertEquals("You cancelled attacking.", response);
         assertNull(_GameMaster.gamesListing.get("game").context);
 
+
+        INPUT.args = new ArrayList<String>(){{add("PERU");}};
+        Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
+        INPUT.args = new ArrayList<String>(){{add("BRAZIL");}};
+        Responses.onAttack(_GameMaster.gamesListing.get("game"), INPUT);
+
+        INPUT.args = new ArrayList<String>(){{add("3");}};
+        response = Responses.onAttackWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have decided to attack BRAZIL from PERU with 3 armies.", response);
+        assertEquals(GameState.DEFENDING, _GameMaster.gamesListing.get("game").state);
+
+        INPUT.args = new ArrayList<String>(){{add("1");}};
+        response = Responses.onDefendWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have decided to defend BRAZIL with 1 armies.", response);
+
+
+        INPUT.args = new ArrayList<String>(){{add("3");}};
+        response = Responses.onAttackWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You have not specified where to attack from and which enemy to attack yet.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("3");}};
+        response = Responses.onDefendWith(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You are not under attack.", response);
+    }
+
+    @Test
+    public void testBuyCredits(){
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        Responses.onCreate(0, "game", "her", 123);
+        Responses.onJoin(INPUT, 1, "his", (long)123);
+        _GameMaster.gamesListing.get("game").setPlayerList();
+        Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
+
+        INPUT.args = new ArrayList<String>(){{add("1200");}};
+        String onBuyCredits = Responses.onBuyCredit(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You bought 1200 credits and now have a total of 1200.0 credits", onBuyCredits);
+
+        INPUT.args = new ArrayList<String>(){{add("1300");}};
+        onBuyCredits = Responses.onBuyCredit(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You bought 1300 credits and now have a total of 2500.0 credits", onBuyCredits);
+
+        INPUT.args = new ArrayList<String>(){{add("");}};
+        onBuyCredits = Responses.onBuyCredit(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You did not provide the amount of credits you want to buy." +
+                "\n/buycredits <amount>", onBuyCredits);
+
+    }
+
+    @Test
+    public void testOnBuyStuff(){
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+
+        Responses.onCreate(0, "game", "her", 123);
+        Responses.onJoin(INPUT, 1, "his", (long)123);
+        _GameMaster.gamesListing.get("game").setPlayerList();
+        Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
+        Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
+
+        INPUT.args = new ArrayList<String>(){{add("2");}};
+        String response = Responses.onBuyStuff(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("Uh Oh! You either did not provide the amount of cards or the amount of undos.\n/buystuff <undos> <cards>", response);
+
+        INPUT.args = new ArrayList<String>(){{add("2"); add("10");}};
+        response = Responses.onBuyStuff(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You do not have enough credits to buy 2 undos (1000 each). \nYou currently have 0.0 credits.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("2200");}};
+        Responses.onBuyCredit(_GameMaster.gamesListing.get("game"), INPUT);
+
+        INPUT.args = new ArrayList<String>(){{add("2"); add("10");}};
+        response = Responses.onBuyStuff(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You successfully bought 2 undos\nYou do not have enough credits to buy 10 cards (100 each). \nYou currently have 200.0 credits.", response);
+
+        INPUT.args = new ArrayList<String>(){{add("0"); add("2");}};
+        response = Responses.onBuyStuff(_GameMaster.gamesListing.get("game"), INPUT);
+        assertEquals("You successfully bought 0 undos\nYou successfully bought 2 cards.", response);
     }
 
 

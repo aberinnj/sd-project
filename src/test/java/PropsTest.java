@@ -9,7 +9,7 @@ public class PropsTest extends TestCase {
     @Test
     public void testProps() throws IOException {
 
-        Props props = new Props(System.getProperty("user.dir") +  "/src/files/secrets_TeamOne_demo.prop");
+        Props props = new Props(System.getProperty("user.dir") +  "/src/files/secrets_example.prop");
 
         assertEquals("KEY3", props.getTwitter_apiKey());
 

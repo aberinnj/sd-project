@@ -358,7 +358,7 @@ public class Responses {
 
     public static String onAttack(Game game, ChatInput in) {
         String tempTerritory = String.join(" ", in.getArgs());
-            if(game.state == GameState.ON_TURN || game.state == GameState.ATTACKING)
+            if(game.state == GameState.ON_TURN || game.state == GameState.ATTACKING || game.state == GameState.DEFENDING)
             {
 
                 Player player = CommandUtils.getPlayer(game);
@@ -385,7 +385,7 @@ public class Responses {
                     } else if (player.getTerritories().contains(tempTerritory)
                         && game.state == GameState.ATTACKING) {
                         // the player owns the territory
-                        // the context is attacking this territory
+                        // the context is attacking an enemy territory
                         return "You own this territory and cannot attack it.";
                     }else if (!player.getTerritories().contains(tempTerritory)
                                 && game.BM.getBoardMap().keySet().contains(tempTerritory)
@@ -408,6 +408,7 @@ public class Responses {
                         return "Territory is unreachable from " + game.context.countryFrom;
                     } else if (tempTerritory.toLowerCase().equals("cancel")) {
                         game.context = null;
+                        game.state = GameState.ON_TURN;
                         return "You cancelled attacking.";
                     } else {
                         return "You do not own " + tempTerritory;
@@ -420,17 +421,18 @@ public class Responses {
     }
 
     public static String onAttackWith(Game game, ChatInput in){
-        if(game.state == GameState.ATTACKING && !game.context.countryFrom.equals("") && !game.context.countryTo.equals(""))
+        if(game.state == GameState.ATTACKING && game.context != null)
         {
             // assuming value is a number for now
             int k = Integer.parseInt(in.getArgs().get(0));
-            if(k < 0 || k > 3)
+            if(k <= 0 || k > 3)
             {
-                return "You can only attack with 1-3 armies. ";
+                return "You can only attack with 1-3 armies.";
             }
             else {
                 game.context.count1 = k;
-                return "You have decided to attack " + game.context.countryTo + " from " + game.context.countryFrom + " with " + game.context.count1 + " armies. ";
+                game.state = GameState.DEFENDING;
+                return "You have decided to attack " + game.context.countryTo + " from " + game.context.countryFrom + " with " + game.context.count1 + " armies.";
             }
         } else {
             return "You have not specified where to attack from and which enemy to attack yet.";
@@ -439,38 +441,105 @@ public class Responses {
 
     public static String onDefendWith(Game game, ChatInput in){
 
-        if(game.state == GameState.ATTACKING && !game.context.countryFrom.equals("") && !game.context.countryTo.equals("") && game.context.count1 != 0)
+        if(game.state == GameState.DEFENDING && game.context != null)
         {
             // assuming value is a number for now
-            game.context.count2 = Integer.parseInt(in.getArgs().get(0));
-            game.state = GameState.RESULT;
-
-            // assuming value is a number for now
             int k = Integer.parseInt(in.getArgs().get(0));
-            if(k < 0 || k > 2)
+            if(k <= 0 || k > 2)
             {
-                return "You can only defend with 1-2 armies. ";
+                return "You can only defend with 1-2 armies.";
             }
             else {
-                game.context.count1 = k;
-                return "You have decided to attack " + game.context.countryTo + " from " + game.context.countryFrom + " with " + game.context.count1 + " armies. ";
+                game.state = GameState.RESULT;
+                game.context.count2 = k;
+                return "You have decided to defend " + game.context.countryTo + " with " + k +" armies.";
             }
+        }else {
+            return "You are not under attack.";
         }
-        return "";
     }
 
     public static String onFollowUpAttack(Game game) {
-        // shows up for when one of a player's territories get attacked (observer)
-        return "";
+        // shows up for when after a player finishes declaring an attack and a follow-up message is needed for
+        // giving instructions to the person who needs to defend
+
+        int id = game.BM.getBoardMap().get(game.context.countryTo).getOccupantID();
+        String username = "null";
+        for (int i: game.playerDirectory.keySet())
+        {
+            if(game.playerDirectory.get(i).id == id)
+            {
+                username = game.playerDirectory.get(i).username;
+            }
+        }
+        if (!username.equals("null"))
+        {
+            return "@" + username + " Your territory " + game.context.countryTo + " is under attack!\n/defendWith <amount MAX.2> to defend it.";
+        } else {
+            return "Uh Oh! Somehow, no one owns the territory! This is unexpected.\n" +
+                    "Either the game is being tested and some objects are not yet initialized" +
+                    "\nOR this has been called before players get to pick a territory or a country to attack/fortify.";
+        }
     }
 
     public static String onFollowUpResult(Game game) {
-        if(game.state == GameState.RESULT)
-        {
             Player p = CommandUtils.getPlayer(game);
             Turn k = new Turn(game.BM, p, game.turn);
-            k.battle(game.context.countryFrom, game.context.countryTo, game.context.count1, game.context.count2);
+            String s = k.battle(game.context.countryFrom, game.context.countryTo, game.context.count1, game.context.count2);
+            game.state = GameState.ON_TURN;
+            game.context = null;
+            return s;
+    }
+
+    public static String onBuyCredit(Game game, ChatInput in){
+        if(in.getArgs().get(0).equals("") || in.getArgs().isEmpty())
+        {
+            return "You did not provide the amount of credits you want to buy." +
+                    "\n/buycredits <amount>";
+        } else{
+            Player player = CommandUtils.getPlayer(game);
+            player.addMoney(Double.parseDouble(in.getArgs().get(0)));
+            return "You bought "+ in.getArgs().get(0) + " credits and now have a total of " + player.getWallet() + " credits";
         }
-        return "";
+
+    }
+
+    public static String onBuyStuff(Game game, ChatInput in)
+    {
+        String response = "";
+        if(in.getArgs().size() < 2)
+        {
+            return "Uh Oh! You either did not provide the amount of cards or the amount of undos.\n/buystuff <undos> <cards>";
+        }
+        else {
+            int turnNo = game.turn % game.playerDirectory.size();
+            Player player = game.playerDirectory.get(turnNo);
+
+            Double cash = player.getWallet();
+
+            int undos = Integer.parseInt(in.getArgs().get(0));
+            if (undos * 1000 <= cash) {
+                player.addUndos(undos);
+                player.addMoney( undos * 1000 * -1);
+                response += "You successfully bought " + undos + " undos\n";
+            } else {
+                return "You do not have enough credits to buy " + undos + " undos (1000 each). \nYou currently have " + cash + " credits.";
+            }
+
+            cash = player.getWallet();
+            int cards = Integer.parseInt(in.getArgs().get(1));
+            if (cards * 100 <= cash) {
+                for (int i = 0; i < cards; i++) {
+                    Card c = game.BM.getGameDeck().draw();
+                    if(c != null) player.getHand().get(c.getUnit()).push(c);
+                }
+                player.addMoney( cards * 100 * -1);
+                return response + "You successfully bought " + cards + " cards.";
+            }
+            else {
+                return response + "You do not have enough credits to buy " + cards + " cards (100 each). \nYou currently have " + cash + " credits.";
+            }
+        }
+
     }
 }
