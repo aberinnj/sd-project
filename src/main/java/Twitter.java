@@ -9,6 +9,7 @@ public class Twitter {
 
     TwitterFactory tf;
     static twitter4j.Twitter twitter;
+    static twitter4j.Status res;
 
     Twitter() {
 
@@ -47,7 +48,7 @@ public class Twitter {
         }
 
         if (gains > 0) {
-            Status res = twitter.updateStatus(result);
+            res = twitter.updateStatus(result);
             return status + res.getText();
         }
         return status + result + "no territories this turn.";

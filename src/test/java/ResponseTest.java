@@ -3,9 +3,13 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import twitter4j.TwitterException;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ResponseTest extends TestCase {
@@ -1008,6 +1012,46 @@ public class ResponseTest extends TestCase {
 
         String response = Responses.onEndTurn(_GameMaster.gamesListing.get("game"), thisTwitter);
         assertEquals("\nTurn Summary: Turn0:Player 0 captured no territories this turn.\nPlayer @his it is now your turn, type /beginTurn to begin your turn", response);
+
+    }
+
+    @Test
+    public void testOnLoad() throws IOException {
+
+        ChatInput INPUT = new ChatInput();
+        INPUT.command = "/join";
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+        _GameMaster.gamesListing = new HashMap<>();
+        _GameMaster.allPlayersAndTheirGames = new HashMap<>();
+        Responses.onCreate(0, "game", "her", 123);
+
+        ArrayList<String> games = new ArrayList<String>(){{
+            add("game1");
+            add("game2");
+        }};
+
+        AWS aws = mock(AWS.class);
+        when(aws.listObjects()).thenReturn(games);
+        when(aws.getFileName()).thenReturn(System.getProperty("user.dir") + "/src/files/testUndo.json");
+
+        INPUT.args = new ArrayList<String>(){{add("");}};
+        String response = Responses.onLoad(_GameMaster.gamesListing.get("game"), aws, INPUT);
+        assertEquals("You have opted to load a game but did not provide a gameID:\n/load <gameID> to load a game\nAvailable games to load:\n"+
+                "game1\ngame2\n", response);
+
+
+        File file = new File(aws.getFileName());
+        assertTrue(file.exists());
+
+        when(aws.download("game")).thenReturn(true);
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+        response = Responses.onLoad(_GameMaster.gamesListing.get("game"), aws, INPUT);
+        assertEquals("Game loaded, it is now the 80 turn", response);
+
+        when(aws.download("game")).thenReturn(false);
+        INPUT.args = new ArrayList<String>(){{add("game");}};
+        response = Responses.onLoad(_GameMaster.gamesListing.get("game"), aws, INPUT);
+        assertEquals("Game could not be downloaded from AWS.", response);
 
     }
 

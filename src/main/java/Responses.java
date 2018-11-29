@@ -2,8 +2,6 @@
 
 *///////////////////////////////////////////////////////////////////////////////*/
 
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import twitter4j.TwitterException;
 
 import java.io.IOException;
@@ -658,12 +656,17 @@ public class Responses {
         else {
 
             try {
-                aws.download(in.getArgs().get(0));
-                Loader loader = new Loader(in.getArgs().get(0));
-                _GameMaster.gamesListing.put(in.getArgs().get(0), loader.LoadGame());
+                if(!aws.download(in.getArgs().get(0)))
+                {
+                    return "Game could not be downloaded from AWS.";
+                } else {
+                    game.gameLoader = new Loader(in.getArgs().get(0));
+                    _GameMaster.gamesListing.get("game").gameLoader.JH.fileName = aws.getFileName();
+                    _GameMaster.gamesListing.put(in.getArgs().get(0), game.gameLoader.loadGame());
 
-                int turn = _GameMaster.gamesListing.get(in.getArgs().get(0)).turn;
-                return "Game loaded, it is now the " + turn + " turn";
+                    int turn = _GameMaster.gamesListing.get(in.getArgs().get(0)).turn;
+                    return "Game loaded, it is now the " + turn + " turn";
+                }
             } catch (IOException e)
             {
                 e.printStackTrace();
@@ -679,7 +682,7 @@ public class Responses {
             aws.download(in.getArgs().get(0));
             // create new loader & game using the input gameID
             Loader loader = new Loader(in.getArgs().get(0));
-            _GameMaster.gamesListing.put(in.getArgs().get(0), loader.LoadGame());
+            _GameMaster.gamesListing.put(in.getArgs().get(0), loader.loadGame());
         } catch(IOException e)
         {
             e.printStackTrace();

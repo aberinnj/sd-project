@@ -23,7 +23,7 @@ public class Loader {
         this.JH = new JSONhandler(game);
     }
 
-    public Game LoadGame() throws IOException {
+    public Game loadGame() throws IOException {
         JsonObject gameJson = JH.JSONreader();
         setGame(gameJson);
         setDeck(gameJson);

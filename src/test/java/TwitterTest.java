@@ -17,11 +17,8 @@ public class TwitterTest extends TestCase{
     {
         twitter4j.Twitter twitter = mock(twitter4j.Twitter.class);
         twitter4j.Status status = mock(twitter4j.Status.class);
-        when(status.getText()).thenReturn("Turn(81):Player 0 captured 2 territories.");
-        when(twitter.updateStatus("Turn(81):Player 0 captured 2 territories.")).thenReturn(status);
-
-        // check if it works
-        assertEquals("Turn(81):Player 0 captured 2 territories.", twitter.updateStatus("Turn(81):Player 0 captured 2 territories.").getText());
+        Twitter.twitter = twitter;
+        Twitter.res = status;
 
         // setup
         _GameMaster.gamesListing = new HashMap<>();
@@ -37,7 +34,7 @@ public class TwitterTest extends TestCase{
         Responses.onSkipClaim(_GameMaster.gamesListing.get("game"));
         Responses.onSkipReinforce(_GameMaster.gamesListing.get("game"));
 
-        Twitter.twitter = twitter;
+
 
         Player player = CommandUtils.getPlayer(_GameMaster.gamesListing.get("game")); // her
         // previousTerritories defined here
@@ -47,13 +44,33 @@ public class TwitterTest extends TestCase{
         String response = Twitter.broadcastToTwitter(turn, player);
         assertEquals("\nTurn Summary: Turn(81):Player 0 captured no territories this turn.", response);
 
-        // add captures here
-        player.addTerritories("BRAZIL");
-        player.addTerritories("ALASKA");
+        // one capture here
+        player.addTerritories("CHINA");
+
+
+
+        when(status.getText()).thenReturn("Turn(81):Player 0 captured 1 territory.");
+        when(twitter.updateStatus("Turn(81):Player 0 captured 1 territory.")).thenReturn(Twitter.res);
+        // check if it works
+        assertEquals("Turn(81):Player 0 captured 1 territory.", twitter.updateStatus("Turn(81):Player 0 captured 1 territory.").getText());
 
         // some captures for this broadcast
         response = Twitter.broadcastToTwitter(turn, player);
-        assertEquals("\nTurn Summary: Turn(81):Player 0 captured 2 territories.", response);
+        assertEquals("\nTurn Summary: Turn(81):Player 0 captured 1 territory.", response);
+
+        // some captures here
+        player.addTerritories("BRAZIL");
+        player.addTerritories("ALASKA");
+
+
+        when(status.getText()).thenReturn("Turn(81):Player 0 captured 3 territories.");
+        when(twitter.updateStatus("Turn(81):Player 0 captured 3 territories.")).thenReturn(Twitter.res);
+        // check if it works
+        assertEquals("Turn(81):Player 0 captured 3 territories.", twitter.updateStatus("Turn(81):Player 0 captured 3 territories.").getText());
+
+        // some captures for this broadcast
+        response = Twitter.broadcastToTwitter(turn, player);
+        assertEquals("\nTurn Summary: Turn(81):Player 0 captured 3 territories.", response);
 
     }
 }

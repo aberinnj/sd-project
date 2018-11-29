@@ -41,7 +41,7 @@ class Game extends Observable {
     Context context;
     Messenger messenger;
     Turn currentTurn;
-    Deck deck;
+    Loader gameLoader;
 
 
     Game() {
